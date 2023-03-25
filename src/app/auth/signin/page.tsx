@@ -8,6 +8,8 @@ import Link from "next/link";
 
 const merriweather_Sans = Merriweather_Sans({ subsets: ["latin"] });
 
+export const dynamic = "force-static";
+
 const Page = async () => {
   const providersObj = (await getProviders()) || [];
   const providers = Object.values(providersObj);

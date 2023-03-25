@@ -2,11 +2,12 @@ import React from "react";
 import { getProviders } from "next-auth/react";
 import Button from "@/components/button";
 import FormComponent from "./signup-form";
-import { Merriweather_Sans, Fasthand } from "next/font/google";
+import { Merriweather_Sans } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 
-const fasthand = Fasthand({ subsets: ["latin"], weight: "400" });
+export const dynamic = "force-static";
+
 const merriweather_Sans = Merriweather_Sans({ subsets: ["latin"] });
 
 const Page = async () => {

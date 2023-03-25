@@ -1,9 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import { Fasthand } from "next/font/google";
 import Link from "next/link";
 
-const fasthand = Fasthand({ subsets: ["latin"], weight: "400" });
 interface PageParams {
   params: {};
   searchParams: {

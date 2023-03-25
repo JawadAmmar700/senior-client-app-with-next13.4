@@ -1,5 +1,4 @@
 "use client";
-import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import { P2P } from "@/lib/P2P";
 import { useRouter } from "next/navigation";
