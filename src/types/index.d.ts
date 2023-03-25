@@ -9,3 +9,28 @@ interface Session {
     image: string;
   };
 }
+
+type FetcherProps = {
+  url: string;
+  obj: {
+    username?: string;
+    email: string;
+    password: string;
+  };
+};
+
+type HandleSubmitProps = {
+  email: string;
+  username: string;
+  password: string;
+};
+
+type FormProps = {
+  provider: ClientSafeProvider;
+};
+
+type User = {
+  userId: string;
+  username: string;
+  photoUrl: string;
+};

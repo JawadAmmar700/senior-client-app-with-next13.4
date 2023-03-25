@@ -6,6 +6,7 @@ const getSession = async (cookie: string): Promise<Session> => {
     {
       method: "GET",
       headers: {
+        "content-type": "application/json",
         cookie,
       },
     }

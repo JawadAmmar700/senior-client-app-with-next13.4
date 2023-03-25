@@ -1,10 +1,18 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcryptjs from "bcryptjs";
+
+import prisma from "@/lib/prisma";
 
 if (!process.env.GOOGLE_CLIENT_ID)
   throw new Error("GOOGLE_CLIENT_ID is not defined");
 if (!process.env.GOOGLE_CLIENT_SECRET)
   throw new Error("GOOGLE_CLIENT_SECRET is not defined");
+if (!process.env.NEXTAUTH_SECRET)
+  throw new Error("NEXTAUTH_SECRET is not defined");
+if (!process.env.NEXTAUTH_JWT_SECRET)
+  throw new Error("NEXTAUTH_JWT_SECRET is not defined");
 
 async function refreshAccessToken(token) {
   try {
@@ -19,7 +27,7 @@ async function refreshAccessToken(token) {
 
     const response = await fetch(url, {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
       method: "POST",
     });
@@ -46,41 +54,111 @@ async function refreshAccessToken(token) {
   }
 }
 
-export default NextAuth({
-  secret: process.env.NEXTAUTH_SECRET,
+export const authOptions = {
+  secret: `${process.env.NEXTAUTH_SECRET}`,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: { params: { access_type: "offline", prompt: "consent" } },
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "exmaple@gmail.com",
+        },
+        username: { label: "Username", type: "text", placeholder: "username" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const userExists = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        if (!userExists) {
+          throw new Error("Email not found");
+        }
+
+        const passwordMatch = await bcryptjs.compare(
+          credentials.password,
+          userExists.password
+        );
+
+        if (!passwordMatch) {
+          throw new Error("Password is incorrect");
+        }
+        const user = {
+          id: userExists.id,
+          email: userExists.email,
+          name: userExists.username,
+          image: userExists.image,
+        };
+        return user;
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user, account }) {
-      // Initial sign in
-      if (account && user) {
+      if (account?.provider === "google") {
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + account.expires_in * 1000,
+          accessTokenExpires: Date.now() + account.expires_at * 1000,
           refreshToken: account.refresh_token,
           user,
         };
       }
 
-      // Return previous token if the access token has not expired yet
-      if (Date.now() < token.accessTokenExpires) {
-        return token;
+      if (account?.provider === "credentials" && user) {
+        return {
+          user,
+        };
       }
 
-      // Access token has expired, try to update it
-      return refreshAccessToken(token);
+      if (
+        account?.provider === "google" &&
+        Date.now() < token.accessTokenExpires
+      ) {
+        return token;
+      }
+      if (account?.provider === "google") return refreshAccessToken(token);
+      return token;
     },
     async session({ session, token }) {
-      session.user = token.user;
-      session.accessToken = token.accessToken;
-      session.error = token.error;
-
+      if (token.user) {
+        session.user = token.user;
+      }
+      if (token.error) {
+        session.error = token.error;
+      }
       return session;
     },
+    async signIn({ user, account }) {
+      if (account?.provider === "credentials") {
+        if (user) {
+          return true;
+        } else {
+          return "/auth/signup";
+        }
+      } else {
+        return true;
+      }
+    },
   },
-});
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
+  },
+  session: {
+    strategy: "jwt",
+  },
+  jwt: {
+    secret: `${process.env.NEXTAUTH_JWT_SECRET}`,
+  },
+};
+
+export default NextAuth(authOptions);
