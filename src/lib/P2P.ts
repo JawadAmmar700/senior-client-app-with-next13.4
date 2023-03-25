@@ -25,7 +25,7 @@ export class P2P {
   constructor() {
     this.peer = new Peer();
     this.opts["sync disconnect on unload"] = false;
-    this.socket = io("http://localhost:4000", this.opts);
+    this.socket = io(`${process.env.NEXT_PUBLIC_SERVER_APP}`, this.opts);
     this.peer.on("open", (id) => {
       this.userId = id;
     });
