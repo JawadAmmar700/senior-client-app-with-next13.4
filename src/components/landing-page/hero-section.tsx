@@ -1,10 +1,11 @@
+import Image from "next/image";
 import React from "react";
 
 const HeroSection = () => {
   return (
     <div className="pt-24">
-      <div className="container px-3 mx-auto flex flex-wrap flex-col md:flex-row items-center">
-        <div className="flex flex-col w-full md:w-2/5 justify-center items-start text-center md:text-left">
+      <div className="container px-3 mx-auto flex flex-wrap flex-col lg:flex-row items-center">
+        <div className="flex flex-col w-full lg:w-2/5 justify-center items-start text-center md:text-left">
           <h1 className="my-4 text-5xl font-bold leading-tight">
             The perfect place to connect with your team and clients from
             anywhere in the world.
@@ -23,8 +24,8 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-3/5 py-6 text-center flex justify-center z-0">
-          <img className="w-full md:w-4/5 z-50" src="/landing/landing-3.svg" />
+        <div className="w-full lg:w-3/5 py-6 text-center flex justify-center z-0 ">
+          <Image src="/landing/landing-3.svg" width={500} height={500} alt="" />
         </div>
       </div>
     </div>

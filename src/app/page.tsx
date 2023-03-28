@@ -21,11 +21,7 @@ export default async function Home() {
         />
       </div>
       <InfoTitle />
-      <img
-        src="/svgs/wave-down.svg"
-        alt="Picture of the author"
-        className="w-full"
-      />
+
       <CallStart />
       <Footer />
     </main>

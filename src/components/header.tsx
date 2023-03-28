@@ -7,7 +7,6 @@ import Link from "next/link";
 const Header = () => {
   const { data: session, status } = useSession();
   const scrollPosition = useScrollPosition();
-
   return (
     <nav
       id="header"
@@ -17,7 +16,7 @@ const Header = () => {
           : "bg-transparent text-white"
       } tranform transition duration-300 ease-in-out`}
     >
-      <div className="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
+      <div className="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2 h-[80px]">
         <div className="pl-4 flex items-center">
           <a
             className=" no-underline flex items-center space-x-2 hover:no-underline font-bold text-2xl lg:text-4xl"
@@ -60,13 +59,18 @@ const Header = () => {
                 <li tabIndex={0} className="relative flex flex-col items-start">
                   <div className="flex space-x-1">
                     <div className="w-10 rounded-full">
-                      <Image
+                      <img
+                        src={session?.user?.image!}
+                        alt="Profile Picture"
+                        className="rounded-full"
+                      />
+                      {/* <Image
                         src={session?.user?.image!}
                         width={40}
                         height={40}
                         alt="Profile Picture"
                         className="rounded-full"
-                      />
+                      /> */}
                     </div>
                     <div className="flex flex-col items-start gap-0 text-xs">
                       <h1>Jawad Ammar</h1>
@@ -106,7 +110,7 @@ const Header = () => {
           {status !== "loading" ? (
             <>
               {session ? (
-                <div className="list-reset lg:flex justify-end flex-1 items-center">
+                <div className="list-reset lg:flex justify-end flex-1 items-center lg:pr-4">
                   <div className="mr-3">
                     <a
                       href="#get-started"
@@ -122,10 +126,15 @@ const Header = () => {
                       className="btn btn-ghost btn-circle avatar"
                     >
                       <div className="w-10 rounded-full">
-                        <Image
+                        {/* <Image
                           src={session?.user?.image!}
                           width={40}
                           height={40}
+                          alt="Profile Picture"
+                          className="rounded-full"
+                        /> */}
+                        <img
+                          src={session?.user?.image!}
                           alt="Profile Picture"
                           className="rounded-full"
                         />
@@ -142,10 +151,15 @@ const Header = () => {
                             <p>jawadgithub@gmail.com</p>
                           </div>
                           <div className="w-10 rounded-full">
-                            <Image
+                            {/* <Image
                               src={session?.user?.image!}
                               width={40}
                               height={40}
+                              alt="Profile Picture"
+                              className="rounded-full"
+                            /> */}
+                            <img
+                              src={session?.user?.image!}
                               alt="Profile Picture"
                               className="rounded-full"
                             />
@@ -160,7 +174,7 @@ const Header = () => {
                   </div>
                 </div>
               ) : (
-                <div className="list-reset lg:flex justify-end flex-1 items-center space-x-2">
+                <div className="list-reset lg:flex justify-end flex-1 items-center space-x-2 lg:pr-4">
                   <Link
                     href="/auth/signin"
                     className="mx-auto lg:mx-0  bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"

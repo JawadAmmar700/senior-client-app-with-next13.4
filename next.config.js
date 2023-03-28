@@ -6,7 +6,7 @@ const nextConfig = {
     typedRoutes: true,
   },
   images: {
-    domains: ["lh3.googleusercontent.com"],
+    domains: ["lh3.googleusercontent.com", "source.boringavatars.com"],
   },
   typescript: {
     ignoreBuildErrors: true,
