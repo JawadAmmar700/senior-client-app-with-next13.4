@@ -14,8 +14,8 @@ const Page = async () => {
   const providersObj = (await getProviders()) || [];
   const providers = Object.values(providersObj);
   return (
-    <main className="w-full bg-[#F7FAFC] flex items-center justify-center px-10 py-5">
-      <div className="w-full h-full bg-white rounded-lg shadow-xl flex ">
+    <main className="w-full xs:bg-[#F7FAFC] bg-white xs:h-full h-screen flex items-center justify-center px-10 py-5">
+      <div className="w-full h-full bg-white rounded-lg shadow-xl flex">
         <div className="md:w-2/5 h-full w-full flex flex-col items-center py-5">
           <Link
             href="/"

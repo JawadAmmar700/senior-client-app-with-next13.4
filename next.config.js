@@ -5,6 +5,9 @@ const nextConfig = {
     appDir: true,
     typedRoutes: true,
   },
+  images: {
+    domains: ["lh3.googleusercontent.com"],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

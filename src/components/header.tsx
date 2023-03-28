@@ -1,17 +1,26 @@
 "use client";
-import { useSession } from "next-auth/react";
+import useScrollPosition from "@/lib/useScrollPosition";
+import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 const Header = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const scrollPosition = useScrollPosition();
+
   return (
-    <nav id="header" className="fixed w-full z-30 top-0 text-white">
+    <nav
+      id="header"
+      className={`fixed w-full z-30 top-0  ${
+        scrollPosition > 0
+          ? "bg-white text-black shadow-md"
+          : "bg-transparent text-white"
+      } tranform transition duration-300 ease-in-out`}
+    >
       <div className="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
         <div className="pl-4 flex items-center">
           <a
-            className="text-white no-underline flex items-center space-x-2 hover:no-underline font-bold text-2xl lg:text-4xl"
+            className=" no-underline flex items-center space-x-2 hover:no-underline font-bold text-2xl lg:text-4xl"
             href="#"
           >
             <svg
@@ -45,39 +54,47 @@ const Header = () => {
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-white text-black rounded-box w-52"
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-white text-black rounded-box w-60"
             >
-              <li tabIndex={0} className="relative">
-                <a className="justify-between">
-                  Profile
-                  <svg
-                    className="fill-current"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
-                  </svg>
-                </a>
-                <ul className="menu menu-compact dropdown-content absolute -left-[215px] mt-3 p-2 shadow bg-white text-black rounded-box w-52">
-                  <li className="flex flex-col items-start">
-                    <div className="flex flex-col items-start gap-0">
+              {session && (
+                <li tabIndex={0} className="relative flex flex-col items-start">
+                  <div className="flex space-x-1">
+                    <div className="w-10 rounded-full">
+                      <Image
+                        src={session?.user?.image!}
+                        width={40}
+                        height={40}
+                        alt="Profile Picture"
+                        className="rounded-full"
+                      />
+                    </div>
+                    <div className="flex flex-col items-start gap-0 text-xs">
                       <h1>Jawad Ammar</h1>
                       <p>jawadgithub@gmail.com</p>
                     </div>
-                  </li>
+                  </div>
+                </li>
+              )}
+              {!session ? (
+                <>
                   <li>
-                    <a>Logout</a>
+                    <Link href="/auth/signin">Login</Link>
                   </li>
-                </ul>
-              </li>
-              <li>
-                <a>Portfolio</a>
-              </li>
-              <li>
-                <a>About</a>
-              </li>
+
+                  <li>
+                    <Link href="/auth/signup">Resgistor</Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <a href="#get-started">Get Started</a>
+                  </li>
+                  <li onClick={() => signOut()}>
+                    <p>Logout</p>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>
@@ -86,57 +103,91 @@ const Header = () => {
           className="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-20"
           id="nav-content"
         >
-          <ul className="list-reset lg:flex justify-end flex-1 items-center">
-            <li className="mr-3">
-              <a
-                href="#get-started"
-                className="mx-auto lg:mx-0 gradient hover:ring-4 ring-amber-600 outline-none border-none text-white font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 opacity-75 transform transition duration-300 ease-in-out"
-              >
-                Get Started
-              </a>
-            </li>
-          </ul>
-          {session ? (
+          {status !== "loading" ? (
             <>
-              <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                  <div className="w-10 rounded-full">
-                    <img src={session.user?.image!} />
-                  </div>
-                </label>
-                <ul
-                  tabIndex={0}
-                  className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-                >
-                  <li>
-                    <a className="justify-between">
-                      Profile
-                      <span className="badge">New</span>
+              {session ? (
+                <div className="list-reset lg:flex justify-end flex-1 items-center">
+                  <div className="mr-3">
+                    <a
+                      href="#get-started"
+                      className="mx-auto lg:mx-0 gradient hover:ring-4 ring-amber-600 outline-none border-none text-white font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 opacity-75 transform transition duration-300 ease-in-out"
+                    >
+                      Get Started
                     </a>
-                  </li>
-                  <li>
-                    <a>Settings</a>
-                  </li>
-                  <li>
-                    <Link href="/api/auth/signout">Logout</Link>
-                  </li>
-                </ul>
-              </div>
+                  </div>
+
+                  <div className="dropdown dropdown-end">
+                    <label
+                      tabIndex={0}
+                      className="btn btn-ghost btn-circle avatar"
+                    >
+                      <div className="w-10 rounded-full">
+                        <Image
+                          src={session?.user?.image!}
+                          width={40}
+                          height={40}
+                          alt="Profile Picture"
+                          className="rounded-full"
+                        />
+                      </div>
+                    </label>
+                    <ul
+                      tabIndex={0}
+                      className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-60"
+                    >
+                      <li className="flex flex-col items-start">
+                        <div className="flex space-x-1">
+                          <div className="flex flex-col items-start gap-0 text-xs">
+                            <h1>Jawad Ammar</h1>
+                            <p>jawadgithub@gmail.com</p>
+                          </div>
+                          <div className="w-10 rounded-full">
+                            <Image
+                              src={session?.user?.image!}
+                              width={40}
+                              height={40}
+                              alt="Profile Picture"
+                              className="rounded-full"
+                            />
+                          </div>
+                        </div>
+                      </li>
+
+                      <li onClick={() => signOut()}>
+                        <p>Logout</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="list-reset lg:flex justify-end flex-1 items-center space-x-2">
+                  <Link
+                    href="/auth/signin"
+                    className="mx-auto lg:mx-0  bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="mx-auto lg:mx-0  gradient text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </>
           ) : (
-            <div className="flex space-x-2 items-center">
-              <Link
-                href="/auth/signin"
-                className="mx-auto lg:mx-0  bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-              >
-                Login
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="mx-auto lg:mx-0  gradient text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-              >
-                Register
-              </Link>
+            <div className="list-reset lg:flex justify-end flex-1 items-center space-x-2">
+              <div className="flex items-center justify-center mr-20">
+                <div
+                  className="inline-block h-8 w-8 animate-spin text-amber-600 rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                  role="status"
+                >
+                  <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                    Loading...
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </div>

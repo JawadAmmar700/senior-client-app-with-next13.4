@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
 import { getSession } from "@/lib/auth-session";
-import SignoutBtn from "@/components/signout-btn";
 import Header from "@/components/header";
 import Footer from "@/components/landing-page/footer";
 import HeroSection from "@/components/landing-page/hero-section";

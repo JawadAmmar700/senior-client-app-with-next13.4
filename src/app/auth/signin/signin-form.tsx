@@ -96,7 +96,7 @@ const FormComponent = ({ provider }: FormProps) => {
               {isSubmitting ? (
                 <Image
                   src="/svgs/spinner.svg"
-                  alt="auth-hero"
+                  alt="auth-spinner"
                   width={25}
                   height={25}
                   className="animate-spin"
