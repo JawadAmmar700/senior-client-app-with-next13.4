@@ -11,4 +11,11 @@ body {
   .gradient {
     background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
   }
+  .hide-scroll-bar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scroll-bar::-webkit-scrollbar {
+    display: none;
+  }
 }

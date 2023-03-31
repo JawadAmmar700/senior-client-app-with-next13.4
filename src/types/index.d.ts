@@ -33,4 +33,5 @@ type User = {
   userId: string;
   username: string;
   photoUrl: string;
+  room_name?: string;
 };
