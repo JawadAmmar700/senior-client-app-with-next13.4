@@ -53,7 +53,7 @@ const Header = () => {
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-white text-black rounded-box w-60"
+              className="menu menu-compact dropdown-content mt-3 p-4 shadow bg-white text-black rounded-box"
             >
               {session && (
                 <li tabIndex={0} className="relative flex flex-col items-start">
@@ -73,8 +73,8 @@ const Header = () => {
                       /> */}
                     </div>
                     <div className="flex flex-col items-start gap-0 text-xs">
-                      <h1>Jawad Ammar</h1>
-                      <p>jawadgithub@gmail.com</p>
+                      <h1>{session?.user?.name!}</h1>
+                      <p>{session?.user?.email!}</p>
                     </div>
                   </div>
                 </li>
@@ -143,13 +143,13 @@ const Header = () => {
                     </label>
                     <ul
                       tabIndex={0}
-                      className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-60"
+                      className="menu menu-compact dropdown-content mt-3 p-4 shadow bg-base-100 rounded-box "
                     >
                       <li className="flex flex-col items-start">
                         <div className="flex space-x-1">
                           <div className="flex flex-col items-start gap-0 text-xs">
-                            <h1>Jawad Ammar</h1>
-                            <p>jawadgithub@gmail.com</p>
+                            <h1>{session?.user?.name!}</h1>
+                            <p>{session?.user?.email!}</p>
                           </div>
                           <div className="w-10 rounded-full">
                             {/* <Image
