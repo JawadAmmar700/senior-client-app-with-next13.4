@@ -22,7 +22,7 @@ const FormComponent = ({ provider }: FormProps) => {
     }
     setIsSubmitting(true);
     const user = await fetcher({
-      url: "http://localhost:3000/api/register-user",
+      url: `${process.env.LOCAL_AUTH_URL}/api/register-user`,
       obj: values,
     });
     if (user.success) {
