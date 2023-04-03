@@ -1,12 +1,36 @@
 "use client";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Toaster, toast } from "react-hot-toast";
 
 const CallStart = () => {
   const { data: session } = useSession();
   const [meetingId, setMeetingId] = useState<string>("");
   const [roomName, setRoomName] = useState<string>("");
+  const router = useRouter();
+
+  const handleNewMeeting = () => {
+    if (!roomName) return toast.error("Provide room name");
+    const searchParams = new URLSearchParams({
+      meeting_id: uuidv4(),
+      room_name: roomName,
+      user_name: session?.user?.name!,
+      user_image: session?.user?.image!,
+    });
+    router.push("/room?" + searchParams);
+  };
+
+  const handleJoinMeeting = () => {
+    if (!meetingId) return toast.error("Provide meeting id");
+    const searchParams = new URLSearchParams({
+      meeting_id: meetingId,
+      user_name: session?.user?.name!,
+      user_image: session?.user?.image!,
+    });
+    router.push("/room?" + searchParams);
+  };
 
   return (
     <>
@@ -36,7 +60,13 @@ const CallStart = () => {
               placeholder="room name"
             />
           </div>
-          <a
+          <button
+            className="mx-auto lg:mx-0 bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
+            onClick={handleNewMeeting}
+          >
+            Start new Meeting
+          </button>
+          {/* <a
             href={
               session
                 ? `/room?meeting-id=${uuidv4()}&room-name=${roomName}&user-name=${
@@ -47,7 +77,7 @@ const CallStart = () => {
             className="mx-auto lg:mx-0 bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
           >
             Start new Meeting
-          </a>
+          </a> */}
         </div>
 
         <div className="divider px-8 text-white">or</div>
@@ -64,7 +94,7 @@ const CallStart = () => {
               placeholder="****-****-****-****"
             />
           </div>
-          <a
+          {/* <a
             href={
               session
                 ? `/room?meeting-id=${meetingId}&user-name=${session.user?.name}&user-image=${session.user?.image}`
@@ -73,9 +103,16 @@ const CallStart = () => {
             className="mx-auto justify-start lg:mx-0 ring-2 ring-white text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
           >
             Join an existing meeting
-          </a>
+          </a> */}
+          <button
+            className="mx-auto lg:mx-0 bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
+            onClick={handleJoinMeeting}
+          >
+            Join an existing meeting
+          </button>
         </div>
       </section>
+      <Toaster position="top-center" reverseOrder={false} />
     </>
   );
 };

@@ -7,7 +7,7 @@ import CallStart from "@/components/landing-page/call-start";
 export default async function Home() {
   return (
     <main className="relative w-full gradient">
-      <Header isGetStartedVisibile={true} />
+      <Header />
       <HeroSection />
       <div className="relative -mt-12 lg:-mt-24">
         <img

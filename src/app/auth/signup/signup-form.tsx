@@ -25,6 +25,7 @@ const FormComponent = ({ provider }: FormProps) => {
       url: `${process.env.NEXT_PUBLIC_APP_API}/api/register-user`,
       obj: values,
     });
+
     if (user.success) {
       const done = await signIn(provider.id, {
         callbackUrl: "/",
@@ -119,13 +120,22 @@ const FormComponent = ({ provider }: FormProps) => {
               className="bg-blue-500 text-black px-10 mx-auto py-3 hover:bg-blue-500/90 rounded-lg flex shadow-blue-400 items-center space-x-2 mt-10 shadow-lg cursor-pointer"
             >
               {isSubmitting ? (
-                <Image
-                  src="/svgs/spinner.svg"
-                  alt="auth-hero"
-                  width={25}
-                  height={25}
-                  className="animate-spin"
-                />
+                <>
+                  {" "}
+                  <Image
+                    src="/svgs/spinner.svg"
+                    alt="auth-spinner"
+                    width={25}
+                    height={25}
+                    className="animate-spin"
+                  />
+                  <label
+                    htmlFor="signin"
+                    className={`${merriweather_Sans.className} font-bold text-xs cursor-pointer text-white`}
+                  >
+                    Signing up
+                  </label>
+                </>
               ) : (
                 <>
                   <Image
