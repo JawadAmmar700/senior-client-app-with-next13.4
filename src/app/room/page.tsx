@@ -31,6 +31,7 @@ export default function Home() {
   const [myMuted, setMyMuted] = useState<boolean>(false);
   const [myCamera, setMyCamera] = useState<boolean>(true);
   const [myPin, setMyPin] = useState<boolean>(true);
+  const [isSharing, setIsSharing] = useState<boolean>(false);
   const [userPin, setUserPin] = useState<string>("");
   // Initialize state variable to manage chat window visibility
   const [openChat, setOpenChat] = useState<boolean>(false);
@@ -75,7 +76,12 @@ export default function Home() {
       <div className="flex-1 relative overflow-hidden">
         <div className="w-full h-full  relative  rounded-lg">
           <div className="absolute inset-0">
-            <Header roomName={roomName} />
+            <Header
+              roomName={roomName}
+              isSharing={isSharing}
+              userPin={userPin}
+              userScreenShare={userScreenShare}
+            />
           </div>
           <PinStream
             pinVideoRef={pinVideoRef}
@@ -85,6 +91,7 @@ export default function Home() {
             userScreenShare={userScreenShare}
             userPin={userPin}
             streams={streams}
+            isSharing={isSharing}
           />
           <Buttons
             peer={peer}
@@ -95,6 +102,11 @@ export default function Home() {
             setMyCamera={setMyCamera}
             setMyMuted={setMyMuted}
             myVideoStreamRef={myVideoStreamRef}
+            pinVideoRef={pinVideoRef}
+            isSharing={isSharing}
+            setIsSharing={setIsSharing}
+            userPin={userPin}
+            userScreenShare={userScreenShare}
           />
         </div>
         <div

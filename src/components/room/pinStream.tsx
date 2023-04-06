@@ -8,6 +8,7 @@ type PinStreamProps = {
   userScreenShare: string[];
   userPin: string;
   streams: MapOfPeerCalls[];
+  isSharing: boolean;
 };
 
 const PinStream = ({
@@ -18,8 +19,10 @@ const PinStream = ({
   userScreenShare,
   userPin,
   streams,
+  isSharing,
 }: PinStreamProps) => {
   const isSreenShare = userScreenShare.find((s) => s === userPin);
+  console.log(isSharing);
   return (
     <>
       <video
@@ -29,10 +32,10 @@ const PinStream = ({
         playsInline
         muted
         className={`w-full h-full ${
-          isSreenShare ? "object-contain" : "object-cover"
+          isSreenShare || isSharing ? "object-contain" : "object-cover"
         }  -z-30`}
       />
-      {!myCamera && (
+      {!myCamera && !userPin && (
         <div className="absolute w-full bg-slate-800 h-full inset-0 rounded-lg flex items-center justify-center">
           <img
             src={image}

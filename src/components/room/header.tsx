@@ -2,17 +2,32 @@ import React from "react";
 import { AiOutlineVideoCamera } from "react-icons/ai";
 import { signOut, useSession } from "next-auth/react";
 
-const Header = ({ roomName = "room-2" }: { roomName: string }) => {
+const Header = ({
+  roomName,
+  isSharing,
+  userScreenShare,
+  userPin,
+}: {
+  roomName: string;
+  isSharing: boolean;
+  userScreenShare: string[];
+  userPin: string;
+}) => {
   const { data: session } = useSession();
+  const isSreenShare = userScreenShare.find((s) => s === userPin);
 
   return (
-    <nav className="flex  items-center text-white justify-between px-4 py-1 z-30">
+    <nav
+      className={`flex  items-center text-white justify-between px-4 py-1 z-30  ${
+        isSharing || isSreenShare ? "bg-black" : "bg-transparent"
+      }`}
+    >
       <div className="flex items-center space-x-4 z-30">
         <div className="flex items-center justify-center p-2 bg-blue-500 rounded-lg">
           <AiOutlineVideoCamera className="text-lg text-white" />
         </div>
         <div className="divider divider-horizontal bg-slate-400 w-0.5"></div>
-        <p className="font-bold text-xl">{roomName}</p>
+        <p className={"font-bold text-xl "}>{roomName}</p>
       </div>
       <div className="block lg:hidden pr-4 z-30">
         <div className="dropdown dropdown-end">

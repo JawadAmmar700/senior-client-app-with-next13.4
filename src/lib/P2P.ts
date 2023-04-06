@@ -168,7 +168,11 @@ export class P2P {
     }
   }
 
-  async shareScreen(video: React.MutableRefObject<HTMLVideoElement | null>) {
+  async shareScreen(
+    myVideo: React.MutableRefObject<HTMLVideoElement | null>,
+    pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>,
+    setIsSharing: React.Dispatch<React.SetStateAction<boolean>>
+  ) {
     const screenShare = await navigator.mediaDevices.getDisplayMedia({
       video: {
         cursor: "always",
@@ -176,11 +180,15 @@ export class P2P {
       } as MediaTrackConstraints,
       audio: false,
     });
-
-    if (video.current) {
+    setIsSharing(true);
+    if (myVideo.current) {
       this.socket.emit("user-operation", this.userId, "userScreenShareOn");
-      video.current.srcObject = screenShare;
-      video.current.play();
+      myVideo.current.srcObject = screenShare;
+      myVideo.current.play();
+    }
+    if (pinVideoRef.current) {
+      pinVideoRef.current.srcObject = screenShare;
+      pinVideoRef.current.play();
     }
     const shareScreenTracks = screenShare.getVideoTracks()[0];
     this.peerConnections.forEach((peerConnection) => {
@@ -191,11 +199,15 @@ export class P2P {
     });
 
     shareScreenTracks.onended = () => {
-      if (video.current) {
+      setIsSharing(false);
+      if (myVideo.current) {
         this.socket.emit("user-operation", this.userId, "userScreenShareOff");
-
-        video.current.srcObject = this.myStream;
-        video.current.play();
+        myVideo.current.srcObject = this.myStream;
+        myVideo.current.play();
+      }
+      if (pinVideoRef.current) {
+        pinVideoRef.current.srcObject = this.myStream;
+        pinVideoRef.current.play();
       }
       const returnStream = this.myStream?.getVideoTracks()[0];
       this.peerConnections.forEach((peerConnection) => {

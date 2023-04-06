@@ -19,6 +19,11 @@ const Buttons = ({
   setOpenChat,
   openChat,
   myVideoStreamRef,
+  pinVideoRef,
+  setIsSharing,
+  isSharing,
+  userPin,
+  userScreenShare,
 }: {
   peer: P2P;
   myMuted: boolean;
@@ -28,15 +33,21 @@ const Buttons = ({
   setOpenChat: React.Dispatch<React.SetStateAction<boolean>>;
   openChat: boolean;
   myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null>;
+  pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
+  setIsSharing: React.Dispatch<React.SetStateAction<boolean>>;
+  isSharing: boolean;
+  userScreenShare: string[];
+  userPin: string;
 }) => {
   const router = useRouter();
+  const isSreenShare = userScreenShare.find((s) => s === userPin);
 
   const endCall = () => {
     peer.disconnectUser();
     router.push("/");
   };
   const shareScreen = () => {
-    peer.shareScreen(myVideoStreamRef);
+    peer.shareScreen(myVideoStreamRef, pinVideoRef, setIsSharing);
   };
   const mute = () => {
     peer.muteStream(!myMuted);
@@ -52,7 +63,9 @@ const Buttons = ({
     <div className="w-full absolute  bottom-2 p-2 flex space-x-5 items-center justify-center z-40">
       <button
         onClick={mute}
-        className="btn  hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
+        className={`btn  hover:bg-opacity-20 outline-none border-none backdrop-blur-sm  ${
+          isSharing || isSreenShare ? "bg-black/50" : "bg-white/10"
+        } cursor-pointer`}
       >
         {myMuted ? (
           <BsMicMute className="w-5 h-5 text-white" />
@@ -62,7 +75,9 @@ const Buttons = ({
       </button>
       <button
         onClick={camonoff}
-        className="btn hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
+        className={`btn hover:bg-opacity-20 outline-none border-none backdrop-blur-sm ${
+          isSharing || isSreenShare ? "bg-black/50" : "bg-white/10"
+        } cursor-pointer`}
       >
         {myCamera ? (
           <BsCameraVideo className="w-5 h-5  text-white" />
@@ -78,13 +93,17 @@ const Buttons = ({
       </button>
       <button
         onClick={shareScreen}
-        className="btn  hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
+        className={`btn hover:bg-opacity-20 outline-none border-none backdrop-blur-sm ${
+          isSharing || isSreenShare ? "bg-black/50" : "bg-white/10"
+        } cursor-pointer`}
       >
         <MdOutlineScreenShare className="w-5 h-5 text-white" />
       </button>
       <button
         onClick={() => setOpenChat(!openChat)}
-        className="btn block lg:hidden  hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
+        className={`btn hover:bg-opacity-20 outline-none lg:hidden block  border-none backdrop-blur-sm ${
+          isSharing || isSreenShare ? "bg-black/50" : "bg-white/10"
+        } cursor-pointer`}
       >
         <BsChatDots className="w-5 h-5 text-white" />
       </button>
