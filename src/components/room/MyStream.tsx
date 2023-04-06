@@ -14,6 +14,8 @@ type MyStreamProps = {
   setUserPin: React.Dispatch<React.SetStateAction<string>>;
   myStream: MediaStream;
   userPin: string;
+  myScreenShare: MediaStream | null;
+  isSharing: boolean;
 };
 
 const MyStream = ({
@@ -28,6 +30,8 @@ const MyStream = ({
   setUserPin,
   myStream,
   userPin,
+  myScreenShare,
+  isSharing,
 }: MyStreamProps) => {
   const pinMyStream = () => {
     if (pinVideoRef.current) {
@@ -36,7 +40,7 @@ const MyStream = ({
         setMyPin(false);
         setUserPin("");
       } else {
-        pinVideoRef.current.srcObject = myStream;
+        pinVideoRef.current.srcObject = isSharing ? myScreenShare : myStream;
         pinVideoRef.current.play();
         setMyPin(true);
         setUserPin("");

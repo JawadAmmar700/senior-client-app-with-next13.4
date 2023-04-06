@@ -24,6 +24,7 @@ const Buttons = ({
   isSharing,
   userPin,
   userScreenShare,
+  setMyScreenShare,
 }: {
   peer: P2P;
   myMuted: boolean;
@@ -38,6 +39,7 @@ const Buttons = ({
   isSharing: boolean;
   userScreenShare: string[];
   userPin: string;
+  setMyScreenShare: React.Dispatch<React.SetStateAction<MediaStream | null>>;
 }) => {
   const router = useRouter();
   const isSreenShare = userScreenShare.find((s) => s === userPin);
@@ -47,7 +49,12 @@ const Buttons = ({
     router.push("/");
   };
   const shareScreen = () => {
-    peer.shareScreen(myVideoStreamRef, pinVideoRef, setIsSharing);
+    peer.shareScreen(
+      myVideoStreamRef,
+      pinVideoRef,
+      setMyScreenShare,
+      setIsSharing
+    );
   };
   const mute = () => {
     peer.muteStream(!myMuted);

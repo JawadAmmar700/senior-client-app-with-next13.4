@@ -13,6 +13,8 @@ type UserStreamsProps = {
   userPin: string;
   setUserPin: React.Dispatch<React.SetStateAction<string>>;
   setMyPin: React.Dispatch<React.SetStateAction<boolean>>;
+  isSharing: boolean;
+  myScreenShare: MediaStream | null;
 };
 
 const UserStreams = ({
@@ -25,6 +27,8 @@ const UserStreams = ({
   userPin,
   setUserPin,
   setMyPin,
+  isSharing,
+  myScreenShare,
 }: UserStreamsProps) => {
   const isCamera = userCameraONOFF.find((s) => s === call.id);
   const isMute = userMute.find((s) => s === call.id);
@@ -34,7 +38,7 @@ const UserStreams = ({
       const stream = streams.find((s) => s.id === userId);
       if (stream) {
         if (userId === userPin) {
-          pinVideoRef.current.srcObject = myStream;
+          pinVideoRef.current.srcObject = isSharing ? myScreenShare : myStream;
           setMyPin(true);
           setUserPin("");
           return;

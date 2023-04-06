@@ -171,6 +171,7 @@ export class P2P {
   async shareScreen(
     myVideo: React.MutableRefObject<HTMLVideoElement | null>,
     pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>,
+    setMyScreenShare: React.Dispatch<React.SetStateAction<MediaStream | null>>,
     setIsSharing: React.Dispatch<React.SetStateAction<boolean>>
   ) {
     const screenShare = await navigator.mediaDevices.getDisplayMedia({
@@ -181,6 +182,7 @@ export class P2P {
       audio: false,
     });
     setIsSharing(true);
+    setMyScreenShare(screenShare);
     if (myVideo.current) {
       this.socket.emit("user-operation", this.userId, "userScreenShareOn");
       myVideo.current.srcObject = screenShare;
@@ -200,6 +202,7 @@ export class P2P {
 
     shareScreenTracks.onended = () => {
       setIsSharing(false);
+      setMyScreenShare(null);
       if (myVideo.current) {
         this.socket.emit("user-operation", this.userId, "userScreenShareOff");
         myVideo.current.srcObject = this.myStream;

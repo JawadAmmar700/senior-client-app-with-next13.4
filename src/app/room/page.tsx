@@ -38,6 +38,9 @@ export default function Home() {
   // Create refs to manage user's pinned stream and own video stream
   const pinVideoRef = useRef<HTMLVideoElement | null>(null);
   const myVideoStreamRef = useRef<HTMLVideoElement | null>(null);
+  // Create ref to manage my own screen share pinned stream
+  // const myScreenShareRef = useRef<MediaStream | null>(null);
+  const [myScreenShare, setMyScreenShare] = useState<MediaStream | null>(null);
   // Initialize state variable to store user's own video stream
   const [myStream, setMyStream] = useState<MediaStream | null>(null);
 
@@ -107,6 +110,7 @@ export default function Home() {
             setIsSharing={setIsSharing}
             userPin={userPin}
             userScreenShare={userScreenShare}
+            setMyScreenShare={setMyScreenShare}
           />
         </div>
         <div
@@ -132,6 +136,8 @@ export default function Home() {
             setUserPin={setUserPin}
             username="you"
             userPin={userPin}
+            myScreenShare={myScreenShare}
+            isSharing={isSharing}
           />
 
           {streams.length > 0 &&
@@ -147,6 +153,8 @@ export default function Home() {
                 userMute={userMute}
                 userPin={userPin}
                 key={id}
+                isSharing={isSharing}
+                myScreenShare={myScreenShare}
               />
             ))}
         </div>

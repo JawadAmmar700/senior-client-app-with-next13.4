@@ -22,7 +22,6 @@ const PinStream = ({
   isSharing,
 }: PinStreamProps) => {
   const isSreenShare = userScreenShare.find((s) => s === userPin);
-  console.log(isSharing);
   return (
     <>
       <video
