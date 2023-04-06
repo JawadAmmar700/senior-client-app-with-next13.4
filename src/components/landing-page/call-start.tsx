@@ -16,8 +16,10 @@ const CallStart = () => {
     const searchParams = new URLSearchParams({
       meeting_id: uuidv4(),
       room_name: roomName,
+      // user_name: "jawad",
       user_name: session?.user?.name!,
       user_image: session?.user?.image!,
+      // user_image: `https://source.boringavatars.com/pixel/120/jawad`,
     });
     router.push("/room?" + searchParams);
   };
@@ -27,7 +29,9 @@ const CallStart = () => {
     const searchParams = new URLSearchParams({
       meeting_id: meetingId,
       user_name: session?.user?.name!,
+      // user_name: "nada",
       user_image: session?.user?.image!,
+      // user_image: `https://source.boringavatars.com/pixel/120/nada`,
     });
     router.push("/room?" + searchParams);
   };

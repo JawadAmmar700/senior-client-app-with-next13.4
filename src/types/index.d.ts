@@ -35,3 +35,10 @@ type User = {
   photoUrl: string;
   room_name?: string;
 };
+
+type MapOfPeerCalls = {
+  call: MediaConnection;
+  stream: MediaStream;
+  user: User;
+  id: string;
+};

@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { headers } from "next/headers";
 import AuthContext from "@/lib/providers/auth-context";
 import { getSession } from "@/lib/auth-session";
-import Header from "@/components/header";
+import Header from "@/components/landing-page/header";
 
 export const metadata = {
   title: "Meetly | video conference",

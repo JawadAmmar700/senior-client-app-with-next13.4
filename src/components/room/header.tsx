@@ -3,18 +3,18 @@ import { AiOutlineVideoCamera } from "react-icons/ai";
 import { signOut, useSession } from "next-auth/react";
 
 const Header = ({ roomName = "room-2" }: { roomName: string }) => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   return (
-    <nav className="flex  items-center text-white justify-between px-4 py-1 z-50">
-      <div className="flex items-center space-x-4">
+    <nav className="flex  items-center text-white justify-between px-4 py-1 z-30">
+      <div className="flex items-center space-x-4 z-30">
         <div className="flex items-center justify-center p-2 bg-blue-500 rounded-lg">
           <AiOutlineVideoCamera className="text-lg text-white" />
         </div>
         <div className="divider divider-horizontal bg-slate-400 w-0.5"></div>
         <p className="font-bold text-xl">{roomName}</p>
       </div>
-      <div className="block lg:hidden pr-4 z-50">
+      <div className="block lg:hidden pr-4 z-30">
         <div className="dropdown dropdown-end">
           <label
             tabIndex={0}
@@ -37,7 +37,7 @@ const Header = ({ roomName = "room-2" }: { roomName: string }) => {
           </label>
           <ul
             tabIndex={0}
-            className="menu menu-compact dropdown-content mt-3 p-4 shadow bg-white text-black rounded-box z-50"
+            className="menu menu-compact dropdown-content mt-3 p-4 shadow bg-white text-black rounded-box z-30"
           >
             <li tabIndex={0} className="relative flex flex-col items-start">
               <div className="flex space-x-1">
@@ -62,7 +62,7 @@ const Header = ({ roomName = "room-2" }: { roomName: string }) => {
         </div>
       </div>
       <div
-        className="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-20"
+        className="w-full flex-grow lg:flex  lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-30"
         id="nav-content"
       >
         <div className="list-reset lg:flex justify-end flex-1 items-center lg:pr-4">

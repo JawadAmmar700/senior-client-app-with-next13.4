@@ -1,210 +1,142 @@
 "use client";
-import { useEffect, useState } from "react";
+// Import necessary dependencies and components
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { P2P } from "@/lib/P2P";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-  MdCallEnd,
-  MdOutlineScreenShare,
-  MdOutlineStopScreenShare,
-} from "react-icons/md";
-import {
-  BsMic,
-  BsMicMute,
-  BsCameraVideo,
-  BsCameraVideoOff,
-  BsChatDots,
-} from "react-icons/bs";
+import usePeerEventListener from "@/lib/usePeerEventListener";
+import useHandleTabAction from "@/lib/useHandleTabAction";
 import Header from "@/components/room/header";
 import Chat from "@/components/room/chat";
-import { useSession } from "next-auth/react";
+import Buttons from "@/components/room/Buttons";
+import UserStreams from "@/components/room/user-streams";
 
+import { useSession } from "next-auth/react";
+import MyStream from "@/components/room/MyStream";
+import PinStream from "@/components/room/pinStream";
+
+// Create a new instance of P2P class to handle peer-to-peer communication
 const peer = new P2P();
-const names = ["jawad", "ali", "ahm", "sajid", "jad", "jafar", "nano", "jafri"];
 
 export default function Home() {
-  const [roomUsers, setRoomUsers] = useState<User[]>([]);
-  const [roomName, setRoomName] = useState<string>("");
-  const [muted, setMuted] = useState<boolean>(false);
-  const [camera, setCamera] = useState<boolean>(true);
-  const [openChat, setOpenChat] = useState<boolean>(false);
-  const router = useRouter();
+  // Use custom hook to handle tab action
+  useHandleTabAction(peer);
+  // Use custom hook to get the current user session
+  const { data: session } = useSession();
+  // Use custom hook to get the search parameters from the URL
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
+  // Use custom hook to handle peer event listeners
+  const { roomName, streams, userCameraONOFF, userMute, userScreenShare } =
+    usePeerEventListener(peer);
+  // Initialize state variables to manage user's muted and camera status
+  const [myMuted, setMyMuted] = useState<boolean>(false);
+  const [myCamera, setMyCamera] = useState<boolean>(true);
+  const [myPin, setMyPin] = useState<boolean>(true);
+  const [userPin, setUserPin] = useState<string>("");
+  // Initialize state variable to manage chat window visibility
+  const [openChat, setOpenChat] = useState<boolean>(false);
+  // Create refs to manage user's pinned stream and own video stream
+  const pinVideoRef = useRef<HTMLVideoElement | null>(null);
+  const myVideoStreamRef = useRef<HTMLVideoElement | null>(null);
+  // Initialize state variable to store user's own video stream
+  const [myStream, setMyStream] = useState<MediaStream | null>(null);
 
+  // Use useEffect hook to run code on component mount and unmount
   useEffect(() => {
-    const name = names[Math.floor(Math.random() * names.length)];
-    peer.joinRoom(
-      searchParams?.get("user_name")!,
-      searchParams?.get("room_name")!,
-      searchParams?.get("meeting_id")!,
-      searchParams?.get("user_image")!
-    );
+    // Define an async function to initialize peer connection and set user's own video stream
+    const start = async () => {
+      // Initialize peer connection and get user's own video stream
+      const myStream = await peer.init();
 
-    peer.eventListeners(
-      (eventName: string, data: User | string | User[] | any) => {
-        switch (eventName) {
-          case "new-user-joined":
-            // console.log("new user joined", data);
-            break;
-          case "user-disconnected":
-            // console.log("user disconnected", data);
-            break;
-          case "users-in-room":
-            setRoomUsers(data as User[]);
-            break;
-          case "room-name":
-            setRoomName(data as string);
-            break;
-          case "streams":
-            break;
+      // Set user's own video stream to state variable and play the stream in the video element
+      setMyStream(myStream);
+      if (!myVideoStreamRef.current) return;
+      myVideoStreamRef.current.srcObject = myStream;
+      myVideoStreamRef.current.play();
 
-          default:
-            break;
-        }
-      }
-    );
+      // Set user's own video stream to the pinned video element and play the stream in the video element
+      if (!pinVideoRef.current) return;
+      pinVideoRef.current.srcObject = myStream;
+      pinVideoRef.current.play();
 
-    const handleCloseReloadTab = (e: any) => {
-      e.preventDefault();
-      e.returnValue = "Are you sure you want to leave this room?";
-      peer.disconnectUser();
+      // Join a room with the given search parameters
+      peer.joinRoom(
+        searchParams?.get("user_name")!,
+        searchParams?.get("room_name")!,
+        searchParams?.get("meeting_id")!,
+        searchParams?.get("user_image")!
+      );
     };
-
-    window.addEventListener("beforeunload", handleCloseReloadTab);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleCloseReloadTab);
-      peer.disconnectUser();
-    };
-  }, []);
-
-  const endCall = () => {
-    peer.disconnectUser();
-    router.push("/");
-  };
-  const shareScreen = () => {
-    peer.shareScreen();
-  };
-  const mute = () => {
-    const isMuted = muted;
-    peer.muteStream(!isMuted);
-    setMuted(!muted);
-  };
-
-  const camonoff = () => {
-    const isCamera = camera;
-    peer.toggleOnOff(!isCamera);
-    setCamera(!camera);
-  };
+    // Call the start function
+    start();
+  }, [pinVideoRef, myVideoStreamRef]);
 
   return (
-    <main className="w-full h-screen flex  bg-white relative">
+    <main className="w-full h-screen flex  bg-black relative">
       <div className="flex-1 relative overflow-hidden">
         <div className="w-full h-full  relative  rounded-lg">
           <div className="absolute inset-0">
             <Header roomName={roomName} />
           </div>
-          <video
-            id="pinStream"
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover -z-30"
+          <PinStream
+            pinVideoRef={pinVideoRef}
+            myCamera={myCamera}
+            image={session?.user?.image!}
+            userCameraONOFF={userCameraONOFF}
+            userScreenShare={userScreenShare}
+            userPin={userPin}
+            streams={streams}
           />
-          {!camera && (
-            <div className="absolute w-full bg-slate-800 h-full inset-0 rounded-lg flex items-center justify-center">
-              <img
-                src={session?.user?.image!}
-                alt="user-image"
-                className="rounded-full w-10 h-10"
-              />
-            </div>
-          )}
-          <div className="w-full absolute  bottom-2 p-2 flex space-x-5 items-center justify-center z-20">
-            <button
-              onClick={mute}
-              className="btn  hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
-            >
-              {muted ? (
-                <BsMicMute className="w-5 h-5 text-white" />
-              ) : (
-                <BsMic className="w-5 h-5 text-white" />
-              )}
-            </button>
-            <button
-              onClick={camonoff}
-              className="btn hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
-            >
-              {camera ? (
-                <BsCameraVideo className="w-5 h-5  text-white" />
-              ) : (
-                <BsCameraVideoOff className="w-5 h-5 text-white" />
-              )}
-            </button>
-            <button
-              onClick={endCall}
-              className="btn btn-lg  border-none hover:bg-red-600 rounded-2xl bg-red-500"
-            >
-              <MdCallEnd className="w-5 h-5 text-white" />
-            </button>
-            <button
-              onClick={shareScreen}
-              className="btn  hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
-            >
-              <MdOutlineScreenShare className="w-5 h-5 text-white" />
-            </button>
-            <button
-              onClick={() => setOpenChat(!openChat)}
-              className="btn block lg:hidden  hover:bg-opacity-20 outline-none border-none backdrop-blur-sm bg-white/10 cursor-pointer"
-            >
-              <BsChatDots className="w-5 h-5 text-white" />
-            </button>
-          </div>
+          <Buttons
+            peer={peer}
+            myCamera={myCamera}
+            myMuted={myMuted}
+            openChat={openChat}
+            setOpenChat={setOpenChat}
+            setMyCamera={setMyCamera}
+            setMyMuted={setMyMuted}
+            myVideoStreamRef={myVideoStreamRef}
+          />
         </div>
         <div
           className={`w-4/5 md:w-[400px] h-full block lg:hidden bg-white ${
             openChat ? "block" : "hidden"
-          }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-30 text-white`}
+          }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-white`}
         >
-          {/* <button onClick={() => setOpenChat(!openChat)}>close</button> */}
           <Chat setOpenChat={setOpenChat} isDrawer={true} />
         </div>
         <div
           id="video-grid"
           className="w-[150px] h-full overflow-y-scroll  top-16 z-20  absolute  right-2  hide-scroll-bar"
         >
-          <div className="w-[150px] h-[100px] bg-slate-900 rounded-lg relative">
-            <video
-              id="myStream"
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-cover -z-30  rounded-lg"
-            />
-            {!camera && (
-              <div className="absolute w-full bg-slate-800 h-full inset-0 rounded-lg flex items-center justify-center">
-                <img
-                  src={session?.user?.image!}
-                  alt="user-image"
-                  className="rounded-full w-10 h-10"
-                />
-              </div>
-            )}
-            <div className="absolute inset-0 rounded-lg flex flex-col  w-full h-full justify-end p-2 text-white z-50">
-              <div className="w-full flex items-center justify-between">
-                <div className="p-2 rounded-full  backdrop-blur-sm bg-white/10  flex items-center justify-center">
-                  {muted ? (
-                    <BsMicMute className="w-4 h-4" />
-                  ) : (
-                    <BsMic className="w-4 h-4" />
-                  )}
-                </div>
-                <p className=" backdrop-blur-sm bg-white/10 rounded-xl px-2 py-0.5 font-bold text-xs">
-                  {session?.user?.name}
-                </p>
-              </div>
-            </div>
-          </div>
+          <MyStream
+            image={session?.user?.image!}
+            myStream={myStream!}
+            myCamera={myCamera}
+            myMuted={myMuted}
+            myPin={myPin}
+            myVideoStreamRef={myVideoStreamRef}
+            pinVideoRef={pinVideoRef}
+            setMyPin={setMyPin}
+            setUserPin={setUserPin}
+            username="you"
+            userPin={userPin}
+          />
+
+          {streams.length > 0 &&
+            streams.map((call, id: number) => (
+              <UserStreams
+                call={call}
+                myStream={myStream!}
+                pinVideoRef={pinVideoRef}
+                setMyPin={setMyPin}
+                setUserPin={setUserPin}
+                streams={streams}
+                userCameraONOFF={userCameraONOFF}
+                userMute={userMute}
+                userPin={userPin}
+                key={id}
+              />
+            ))}
         </div>
       </div>
       <div
@@ -212,76 +144,6 @@ export default function Home() {
       >
         <Chat setOpenChat={setOpenChat} isDrawer={false} />
       </div>
-
-      {/* <div
-        className={`w-[300px] bg-slate-800 hidden lg:block  rounded-lg transition-all duration-500 ease-in-out  `}
-      ></div> */}
-
-      {/* <div className="w-full h-full bg-black flex p-2 lg:p-4">
-        <div className="w-full h-full flex flex-col space-y-5 bg-slate-800">
-          <div className="flex items-center overflow-y-hidden overflow-x-scroll w-full   bg-red-500 z-50 py-5 hide-scroll-bar">
-            <div
-              className="flex flex-nowrap items-center bg-green-500 "
-              id="video-grid"
-            >
-              <div className="inline-block px-3 ">
-                <div className="w-[150px] h-[100px] bg-slate-600 rounded-lg relative">
-                  {!camera && (
-                    <div className="absolute w-full bg-slate-800 h-[113px] inset-0 rounded-lg flex items-center justify-center">
-                      <img
-                        src={session?.user?.image!}
-                        alt="user-image"
-                        className="rounded-full w-10 h-10"
-                      />
-                    </div>
-                  )}
-                  <video
-                    id="myStream"
-                    autoPlay
-                    playsInline
-                    muted
-                    className="rounded-lg object-fill"
-                  />
-
-                  <div className="absolute inset-0 rounded-lg flex flex-col  w-[150px] h-[113px] justify-end p-2 text-white">
-                    <div className="w-full flex items-center justify-between">
-                      <div className="p-2 rounded-full bg-gray-700 bg-opacity-80  flex items-center justify-center">
-                        {muted ? (
-                          <BiMicrophoneOff className="w-4 h-4" />
-                        ) : (
-                          <BiMicrophone className="w-4 h-4" />
-                        )}
-                      </div>
-                      <p className="bg-gray-700 bg-opacity-80 rounded-xl px-4 py-0.5 font-bold text-sm">
-                        {session?.user?.name}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className="w-full h-full bg-slate-300  mt-14 flex justify-center items-center"
-            id="pin-video"
-          >
-            <video
-              id="pinStream"
-              autoPlay
-              playsInline
-              muted
-              className="rounded-lg object-fill md:w-[600px] md:h-[400px]"
-            />
-          </div>
-          <div className=" bg-orange-500 p-3">
-            <button onClick={endCall}>EndCall</button>
-            <button onClick={mute}>mute</button>
-            <button onClick={shareScreen}>share screen</button>
-            <button onClick={camonoff}>on/off</button>
-          </div>
-        </div>
-        <div className="w-1/4 bg-zinc-800 hidden lg:block"></div>
-      </div> */}
     </main>
   );
 }

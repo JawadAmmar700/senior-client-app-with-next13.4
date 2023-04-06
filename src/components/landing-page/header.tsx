@@ -1,7 +1,6 @@
 "use client";
 import useScrollPosition from "@/lib/useScrollPosition";
 import { useSession, signOut } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 
 const Header = () => {
@@ -33,76 +32,81 @@ const Header = () => {
             Meetly
           </Link>
         </div>
-        <div className="block lg:hidden pr-4">
-          <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="btn btn-ghost btn-circle">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+        {status === "authenticated" && (
+          <div className="block lg:hidden pr-4">
+            <div className="dropdown dropdown-end">
+              <label tabIndex={0} className="btn btn-ghost btn-circle">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h7"
+                  />
+                </svg>
+              </label>
+              <ul
+                tabIndex={0}
+                className="menu menu-compact dropdown-content mt-3 p-4 shadow bg-white text-black rounded-box"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h7"
-                />
-              </svg>
-            </label>
-            <ul
-              tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-4 shadow bg-white text-black rounded-box"
-            >
-              {session && (
-                <li tabIndex={0} className="relative flex flex-col items-start">
-                  <div className="flex space-x-1">
-                    <div className="w-10 rounded-full">
-                      <img
-                        src={session?.user?.image!}
-                        alt="Profile Picture"
-                        className="rounded-full"
-                      />
-                      {/* <Image
+                {session && (
+                  <li
+                    tabIndex={0}
+                    className="relative flex flex-col items-start"
+                  >
+                    <div className="flex space-x-1">
+                      <div className="w-10 rounded-full">
+                        <img
+                          src={session?.user?.image!}
+                          alt="Profile Picture"
+                          className="rounded-full"
+                        />
+                        {/* <Image
                         src={session?.user?.image!}
                         width={40}
                         height={40}
                         alt="Profile Picture"
                         className="rounded-full"
                       /> */}
+                      </div>
+                      <div className="flex flex-col items-start gap-0 text-xs">
+                        <h1>{session?.user?.name!}</h1>
+                        <p>{session?.user?.email!}</p>
+                      </div>
                     </div>
-                    <div className="flex flex-col items-start gap-0 text-xs">
-                      <h1>{session?.user?.name!}</h1>
-                      <p>{session?.user?.email!}</p>
-                    </div>
-                  </div>
-                </li>
-              )}
-              {!session ? (
-                <>
-                  <li>
-                    <Link href="/auth/signin">Login</Link>
                   </li>
+                )}
+                {!session ? (
+                  <>
+                    <li>
+                      <Link href="/auth/signin">Login</Link>
+                    </li>
 
-                  <li>
-                    <Link href="/auth/signup">Resgistor</Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <a href="#get-started">Get Started</a>
-                  </li>
+                    <li>
+                      <Link href="/auth/signup">Resgistor</Link>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <a href="#get-started">Get Started</a>
+                    </li>
 
-                  <li onClick={() => signOut()}>
-                    <p>Logout</p>
-                  </li>
-                </>
-              )}
-            </ul>
+                    <li onClick={() => signOut()}>
+                      <p>Logout</p>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </div>
           </div>
-        </div>
+        )}
 
         <div
           className="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-20"
