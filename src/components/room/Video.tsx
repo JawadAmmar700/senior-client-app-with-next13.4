@@ -12,7 +12,7 @@ const Video = ({ stream }: { stream: MediaStream }) => {
       ref={localVideo}
       autoPlay
       playsInline
-      muted
+      // muted
       className="w-full h-full object-cover -z-30 rounded-lg"
     />
   );

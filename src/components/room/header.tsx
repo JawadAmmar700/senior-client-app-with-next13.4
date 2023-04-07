@@ -1,20 +1,26 @@
 import React from "react";
 import { AiOutlineVideoCamera } from "react-icons/ai";
 import { signOut, useSession } from "next-auth/react";
+import { RootState } from "@/store/configuration";
+import { useSelector } from "react-redux";
+// {
+//   roomName,
+//   isSharing,
+//   userScreenShare,
+//   userPin,
+// }: {
+//   roomName: string;
+//   isSharing: boolean;
+//   userScreenShare: string[];
+//   userPin: string;
+// }
+const Header = () => {
+  const { userScreenShare, userPin, isSharing, roomName } = useSelector(
+    (state: RootState) => state.appState
+  );
 
-const Header = ({
-  roomName,
-  isSharing,
-  userScreenShare,
-  userPin,
-}: {
-  roomName: string;
-  isSharing: boolean;
-  userScreenShare: string[];
-  userPin: string;
-}) => {
   const { data: session } = useSession();
-  const isSreenShare = userScreenShare.find((s) => s === userPin);
+  const isSreenShare = userScreenShare?.find((s) => s === userPin);
 
   return (
     <nav

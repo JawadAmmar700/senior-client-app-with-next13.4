@@ -2,36 +2,49 @@ import React from "react";
 import Video from "./Video";
 import { TbPinnedOff, TbPinned } from "react-icons/tb";
 import { BsMic, BsMicMute } from "react-icons/bs";
-
+import { RootState } from "@/store/configuration";
+import { useSelector, useDispatch } from "react-redux";
+import { setMyPin, setUserPin } from "@/store/features/app-state/app-slice";
 type UserStreamsProps = {
   call: MapOfPeerCalls;
-  userCameraONOFF: string[];
-  userMute: string[];
+  // userCameraONOFF: string[];
+  // userMute: string[];
   pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
-  streams: MapOfPeerCalls[];
-  myStream: MediaStream;
-  userPin: string;
-  setUserPin: React.Dispatch<React.SetStateAction<string>>;
-  setMyPin: React.Dispatch<React.SetStateAction<boolean>>;
-  isSharing: boolean;
-  myScreenShare: MediaStream | null;
+  // streams: MapOfPeerCalls[];
+  // myStream: MediaStream;
+  // userPin: string;
+  // setUserPin: React.Dispatch<React.SetStateAction<string>>;
+  // setMyPin: React.Dispatch<React.SetStateAction<boolean>>;
+  // isSharing: boolean;
+  // myScreenShare: MediaStream | null;
 };
 
 const UserStreams = ({
   call,
-  userCameraONOFF,
-  userMute,
+  // userCameraONOFF,
+  // userMute,
   pinVideoRef,
-  streams,
-  myStream,
-  userPin,
-  setUserPin,
-  setMyPin,
-  isSharing,
-  myScreenShare,
-}: UserStreamsProps) => {
-  const isCamera = userCameraONOFF.find((s) => s === call.id);
-  const isMute = userMute.find((s) => s === call.id);
+}: // streams,
+// myStream,
+// userPin,
+// setUserPin,
+// setMyPin,
+// isSharing,
+// myScreenShare,
+UserStreamsProps) => {
+  const {
+    userPin,
+    isSharing,
+    myScreenShare,
+    myStream,
+    userCameraONOFF,
+    userMute,
+    streams,
+  } = useSelector((state: RootState) => state.appState);
+  const dispatch = useDispatch();
+
+  const isCamera = userCameraONOFF?.find((s) => s === call.id);
+  const isMute = userMute?.find((s) => s === call.id);
 
   const pinUserStream = (userId: string) => {
     if (pinVideoRef.current) {
@@ -39,13 +52,17 @@ const UserStreams = ({
       if (stream) {
         if (userId === userPin) {
           pinVideoRef.current.srcObject = isSharing ? myScreenShare : myStream;
-          setMyPin(true);
-          setUserPin("");
+          // setMyPin(true);
+          // setUserPin("");
+          dispatch(setMyPin(true));
+          dispatch(setUserPin(""));
           return;
         }
         pinVideoRef.current.srcObject = stream.stream;
-        setUserPin(userId);
-        setMyPin(false);
+        // setUserPin(userId);
+        // setMyPin(false);
+        dispatch(setUserPin(userId));
+        dispatch(setMyPin(false));
       }
     }
   };

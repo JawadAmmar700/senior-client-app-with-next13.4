@@ -1,49 +1,66 @@
 import React from "react";
 import { TbPinnedOff, TbPinned } from "react-icons/tb";
 import { BsMic, BsMicMute } from "react-icons/bs";
-
+import { RootState } from "@/store/configuration";
+import { useSelector, useDispatch } from "react-redux";
+import { setMyPin, setUserPin } from "@/store/features/app-state/app-slice";
 type MyStreamProps = {
   myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null>;
-  myCamera: boolean;
-  myMuted: boolean;
-  myPin: boolean;
+  // myCamera: boolean;
+  // myMuted: boolean;
+  // myPin: boolean;
   username: string;
   image: string;
   pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
-  setMyPin: React.Dispatch<React.SetStateAction<boolean>>;
-  setUserPin: React.Dispatch<React.SetStateAction<string>>;
-  myStream: MediaStream;
-  userPin: string;
-  myScreenShare: MediaStream | null;
-  isSharing: boolean;
+  // setMyPin: React.Dispatch<React.SetStateAction<boolean>>;
+  // setUserPin: React.Dispatch<React.SetStateAction<string>>;
+  // myStream: MediaStream;
+  // userPin: string;
+  // myScreenShare: MediaStream | null;
+  // isSharing: boolean;
 };
 
 const MyStream = ({
   myVideoStreamRef,
-  myCamera,
-  myMuted,
-  myPin,
+  // myCamera,
+  // myMuted,
+  // myPin,
   username,
   image,
   pinVideoRef,
-  setMyPin,
-  setUserPin,
-  myStream,
-  userPin,
-  myScreenShare,
-  isSharing,
-}: MyStreamProps) => {
+}: // setMyPin,
+// setUserPin,
+// myStream,
+// userPin,
+// myScreenShare,
+// isSharing,
+MyStreamProps) => {
+  const {
+    userPin,
+    isSharing,
+    myCamera,
+    myMuted,
+    myPin,
+    myScreenShare,
+    myStream,
+  } = useSelector((state: RootState) => state.appState);
+  const dispatch = useDispatch();
+
   const pinMyStream = () => {
     if (pinVideoRef.current) {
       if (myPin) {
         pinVideoRef.current.srcObject = null;
-        setMyPin(false);
-        setUserPin("");
+        // setMyPin(false);
+        // setUserPin("");
+        dispatch(setMyPin(false));
+        dispatch(setUserPin(""));
       } else {
         pinVideoRef.current.srcObject = isSharing ? myScreenShare : myStream;
         pinVideoRef.current.play();
-        setMyPin(true);
-        setUserPin("");
+        // setMyPin(true);
+        // setUserPin("");
+        dispatch(setMyPin(true));
+        dispatch(setUserPin(""));
       }
     }
   };

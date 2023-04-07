@@ -13,11 +13,19 @@ import UserStreams from "@/components/room/user-streams";
 import { useSession } from "next-auth/react";
 import MyStream from "@/components/room/MyStream";
 import PinStream from "@/components/room/pinStream";
+import { useDispatch, useSelector } from "react-redux";
+import { setMyStream } from "@/store/features/app-state/app-slice";
+import { RootState } from "@/store/configuration";
 
 // Create a new instance of P2P class to handle peer-to-peer communication
 const peer = new P2P();
 
 export default function Home() {
+  const { openChat, streams } = useSelector(
+    (state: RootState) => state.appState
+  );
+  const dispatch = useDispatch();
+
   // Use custom hook to handle tab action
   useHandleTabAction(peer);
   // Use custom hook to get the current user session
@@ -25,24 +33,11 @@ export default function Home() {
   // Use custom hook to get the search parameters from the URL
   const searchParams = useSearchParams();
   // Use custom hook to handle peer event listeners
-  const { roomName, streams, userCameraONOFF, userMute, userScreenShare } =
-    usePeerEventListener(peer);
-  // Initialize state variables to manage user's muted and camera status
-  const [myMuted, setMyMuted] = useState<boolean>(false);
-  const [myCamera, setMyCamera] = useState<boolean>(true);
-  const [myPin, setMyPin] = useState<boolean>(true);
-  const [isSharing, setIsSharing] = useState<boolean>(false);
-  const [userPin, setUserPin] = useState<string>("");
-  // Initialize state variable to manage chat window visibility
-  const [openChat, setOpenChat] = useState<boolean>(false);
+  usePeerEventListener(peer);
+
   // Create refs to manage user's pinned stream and own video stream
   const pinVideoRef = useRef<HTMLVideoElement | null>(null);
   const myVideoStreamRef = useRef<HTMLVideoElement | null>(null);
-  // Create ref to manage my own screen share pinned stream
-  // const myScreenShareRef = useRef<MediaStream | null>(null);
-  const [myScreenShare, setMyScreenShare] = useState<MediaStream | null>(null);
-  // Initialize state variable to store user's own video stream
-  const [myStream, setMyStream] = useState<MediaStream | null>(null);
 
   // Use useEffect hook to run code on component mount and unmount
   useEffect(() => {
@@ -50,9 +45,9 @@ export default function Home() {
     const start = async () => {
       // Initialize peer connection and get user's own video stream
       const myStream = await peer.init();
-
       // Set user's own video stream to state variable and play the stream in the video element
-      setMyStream(myStream);
+      dispatch(setMyStream(myStream));
+      // setMyStream(myStream);
       if (!myVideoStreamRef.current) return;
       myVideoStreamRef.current.srcObject = myStream;
       myVideoStreamRef.current.play();
@@ -79,38 +74,14 @@ export default function Home() {
       <div className="flex-1 relative overflow-hidden">
         <div className="w-full h-full  relative  rounded-lg">
           <div className="absolute inset-0">
-            <Header
-              roomName={roomName}
-              isSharing={isSharing}
-              userPin={userPin}
-              userScreenShare={userScreenShare}
-            />
+            <Header />
           </div>
-          <PinStream
-            pinVideoRef={pinVideoRef}
-            myCamera={myCamera}
-            image={session?.user?.image!}
-            userCameraONOFF={userCameraONOFF}
-            userScreenShare={userScreenShare}
-            userPin={userPin}
-            streams={streams}
-            isSharing={isSharing}
-          />
+          <PinStream pinVideoRef={pinVideoRef} image={session?.user?.image!} />
+
           <Buttons
             peer={peer}
-            myCamera={myCamera}
-            myMuted={myMuted}
-            openChat={openChat}
-            setOpenChat={setOpenChat}
-            setMyCamera={setMyCamera}
-            setMyMuted={setMyMuted}
             myVideoStreamRef={myVideoStreamRef}
             pinVideoRef={pinVideoRef}
-            isSharing={isSharing}
-            setIsSharing={setIsSharing}
-            userPin={userPin}
-            userScreenShare={userScreenShare}
-            setMyScreenShare={setMyScreenShare}
           />
         </div>
         <div
@@ -118,7 +89,7 @@ export default function Home() {
             openChat ? "block" : "hidden"
           }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-white`}
         >
-          <Chat setOpenChat={setOpenChat} isDrawer={true} />
+          <Chat isDrawer={true} />
         </div>
         <div
           id="video-grid"
@@ -126,43 +97,21 @@ export default function Home() {
         >
           <MyStream
             image={session?.user?.image!}
-            myStream={myStream!}
-            myCamera={myCamera}
-            myMuted={myMuted}
-            myPin={myPin}
             myVideoStreamRef={myVideoStreamRef}
             pinVideoRef={pinVideoRef}
-            setMyPin={setMyPin}
-            setUserPin={setUserPin}
             username="you"
-            userPin={userPin}
-            myScreenShare={myScreenShare}
-            isSharing={isSharing}
           />
 
           {streams.length > 0 &&
             streams.map((call, id: number) => (
-              <UserStreams
-                call={call}
-                myStream={myStream!}
-                pinVideoRef={pinVideoRef}
-                setMyPin={setMyPin}
-                setUserPin={setUserPin}
-                streams={streams}
-                userCameraONOFF={userCameraONOFF}
-                userMute={userMute}
-                userPin={userPin}
-                key={id}
-                isSharing={isSharing}
-                myScreenShare={myScreenShare}
-              />
+              <UserStreams call={call} pinVideoRef={pinVideoRef} key={id} />
             ))}
         </div>
       </div>
       <div
         className={`w-[400px] h-full  bg-[#E5DED6] hidden lg:block   transition-all duration-500 ease-in-out  `}
       >
-        <Chat setOpenChat={setOpenChat} isDrawer={false} />
+        <Chat isDrawer={false} />
       </div>
     </main>
   );

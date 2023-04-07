@@ -1,18 +1,26 @@
+import { AnyAction } from "@reduxjs/toolkit";
 import React, { Dispatch, SetStateAction } from "react";
 import { IoPaperPlaneOutline, IoClose } from "react-icons/io5";
+import { setOpenChat } from "@/store/features/app-state/app-slice";
+import { useDispatch } from "react-redux";
 
 interface Props {
-  setOpenChat: Dispatch<SetStateAction<boolean>>;
   isDrawer: boolean;
 }
 
-const Chat = ({ setOpenChat, isDrawer }: Props) => {
+const Chat = ({ isDrawer }: Props) => {
+  const dispatch = useDispatch();
   return (
     <div className="relative flex flex-col h-screen">
       <div className="w-full p-2 flex items-center justify-between">
         <h1 className="text-lg text-black font-bold text-center">Group Chat</h1>
         {isDrawer && (
-          <button onClick={() => setOpenChat(false)} className="btn btn-square">
+          <button
+            onClick={() => dispatch(setOpenChat())}
+            // onClick={() => setOpenChat(false)}
+
+            className="btn btn-square"
+          >
             <IoClose className="w-5 h-5" />
           </button>
         )}

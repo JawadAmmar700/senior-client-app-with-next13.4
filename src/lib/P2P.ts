@@ -1,4 +1,9 @@
-import Peer, { MediaConnection } from "peerjs";
+import {
+  ActionCreatorWithPayload,
+  AnyAction,
+  Dispatch,
+} from "@reduxjs/toolkit";
+import Peer from "peerjs";
 import io, { Socket } from "socket.io-client";
 
 export class P2P {
@@ -135,12 +140,20 @@ export class P2P {
       return callback("streams", Array.from(this.peerCalls.values()));
     });
     this.socket.on("user-operation", (userId, op, data) => {
-      console.log("user-operation", userId, op, data);
       return callback("user-operation", {
         userId,
         op,
         data,
       });
+    });
+    this.socket.on("get-users-muted", (usersMuted) => {
+      return callback("get-users-muted", usersMuted);
+    });
+    this.socket.on("get-users-cameraOnOff", (usersCameraONOFF) => {
+      return callback("get-users-camera-status", usersCameraONOFF);
+    });
+    this.socket.on("get-users-shareScreen", (usersScreenShare) => {
+      return callback("get-users-sharescreen-status", usersScreenShare);
     });
   }
 
@@ -154,6 +167,7 @@ export class P2P {
     } else {
       this.socket.emit("user-operation", this.userId, "userUnmuted");
     }
+    // this.socket.emit("get-users-muted");
   }
 
   toggleOnOff(isCamera: boolean) {
@@ -171,8 +185,12 @@ export class P2P {
   async shareScreen(
     myVideo: React.MutableRefObject<HTMLVideoElement | null>,
     pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>,
-    setMyScreenShare: React.Dispatch<React.SetStateAction<MediaStream | null>>,
-    setIsSharing: React.Dispatch<React.SetStateAction<boolean>>
+    setMyScreenShare: ActionCreatorWithPayload<
+      MediaStream | null,
+      "counter/setMyScreenShare"
+    >,
+    setIsSharing: ActionCreatorWithPayload<boolean, "counter/setIsSharing">,
+    dispatch: Dispatch<AnyAction>
   ) {
     const screenShare = await navigator.mediaDevices.getDisplayMedia({
       video: {
@@ -181,8 +199,10 @@ export class P2P {
       } as MediaTrackConstraints,
       audio: false,
     });
-    setIsSharing(true);
-    setMyScreenShare(screenShare);
+    dispatch(setIsSharing(true));
+    dispatch(setMyScreenShare(screenShare));
+    // setIsSharing(true);
+    // setMyScreenShare(screenShare);
     if (myVideo.current) {
       this.socket.emit("user-operation", this.userId, "userScreenShareOn");
       myVideo.current.srcObject = screenShare;
@@ -201,8 +221,10 @@ export class P2P {
     });
 
     shareScreenTracks.onended = () => {
-      setIsSharing(false);
-      setMyScreenShare(null);
+      dispatch(setIsSharing(false));
+      dispatch(setMyScreenShare(null));
+      // setIsSharing(false);
+      // setMyScreenShare(null);
       if (myVideo.current) {
         this.socket.emit("user-operation", this.userId, "userScreenShareOff");
         myVideo.current.srcObject = this.myStream;

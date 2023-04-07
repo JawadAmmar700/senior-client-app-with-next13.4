@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import AuthContext from "@/lib/providers/auth-context";
 import { getSession } from "@/lib/auth-session";
 import Header from "@/components/landing-page/header";
+import ReduxProvider from "@/lib/providers/redux-provider";
 
 export const metadata = {
   title: "Meetly | video conference",
@@ -20,7 +21,7 @@ export default async function RootLayout({
       <body>
         {/* <Header /> */}
         <AuthContext session={session}>
-          <main>{children}</main>
+          <ReduxProvider>{children}</ReduxProvider>
         </AuthContext>
       </body>
     </html>

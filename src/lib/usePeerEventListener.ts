@@ -1,12 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { P2P } from "./P2P";
+import {
+  setRoomName,
+  setStreams,
+  setUserCameraONOFF,
+  setUserMute,
+  setUserScreenShare,
+} from "@/store/features/app-state/app-slice";
 
 const usePeerEventListener = (peer: P2P) => {
-  const [roomName, setRoomName] = useState<string>("");
-  const [streams, setStreams] = useState<MapOfPeerCalls[]>([]);
-  const [userCameraONOFF, setUserCameraONOFF] = useState<string[]>([]);
-  const [userMute, setUserMute] = useState<string[]>([]);
-  const [userScreenShare, setUserScreenShare] = useState<string[]>([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const eventListener = (
@@ -19,34 +23,45 @@ const usePeerEventListener = (peer: P2P) => {
         case "user-disconnected":
           break;
         case "room-name":
-          setRoomName(data);
+          dispatch(setRoomName(data));
           break;
         case "streams":
-          setStreams(data);
+          dispatch(setStreams(data));
           break;
         case "user-operation":
           switch (data.op) {
             case "userCameraOff":
-              setUserCameraONOFF(data.data);
+              dispatch(setUserCameraONOFF(data.data));
               break;
             case "userCameraOn":
-              setUserCameraONOFF(data.data);
+              dispatch(setUserCameraONOFF(data.data));
               break;
             case "userMuted":
-              setUserMute(data.data);
+              dispatch(setUserMute(data.data));
               break;
             case "userUnmuted":
-              setUserMute(data.data);
+              dispatch(setUserMute(data.data));
               break;
             case "userScreenShareOff":
-              setUserScreenShare(data.data);
+              dispatch(setUserScreenShare(data.data));
               break;
             case "userScreenShareOn":
-              setUserScreenShare(data.data);
+              dispatch(setUserScreenShare(data.data));
               break;
+
             default:
               break;
           }
+          break;
+        case "get-users-muted":
+          console.log("get-users-muted", data);
+          dispatch(setUserMute(data));
+          break;
+        case "get-users-camera-status":
+          dispatch(setUserCameraONOFF(data));
+          break;
+        case "get-users-sharescreen-status":
+          dispatch(setUserScreenShare(data));
           break;
         default:
           break;
@@ -59,8 +74,6 @@ const usePeerEventListener = (peer: P2P) => {
     //   peer.offEventListeners(eventListener);
     // };
   }, [peer]);
-
-  return { roomName, streams, userCameraONOFF, userMute, userScreenShare };
 };
 
 export default usePeerEventListener;

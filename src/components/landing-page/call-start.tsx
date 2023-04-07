@@ -7,20 +7,22 @@ import { Toaster, toast } from "react-hot-toast";
 
 const CallStart = () => {
   const { data: session } = useSession();
+
   const [meetingId, setMeetingId] = useState<string>("");
-  const [roomName, setRoomName] = useState<string>("");
+  const [roomname, setRoomName] = useState<string>("");
   const router = useRouter();
 
   const handleNewMeeting = () => {
-    if (!roomName) return toast.error("Provide room name");
+    if (!roomname) return toast.error("Provide room name");
     const searchParams = new URLSearchParams({
       meeting_id: uuidv4(),
-      room_name: roomName,
+      room_name: roomname,
       // user_name: "jawad",
       user_name: session?.user?.name!,
       user_image: session?.user?.image!,
       // user_image: `https://source.boringavatars.com/pixel/120/jawad`,
     });
+
     router.push("/room?" + searchParams);
   };
 
@@ -33,6 +35,7 @@ const CallStart = () => {
       user_image: session?.user?.image!,
       // user_image: `https://source.boringavatars.com/pixel/120/nada`,
     });
+
     router.push("/room?" + searchParams);
   };
 

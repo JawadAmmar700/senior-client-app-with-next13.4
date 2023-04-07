@@ -1,27 +1,36 @@
-import React from "react";
+import { RootState } from "@/store/configuration";
+import { useSelector } from "react-redux";
 
 type PinStreamProps = {
   pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
-  myCamera: boolean;
+  // myCamera: boolean;
   image: string;
-  userCameraONOFF: string[];
-  userScreenShare: string[];
-  userPin: string;
-  streams: MapOfPeerCalls[];
-  isSharing: boolean;
+  // userCameraONOFF: string[];
+  // userScreenShare: string[];
+  // userPin: string;
+  // streams: MapOfPeerCalls[];
+  // isSharing: boolean;
 };
 
 const PinStream = ({
   pinVideoRef,
-  myCamera,
+  // myCamera,
   image,
-  userCameraONOFF,
-  userScreenShare,
-  userPin,
-  streams,
-  isSharing,
-}: PinStreamProps) => {
-  const isSreenShare = userScreenShare.find((s) => s === userPin);
+}: // userCameraONOFF,
+// userScreenShare,
+// userPin,
+// streams,
+// isSharing,
+PinStreamProps) => {
+  const {
+    userScreenShare,
+    userPin,
+    isSharing,
+    myCamera,
+    userCameraONOFF,
+    streams,
+  } = useSelector((state: RootState) => state.appState);
+  const isSreenShare = userScreenShare?.find((s) => s === userPin);
   return (
     <>
       <video
@@ -29,7 +38,6 @@ const PinStream = ({
         ref={pinVideoRef}
         autoPlay
         playsInline
-        muted
         className={`w-full h-full ${
           isSreenShare || isSharing ? "object-contain" : "object-cover"
         }  -z-30`}
@@ -43,7 +51,7 @@ const PinStream = ({
           />
         </div>
       )}
-      {userCameraONOFF.find((s) => s === userPin) && (
+      {userCameraONOFF?.find((s) => s === userPin) && (
         <div className="absolute w-full bg-slate-800 h-full inset-0 rounded-lg flex items-center justify-center">
           <img
             src={streams.find((s: any) => s.id === userPin)?.user.photoUrl}
