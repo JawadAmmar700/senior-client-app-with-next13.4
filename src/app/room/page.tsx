@@ -2,7 +2,6 @@
 // Import necessary dependencies and components
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { P2P } from "@/lib/P2P";
 import usePeerEventListener from "@/lib/usePeerEventListener";
 import useHandleTabAction from "@/lib/useHandleTabAction";
 import Header from "@/components/room/header";
@@ -17,11 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMyStream } from "@/store/features/app-state/app-slice";
 import { RootState } from "@/store/configuration";
 
-// Create a new instance of P2P class to handle peer-to-peer communication
-const peer = new P2P();
-
 export default function Home() {
-  const { openChat, streams } = useSelector(
+  const { openChat, streams, peer } = useSelector(
     (state: RootState) => state.appState
   );
   const dispatch = useDispatch();
@@ -34,12 +30,10 @@ export default function Home() {
   const searchParams = useSearchParams();
   // Use custom hook to handle peer event listeners
   usePeerEventListener(peer);
-
   // Create refs to manage user's pinned stream and own video stream
   const pinVideoRef = useRef<HTMLVideoElement | null>(null);
   const myVideoStreamRef = useRef<HTMLVideoElement | null>(null);
 
-  // Use useEffect hook to run code on component mount and unmount
   useEffect(() => {
     // Define an async function to initialize peer connection and set user's own video stream
     const start = async () => {
@@ -85,11 +79,11 @@ export default function Home() {
           />
         </div>
         <div
-          className={`w-4/5 md:w-[400px] h-full block lg:hidden bg-white ${
+          className={`w-4/5 md:w-[400px] h-full block lg:hidden bg-slate-100 ${
             openChat ? "block" : "hidden"
           }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-white`}
         >
-          <Chat isDrawer={true} />
+          <Chat isDrawer={true} peer={peer} />
         </div>
         <div
           id="video-grid"
@@ -109,9 +103,9 @@ export default function Home() {
         </div>
       </div>
       <div
-        className={`w-[400px] h-full  bg-[#E5DED6] hidden lg:block   transition-all duration-500 ease-in-out  `}
+        className={`w-[400px] h-full  bg-slate-100 hidden lg:block   transition-all duration-500 ease-in-out  `}
       >
-        <Chat isDrawer={false} />
+        <Chat isDrawer={false} peer={peer} />
       </div>
     </main>
   );

@@ -42,3 +42,11 @@ type MapOfPeerCalls = {
   user: User;
   id: string;
 };
+
+type Chat = {
+  user_name: string;
+  photoUrl: string;
+  email: string;
+  time: number;
+  message: string;
+};

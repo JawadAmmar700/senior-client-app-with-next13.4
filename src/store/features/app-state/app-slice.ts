@@ -1,7 +1,9 @@
+import { P2P } from "@/lib/P2P";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface AppState {
+  peer: P2P;
   myMuted: boolean;
   myCamera: boolean;
   myPin: boolean;
@@ -15,9 +17,11 @@ export interface AppState {
   userCameraONOFF: string[];
   userMute: string[];
   userScreenShare: string[];
+  chat: Chat[];
 }
 
 const initialState: AppState = {
+  peer: new P2P(),
   myMuted: false,
   myCamera: true,
   myPin: true,
@@ -31,6 +35,7 @@ const initialState: AppState = {
   userCameraONOFF: [],
   userMute: [],
   userScreenShare: [],
+  chat: [],
 };
 
 export const AppSlice = createSlice({
@@ -76,6 +81,9 @@ export const AppSlice = createSlice({
     setUserScreenShare: (state, action: PayloadAction<string[]>) => {
       state.userScreenShare = action.payload;
     },
+    setChat: (state, action: PayloadAction<Chat>) => {
+      state.chat = [...state.chat, action.payload];
+    },
   },
 });
 
@@ -94,6 +102,7 @@ export const {
   setUserCameraONOFF,
   setUserMute,
   setUserScreenShare,
+  setChat,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

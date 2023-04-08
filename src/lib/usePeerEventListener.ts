@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { P2P } from "./P2P";
 import {
+  setChat,
   setRoomName,
   setStreams,
   setUserCameraONOFF,
@@ -62,6 +63,10 @@ const usePeerEventListener = (peer: P2P) => {
           break;
         case "get-users-sharescreen-status":
           dispatch(setUserScreenShare(data));
+          break;
+        case "chat-message":
+          console.log("chat-message", data);
+          dispatch(setChat(data));
           break;
         default:
           break;

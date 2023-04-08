@@ -155,6 +155,9 @@ export class P2P {
     this.socket.on("get-users-shareScreen", (usersScreenShare) => {
       return callback("get-users-sharescreen-status", usersScreenShare);
     });
+    this.socket.on("chat-message", (data) => {
+      return callback("chat-message", data);
+    });
   }
 
   async muteStream(isMuted: boolean) {
@@ -242,6 +245,10 @@ export class P2P {
         sender?.replaceTrack(returnStream!);
       });
     };
+  }
+
+  sendMessage(message: Chat) {
+    this.socket.emit("chat-message", message);
   }
 
   disconnectUser() {
