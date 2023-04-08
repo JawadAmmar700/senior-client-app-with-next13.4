@@ -1,3 +1,4 @@
+"use client";
 import {
   ActionCreatorWithPayload,
   AnyAction,
@@ -259,3 +260,7 @@ export class P2P {
     this.socket.disconnect();
   }
 }
+
+export const peerConnection = () => {
+  return new P2P();
+};
