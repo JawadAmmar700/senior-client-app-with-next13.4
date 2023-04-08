@@ -12,10 +12,10 @@ interface Props {
   peer: P2P;
 }
 
-const Chat = ({ isDrawer }: Props) => {
+const Chat = ({ isDrawer, peer }: Props) => {
   const dispatch = useDispatch();
   const { data: session } = useSession();
-  const { chat, peer } = useSelector((state: RootState) => state.appState);
+  const { chat } = useSelector((state: RootState) => state.appState);
   const [messageText, setMessageText] = useState<string>("");
 
   const handleSendMessage = () => {

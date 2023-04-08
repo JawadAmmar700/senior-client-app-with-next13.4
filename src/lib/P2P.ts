@@ -1,4 +1,3 @@
-"use client";
 import {
   ActionCreatorWithPayload,
   AnyAction,
@@ -261,6 +260,6 @@ export class P2P {
   }
 }
 
-export const peerConnection = () => {
-  return new P2P();
-};
+// export const peerConnection = () => {
+//   return new P2P();
+// };

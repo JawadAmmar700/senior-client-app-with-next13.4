@@ -15,9 +15,12 @@ import PinStream from "@/components/room/pinStream";
 import { useDispatch, useSelector } from "react-redux";
 import { setMyStream } from "@/store/features/app-state/app-slice";
 import { RootState } from "@/store/configuration";
+import { P2P } from "@/lib/P2P";
+
+const peer = new P2P();
 
 export default function Home() {
-  const { openChat, streams, peer } = useSelector(
+  const { openChat, streams } = useSelector(
     (state: RootState) => state.appState
   );
   const dispatch = useDispatch();
