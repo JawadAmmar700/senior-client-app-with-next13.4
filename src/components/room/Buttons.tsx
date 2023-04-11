@@ -9,7 +9,7 @@ import {
 import { MdCallEnd, MdOutlineScreenShare } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 import { P2P } from "@/lib/P2P";
 import { RootState } from "@/store/configuration";
@@ -138,7 +138,6 @@ ButtonsProps) => {
       >
         <BsChatDots className="w-5 h-5 text-white" />
       </button>
-      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 };

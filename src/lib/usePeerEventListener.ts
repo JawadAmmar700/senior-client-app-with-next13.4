@@ -55,7 +55,6 @@ const usePeerEventListener = (peer: P2P) => {
           }
           break;
         case "get-users-muted":
-          console.log("get-users-muted", data);
           dispatch(setUserMute(data));
           break;
         case "get-users-camera-status":
@@ -65,7 +64,6 @@ const usePeerEventListener = (peer: P2P) => {
           dispatch(setUserScreenShare(data));
           break;
         case "chat-message":
-          console.log("chat-message", data);
           dispatch(setChat(data));
           break;
         default:

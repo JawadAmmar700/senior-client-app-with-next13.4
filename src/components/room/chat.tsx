@@ -1,7 +1,7 @@
 import { IoPaperPlaneOutline, IoClose } from "react-icons/io5";
 import { setOpenChat, setChat } from "@/store/features/app-state/app-slice";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RootState } from "@/store/configuration";
 import { useSession } from "next-auth/react";
 import moment from "moment";
@@ -17,6 +17,7 @@ const Chat = ({ isDrawer, peer }: Props) => {
   const { data: session } = useSession();
   const { chat } = useSelector((state: RootState) => state.appState);
   const [messageText, setMessageText] = useState<string>("");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = () => {
     if (messageText === "") return;
@@ -30,12 +31,14 @@ const Chat = ({ isDrawer, peer }: Props) => {
     };
     peer.sendMessage(messageData);
     dispatch(setChat(messageData));
+    if (scrollRef.current)
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
     setMessageText("");
   };
 
   return (
-    <div className="relative flex flex-col h-screen">
-      <div className="w-full p-2 flex items-center justify-between">
+    <div className="relative flex flex-col h-screen overflow-hidden w-full">
+      <div className="w-full p-2 flex items-center justify-between ">
         <h1 className="text-lg text-black font-bold text-center">Group Chat</h1>
         {isDrawer && (
           <button
@@ -48,8 +51,8 @@ const Chat = ({ isDrawer, peer }: Props) => {
           </button>
         )}
       </div>
-      <div className="flex-1 p-2 sm:p-4 justify-between flex flex-col h-screen">
-        <div className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
+      <div className="flex-1 p-3 justify-between flex flex-col h-screen relative overflow-hidden">
+        <div className="flex flex-col  p-3 overflow-y-auto flex-1 hide-scroll-bar">
           {chat.length === 0 && (
             <div className="text-center text-gray-500">
               <h1 className="text-2xl font-bold">No Messages</h1>
@@ -88,9 +91,10 @@ const Chat = ({ isDrawer, peer }: Props) => {
                 </div>
               </div>
             ))}
+          <div ref={scrollRef} className="mt-24" />
         </div>
-        <div className="border-t-2 border-gray-200 p-2">
-          <div className="relative flex ">
+        <div className="border-t-2 border-gray-200 p-2 sticky bottom-0 h-[80px] flex items-center">
+          <div className="relative flex w-full">
             <input
               type="text"
               value={messageText}

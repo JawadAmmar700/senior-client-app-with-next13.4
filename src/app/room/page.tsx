@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMyStream } from "@/store/features/app-state/app-slice";
 import { RootState } from "@/store/configuration";
 import { P2P } from "@/lib/P2P";
+import { Toaster } from "react-hot-toast";
 
 const peer = new P2P();
 
@@ -82,9 +83,9 @@ export default function Home() {
           />
         </div>
         <div
-          className={`w-4/5 md:w-[400px] h-full block lg:hidden bg-slate-100 ${
+          className={`w-4/5 md:w-[400px] h-full block lg:hidden bg-white ${
             openChat ? "block" : "hidden"
-          }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-white`}
+          }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-black`}
         >
           <Chat isDrawer={true} peer={peer} />
         </div>
@@ -106,10 +107,11 @@ export default function Home() {
         </div>
       </div>
       <div
-        className={`w-[400px] h-full  bg-slate-100 hidden lg:block   transition-all duration-500 ease-in-out  `}
+        className={`w-[400px] h-full  bg-white hidden lg:block   transition-all duration-500 ease-in-out  `}
       >
         <Chat isDrawer={false} peer={peer} />
       </div>
+      <Toaster position="top-center" reverseOrder={false} />
     </main>
   );
 }
