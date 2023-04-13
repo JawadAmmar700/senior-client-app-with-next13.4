@@ -5,33 +5,13 @@ import { BsMic, BsMicMute } from "react-icons/bs";
 import { RootState } from "@/store/configuration";
 import { useSelector, useDispatch } from "react-redux";
 import { setMyPin, setUserPin } from "@/store/features/app-state/app-slice";
+
 type UserStreamsProps = {
   call: MapOfPeerCalls;
-  // userCameraONOFF: string[];
-  // userMute: string[];
   pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
-  // streams: MapOfPeerCalls[];
-  // myStream: MediaStream;
-  // userPin: string;
-  // setUserPin: React.Dispatch<React.SetStateAction<string>>;
-  // setMyPin: React.Dispatch<React.SetStateAction<boolean>>;
-  // isSharing: boolean;
-  // myScreenShare: MediaStream | null;
 };
 
-const UserStreams = ({
-  call,
-  // userCameraONOFF,
-  // userMute,
-  pinVideoRef,
-}: // streams,
-// myStream,
-// userPin,
-// setUserPin,
-// setMyPin,
-// isSharing,
-// myScreenShare,
-UserStreamsProps) => {
+const UserStreams = ({ call, pinVideoRef }: UserStreamsProps) => {
   const {
     userPin,
     isSharing,
@@ -52,15 +32,11 @@ UserStreamsProps) => {
       if (stream) {
         if (userId === userPin) {
           pinVideoRef.current.srcObject = isSharing ? myScreenShare : myStream;
-          // setMyPin(true);
-          // setUserPin("");
           dispatch(setMyPin(true));
           dispatch(setUserPin(""));
           return;
         }
         pinVideoRef.current.srcObject = stream.stream;
-        // setUserPin(userId);
-        // setMyPin(false);
         dispatch(setUserPin(userId));
         dispatch(setMyPin(false));
       }
@@ -68,7 +44,7 @@ UserStreamsProps) => {
   };
 
   return (
-    <div className="w-[150px] h-[100px] rounded-lg relative mt-5">
+    <div className="w-[150px] h-[100px] rounded-lg relative mt-5 border-2 border-white">
       <Video stream={call.stream} />
       {isCamera && (
         <div className="absolute w-full bg-slate-700 h-full inset-0 rounded-lg flex items-center justify-center">
@@ -98,15 +74,15 @@ UserStreamsProps) => {
               <TbPinned className="w-4 h-4" />
             )}
           </button>
-
-          <p
-            className={`backdrop-blur-sm ${
-              call.id === userPin ? "bg-sky-500" : " bg-white/10"
-            } rounded-xl px-2 py-0.5 font-bold text-xs `}
-          >
-            {call.user.username}
-          </p>
         </div>
+
+        <p
+          className={`backdrop-blur-sm ${
+            call.id === userPin ? "bg-sky-500" : " bg-white/10"
+          } rounded-xl px-2 py-0.5 font-bold text-xs absolute bottom-1 right-1 `}
+        >
+          {call.user.username}
+        </p>
       </div>
     </div>
   );

@@ -129,10 +129,6 @@ export class P2P {
     this.socket.on("user-disconnected", (disconnectedUserId) => {
       return callback("user-disconnected", disconnectedUserId);
     });
-
-    this.socket.on("users-in-room", (usersInRoom) => {
-      return callback("users-in-room", usersInRoom);
-    });
     this.socket.on("room-name", (room_name) => {
       return callback("room-name", room_name);
     });
@@ -166,9 +162,21 @@ export class P2P {
       .forEach((track) => (track.enabled = !track.enabled));
 
     if (isMuted) {
-      this.socket.emit("user-operation", this.userId, "userMuted");
+      this.socket.emit(
+        "user-operation",
+        this.userId,
+
+        isMuted,
+        "userMuted"
+      );
     } else {
-      this.socket.emit("user-operation", this.userId, "userUnmuted");
+      this.socket.emit(
+        "user-operation",
+        this.userId,
+
+        isMuted,
+        "userMuted"
+      );
     }
     // this.socket.emit("get-users-muted");
   }
@@ -179,9 +187,19 @@ export class P2P {
       .forEach((track) => (track.enabled = !track.enabled));
 
     if (isCamera) {
-      this.socket.emit("user-operation", this.userId, "userCameraOn");
+      this.socket.emit(
+        "user-operation",
+        this.userId,
+        isCamera,
+        "userCameraOnOff"
+      );
     } else {
-      this.socket.emit("user-operation", this.userId, "userCameraOff");
+      this.socket.emit(
+        "user-operation",
+        this.userId,
+        isCamera,
+        "userCameraOnOff"
+      );
     }
   }
 
@@ -204,10 +222,9 @@ export class P2P {
     });
     dispatch(setIsSharing(true));
     dispatch(setMyScreenShare(screenShare));
-    // setIsSharing(true);
-    // setMyScreenShare(screenShare);
+
     if (myVideo.current) {
-      this.socket.emit("user-operation", this.userId, "userScreenShareOn");
+      this.socket.emit("user-operation", this.userId, true, "userScreenShare");
       myVideo.current.srcObject = screenShare;
       myVideo.current.play();
     }
@@ -226,10 +243,14 @@ export class P2P {
     shareScreenTracks.onended = () => {
       dispatch(setIsSharing(false));
       dispatch(setMyScreenShare(null));
-      // setIsSharing(false);
-      // setMyScreenShare(null);
+
       if (myVideo.current) {
-        this.socket.emit("user-operation", this.userId, "userScreenShareOff");
+        this.socket.emit(
+          "user-operation",
+          this.userId,
+          false,
+          "userScreenShare"
+        );
         myVideo.current.srcObject = this.myStream;
         myVideo.current.play();
       }
@@ -248,18 +269,19 @@ export class P2P {
   }
 
   sendMessage(message: Chat) {
-    this.socket.emit("chat-message", message);
+    this.socket.emit(
+      "chat-message",
+      message,
+      sessionStorage.getItem("meetingId")
+    );
   }
 
-  disconnectUser() {
+  async disconnectUser() {
     this.myStream?.getTracks().forEach((track) => track.stop());
     this.peerCalls.forEach((peerCall) => {
       peerCall.call.close();
     });
+
     this.socket.disconnect();
   }
 }
-
-// export const peerConnection = () => {
-//   return new P2P();
-// };

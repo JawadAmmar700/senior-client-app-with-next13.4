@@ -95,7 +95,12 @@ const Header = () => {
                     <a href="#get-started">Get Started</a>
                   </li>
 
-                  <li onClick={() => signOut()}>
+                  <li
+                    onClick={() => {
+                      sessionStorage.clear();
+                      signOut();
+                    }}
+                  >
                     <p>Logout</p>
                   </li>
                 </>

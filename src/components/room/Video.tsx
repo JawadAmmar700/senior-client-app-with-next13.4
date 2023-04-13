@@ -13,7 +13,7 @@ const Video = ({ stream }: { stream: MediaStream }) => {
       autoPlay
       playsInline
       // muted
-      className="w-full h-full object-cover -z-30 rounded-lg"
+      className="w-full h-full aspect-video object-cover rounded-lg"
     />
   );
 };

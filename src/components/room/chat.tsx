@@ -1,3 +1,4 @@
+"use client";
 import { IoPaperPlaneOutline, IoClose } from "react-icons/io5";
 import { setOpenChat, setChat } from "@/store/features/app-state/app-slice";
 import { useDispatch, useSelector } from "react-redux";
@@ -5,17 +6,17 @@ import { useRef, useState } from "react";
 import { RootState } from "@/store/configuration";
 import { useSession } from "next-auth/react";
 import moment from "moment";
-import { P2P } from "@/lib/P2P";
 
 interface Props {
   isDrawer: boolean;
-  peer: P2P;
 }
 
-const Chat = ({ isDrawer, peer }: Props) => {
+const Chat = ({ isDrawer }: Props) => {
   const dispatch = useDispatch();
   const { data: session } = useSession();
-  const { chat } = useSelector((state: RootState) => state.appState);
+  const { chat, peer, openChat } = useSelector(
+    (state: RootState) => state.appState
+  );
   const [messageText, setMessageText] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -37,17 +38,21 @@ const Chat = ({ isDrawer, peer }: Props) => {
   };
 
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden w-full">
+    <div
+      className={`${
+        !isDrawer
+          ? "hidden lg:flex w-[400px]"
+          : ` ${openChat ? " flex w-full" : "hidden"}`
+      }  flex-col  h-screen overflow-hidden  bg-white shadow-lg rounded-tl-lg rounded-bl-lg`}
+    >
       <div className="w-full p-2 flex items-center justify-between ">
-        <h1 className="text-lg text-black font-bold text-center">Group Chat</h1>
+        <h1 className="text-xl text-black font-bold text-center">Group Chat</h1>
         {isDrawer && (
           <button
             onClick={() => dispatch(setOpenChat())}
-            // onClick={() => setOpenChat(false)}
-
-            className="btn btn-square"
+            className="text-gray-500 hover:text-gray-600"
           >
-            <IoClose className="w-5 h-5" />
+            <IoClose className="h-5 w-5" />
           </button>
         )}
       </div>
@@ -93,8 +98,8 @@ const Chat = ({ isDrawer, peer }: Props) => {
             ))}
           <div ref={scrollRef} className="mt-24" />
         </div>
-        <div className="border-t-2 border-gray-200 p-2 sticky bottom-0 h-[80px] flex items-center">
-          <div className="relative flex w-full">
+        <div className="p-2 sticky bottom-0 flex items-center">
+          <div className="relative flex w-full  shadow-md">
             <input
               type="text"
               value={messageText}

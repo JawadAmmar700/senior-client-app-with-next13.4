@@ -31,22 +31,15 @@ const usePeerEventListener = (peer: P2P) => {
           break;
         case "user-operation":
           switch (data.op) {
-            case "userCameraOff":
+            case "userCameraOnOff":
               dispatch(setUserCameraONOFF(data.data));
               break;
-            case "userCameraOn":
-              dispatch(setUserCameraONOFF(data.data));
-              break;
+
             case "userMuted":
               dispatch(setUserMute(data.data));
               break;
-            case "userUnmuted":
-              dispatch(setUserMute(data.data));
-              break;
-            case "userScreenShareOff":
-              dispatch(setUserScreenShare(data.data));
-              break;
-            case "userScreenShareOn":
+
+            case "userScreenShare":
               dispatch(setUserScreenShare(data.data));
               break;
 
@@ -72,10 +65,6 @@ const usePeerEventListener = (peer: P2P) => {
     };
 
     peer.eventListeners(eventListener);
-
-    // return () => {
-    //   peer.offEventListeners(eventListener);
-    // };
   }, [peer]);
 };
 

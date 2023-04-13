@@ -38,7 +38,7 @@ PinStreamProps) => {
         ref={pinVideoRef}
         autoPlay
         playsInline
-        className={`w-full h-full ${
+        className={`w-full h-full aspect-video rounded-lg ${
           isSreenShare || isSharing ? "object-contain" : "object-cover"
         }  -z-30`}
       />

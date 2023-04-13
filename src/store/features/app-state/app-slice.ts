@@ -1,8 +1,9 @@
+import { P2P } from "@/lib/P2P";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface AppState {
-  // peer: P2P;
+  peer: P2P;
   myMuted: boolean;
   myCamera: boolean;
   myPin: boolean;
@@ -20,7 +21,7 @@ export interface AppState {
 }
 
 const initialState: AppState = {
-  // peer: peerConnection(),
+  peer: new P2P(),
   myMuted: false,
   myCamera: true,
   myPin: true,

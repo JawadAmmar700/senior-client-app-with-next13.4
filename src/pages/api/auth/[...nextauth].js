@@ -133,6 +133,7 @@ export const authOptions = {
       if (token.error) {
         session.error = token.error;
       }
+
       return session;
     },
     async signIn({ user, account }) {

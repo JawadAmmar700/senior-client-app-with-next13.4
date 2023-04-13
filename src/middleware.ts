@@ -10,10 +10,7 @@ export async function middleware(request: NextRequest) {
   if (session && request.nextUrl.pathname.startsWith("/auth/signup")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
-  if (!session && request.nextUrl.pathname.startsWith("/room")) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
-  }
-  if (!session && request.nextUrl.pathname.startsWith("/room/[id]")) {
+  if (!session && request.nextUrl.pathname.startsWith("/chat")) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 }

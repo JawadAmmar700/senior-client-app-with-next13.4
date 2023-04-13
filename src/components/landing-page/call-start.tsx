@@ -13,30 +13,36 @@ const CallStart = () => {
   const router = useRouter();
 
   const handleNewMeeting = () => {
+    if (!session)
+      return toast.error("You must be logged in to create a meeting");
     if (!roomname) return toast.error("Provide room name");
+    const meetingId = uuidv4();
+    sessionStorage.setItem("roomName", roomname);
+    sessionStorage.setItem("meetingId", meetingId);
+    sessionStorage.setItem("user_name", session?.user?.name!);
+    sessionStorage.setItem("user_image", session?.user?.image!);
+
     const searchParams = new URLSearchParams({
-      meeting_id: uuidv4(),
-      room_name: roomname,
-      // user_name: "jawad",
-      user_name: session?.user?.name!,
-      user_image: session?.user?.image!,
-      // user_image: `https://source.boringavatars.com/pixel/120/jawad`,
+      meeting_id: meetingId,
     });
 
-    router.push("/room?" + searchParams);
+    router.push("/chat?" + searchParams);
   };
 
   const handleJoinMeeting = () => {
+    if (!session)
+      return toast.error("You must be logged in to create a meeting");
     if (!meetingId) return toast.error("Provide meeting id");
+
+    sessionStorage.setItem("meetingId", meetingId);
+    sessionStorage.setItem("user_name", session?.user?.name!);
+    sessionStorage.setItem("user_image", session?.user?.image!);
+
     const searchParams = new URLSearchParams({
       meeting_id: meetingId,
-      user_name: session?.user?.name!,
-      // user_name: "nada",
-      user_image: session?.user?.image!,
-      // user_image: `https://source.boringavatars.com/pixel/120/nada`,
     });
 
-    router.push("/room?" + searchParams);
+    router.push("/chat?" + searchParams);
   };
 
   return (
