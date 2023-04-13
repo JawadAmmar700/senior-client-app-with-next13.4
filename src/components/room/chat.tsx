@@ -6,23 +6,24 @@ import { useRef, useState } from "react";
 import { RootState } from "@/store/configuration";
 import { useSession } from "next-auth/react";
 import moment from "moment";
+import { P2P } from "@/lib/P2P";
 
 interface Props {
   isDrawer: boolean;
+  peer?: P2P | null;
 }
 
-const Chat = ({ isDrawer }: Props) => {
+const Chat = ({ isDrawer, peer }: Props) => {
   const dispatch = useDispatch();
   const { data: session } = useSession();
-  const { chat, peer, openChat } = useSelector(
-    (state: RootState) => state.appState
-  );
+  const { chat, openChat } = useSelector((state: RootState) => state.appState);
   const [messageText, setMessageText] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = () => {
     if (messageText === "") return;
     if (!session?.user) return;
+    if (!peer) return;
     const messageData = {
       user_name: session.user.name!,
       photoUrl: session.user.image!,

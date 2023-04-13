@@ -19,22 +19,17 @@ import {
   setMyMuted,
   setMyCamera,
 } from "@/store/features/app-state/app-slice";
+import { P2P } from "@/lib/P2P";
 
 type ButtonsProps = {
   myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null>;
   pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
+  peer: P2P;
 };
 
-const Buttons = ({ myVideoStreamRef, pinVideoRef }: ButtonsProps) => {
-  const {
-    userScreenShare,
-    userPin,
-    isSharing,
-    myCamera,
-    myMuted,
-    streams,
-    peer,
-  } = useSelector((state: RootState) => state.appState);
+const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
+  const { userScreenShare, userPin, isSharing, myCamera, myMuted, streams } =
+    useSelector((state: RootState) => state.appState);
   const dispatch = useDispatch();
 
   const router = useRouter();

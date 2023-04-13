@@ -17,8 +17,10 @@ import { RootState } from "@/store/configuration";
 import { Toaster } from "react-hot-toast";
 import { P2P } from "@/lib/P2P";
 
+const peer = new P2P();
+
 export default function Home() {
-  const { openChat, streams, peer } = useSelector(
+  const { openChat, streams } = useSelector(
     (state: RootState) => state.appState
   );
   const dispatch = useDispatch();
@@ -77,6 +79,7 @@ export default function Home() {
             <Buttons
               myVideoStreamRef={myVideoStreamRef}
               pinVideoRef={pinVideoRef}
+              peer={peer}
             />
           </div>
         </div>
@@ -86,7 +89,7 @@ export default function Home() {
           openChat ? "block" : "hidden"
         }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-black`}
       >
-        <Chat isDrawer={true} />
+        <Chat isDrawer={true} peer={peer} />
       </div>
       <Toaster position="top-center" reverseOrder={false} />
     </main>
