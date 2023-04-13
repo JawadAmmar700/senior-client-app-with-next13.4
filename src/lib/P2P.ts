@@ -31,7 +31,7 @@ export class P2P {
 
   async init() {
     this.myStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
+      audio: true,
       video: {
         facingMode: "user",
         width: { min: 150, ideal: 1280, max: 1920 },
@@ -276,7 +276,7 @@ export class P2P {
     );
   }
 
-  async disconnectUser() {
+  disconnectUser() {
     this.myStream?.getTracks().forEach((track) => track.stop());
     this.peerCalls.forEach((peerCall) => {
       peerCall.call.close();

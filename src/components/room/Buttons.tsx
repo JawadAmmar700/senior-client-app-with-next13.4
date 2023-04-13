@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   BsMic,
@@ -35,8 +36,8 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
   const router = useRouter();
   const isSreenShare = userScreenShare?.find((s) => s === userPin);
 
-  const endCall = async () => {
-    await peer.disconnectUser();
+  const endCall = () => {
+    peer.disconnectUser();
     router.push("/");
   };
   const shareScreen = () => {

@@ -2,7 +2,6 @@ import "@/styles/globals.css";
 import { headers } from "next/headers";
 import AuthContext from "@/lib/providers/auth-context";
 import { getSession } from "@/lib/auth-session";
-import Header from "@/components/landing-page/header";
 import ReduxProvider from "@/lib/providers/redux-provider";
 
 export const metadata = {
@@ -19,7 +18,6 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        {/* <Header /> */}
         <AuthContext session={session}>
           <ReduxProvider>{children}</ReduxProvider>
         </AuthContext>

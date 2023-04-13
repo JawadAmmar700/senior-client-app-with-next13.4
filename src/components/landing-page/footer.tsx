@@ -2,12 +2,12 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-white">
+    <footer className="gradient">
       <div className="container mx-auto px-8">
         <div className="w-full flex flex-col md:flex-row py-6">
           <div className="flex-1 mb-6 text-black">
             <a
-              className="text-pink-600 no-underline hover:no-underline font-bold text-2xl lg:text-4xl"
+              className="text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl"
               href="#"
             >
               <svg
@@ -22,7 +22,7 @@ const Footer = () => {
             </a>
           </div>
           <div className="flex-1">
-            <p className="uppercase text-gray-500 md:mb-6">Links</p>
+            <p className="uppercase text-slate-100 md:mb-6">Links</p>
             <ul className="list-reset mb-6">
               <li className="mt-2 inline-block mr-2 md:block md:mr-0">
                 <a
@@ -51,7 +51,7 @@ const Footer = () => {
             </ul>
           </div>
           <div className="flex-1">
-            <p className="uppercase text-gray-500 md:mb-6">Legal</p>
+            <p className="uppercase text-slate-100 md:mb-6">Legal</p>
             <ul className="list-reset mb-6">
               <li className="mt-2 inline-block mr-2 md:block md:mr-0">
                 <a
@@ -72,7 +72,7 @@ const Footer = () => {
             </ul>
           </div>
           <div className="flex-1">
-            <p className="uppercase text-gray-500 md:mb-6">Social</p>
+            <p className="uppercase text-slate-100 md:mb-6">Social</p>
             <ul className="list-reset mb-6">
               <li className="mt-2 inline-block mr-2 md:block md:mr-0">
                 <a
@@ -101,7 +101,7 @@ const Footer = () => {
             </ul>
           </div>
           <div className="flex-1">
-            <p className="uppercase text-gray-500 md:mb-6">Company</p>
+            <p className="uppercase text-slate-100 md:mb-6">Company</p>
             <ul className="list-reset mb-6">
               <li className="mt-2 inline-block mr-2 md:block md:mr-0">
                 <a

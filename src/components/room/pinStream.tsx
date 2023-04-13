@@ -3,25 +3,10 @@ import { useSelector } from "react-redux";
 
 type PinStreamProps = {
   pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
-  // myCamera: boolean;
   image: string;
-  // userCameraONOFF: string[];
-  // userScreenShare: string[];
-  // userPin: string;
-  // streams: MapOfPeerCalls[];
-  // isSharing: boolean;
 };
 
-const PinStream = ({
-  pinVideoRef,
-  // myCamera,
-  image,
-}: // userCameraONOFF,
-// userScreenShare,
-// userPin,
-// streams,
-// isSharing,
-PinStreamProps) => {
+const PinStream = ({ pinVideoRef, image }: PinStreamProps) => {
   const {
     userScreenShare,
     userPin,
@@ -38,6 +23,7 @@ PinStreamProps) => {
         ref={pinVideoRef}
         autoPlay
         playsInline
+        muted
         className={`w-full h-full aspect-video rounded-lg ${
           isSreenShare || isSharing ? "object-contain" : "object-cover"
         }  -z-30`}
