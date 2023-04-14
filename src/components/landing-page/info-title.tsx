@@ -28,6 +28,7 @@ const InfoTitle = () => {
               alt="Picture of the author"
               width={400}
               height={400}
+              className="w-full h-auto"
             />
           </div>
         </div>
@@ -38,6 +39,7 @@ const InfoTitle = () => {
               alt="Picture of the author"
               width={400}
               height={400}
+              className="w-full h-auto"
             />
           </div>
           <div className="w-full sm:w-1/2 p-6 mt-6">

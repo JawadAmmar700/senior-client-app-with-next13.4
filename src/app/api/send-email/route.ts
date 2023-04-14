@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     await transporter.sendMail(mailOptions);
     return new Response(JSON.stringify({ success: true }));
   } catch (error) {
-    console.error(error);
+
     return new Response(JSON.stringify({ success: false }), {
       status: 500,
     });

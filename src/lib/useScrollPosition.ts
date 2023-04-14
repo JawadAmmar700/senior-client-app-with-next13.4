@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const useScrollPosition = () => {
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
+  const [scrollPosition, setScrollPosition] = useState<number>(window.pageYOffset);
 
   useEffect(() => {
     function handleScroll() {

@@ -16,6 +16,7 @@ import { setMyStream } from "@/store/features/app-state/app-slice";
 import { RootState } from "@/store/configuration";
 import { Toaster } from "react-hot-toast";
 import { P2P } from "@/lib/P2P";
+import RecordingTracker from "@/components/room/recordingTracker";
 
 const peer = new P2P();
 
@@ -94,6 +95,7 @@ export default function Home() {
               peer={peer}
             />
           </div>
+          <RecordingTracker />
         </div>
       </div>
       <div

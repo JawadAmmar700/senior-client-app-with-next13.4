@@ -1,5 +1,4 @@
 interface Session {
-  accessToken: string;
   expires: string;
   error?: string;
   user: {

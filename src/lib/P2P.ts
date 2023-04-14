@@ -22,7 +22,6 @@ export class P2P {
     this.socket = io(`${process.env.NEXT_PUBLIC_SERVER_APP}`, this.opts);
     this.peer.on("open", (id) => {
       this.userId = id;
-      console.log("peer id: ", id);
     });
 
     this.socketEvents();

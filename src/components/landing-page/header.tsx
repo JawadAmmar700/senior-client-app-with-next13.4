@@ -1,10 +1,11 @@
 "use client";
 import useScrollPosition from "@/lib/useScrollPosition";
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 
 const Header = () => {
-  const { data: session, status } = useSession();
+  const { data:session, status } = useSession();
   const scrollPosition = useScrollPosition();
   return (
     <nav

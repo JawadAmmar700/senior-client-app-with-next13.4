@@ -20,8 +20,10 @@ import {
   setIsSharing,
   setMyMuted,
   setMyCamera,
+  setRecordingState
 } from "@/store/features/app-state/app-slice";
 import { P2P } from "@/lib/P2P";
+import { startRecording } from "@/lib/recordingFncs";
 
 type ButtonsProps = {
   myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null>;
@@ -30,7 +32,7 @@ type ButtonsProps = {
 };
 
 const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
-  const { userScreenShare, userPin, isSharing, myCamera, myMuted, streams } =
+  const { userScreenShare, userPin, isSharing, myCamera, myMuted, streams,recordingState } =
     useSelector((state: RootState) => state.appState);
   const dispatch = useDispatch();
 
@@ -64,6 +66,12 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
     peer.toggleOnOff(!myCamera);
     dispatch(setMyCamera());
   };
+
+
+  const handleRecording = async() => {
+    await startRecording()
+    dispatch(setRecordingState())
+  }
 
   return (
     <div className="w-full absolute  bottom-2 p-2 flex space-x-5 items-center justify-center z-40">
@@ -122,13 +130,18 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
         <BsChatDots className="w-5 h-5 text-white" />
       </button>
       <button
+        onClick={handleRecording}
         className={`btn outline-none border-none backdrop-blur-sm ${
           isSharing || isSreenShare
             ? "bg-black"
             : "bg-white/10 hover:bg-opacity-20"
         } cursor-pointer`}
       >
+        {
+          recordingState ?
+        <BsRecord2Fill className="w-5 h-5 text-red-500 animate-pulse" />:
         <BsRecord2Fill className="w-5 h-5 text-white" />
+        }
       </button>
     </div>
   );

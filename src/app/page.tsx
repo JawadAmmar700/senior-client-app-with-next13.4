@@ -14,7 +14,7 @@ export default async function Home() {
         <img
           src="/svgs/wave-up.svg"
           alt="Picture of the author"
-          className="w-full"
+          className="w-full h-auto"
         />
       </div>
       <InfoTitle />
@@ -23,9 +23,10 @@ export default async function Home() {
         <img
           src="/svgs/wave-up.svg"
           alt="Picture of the author"
-          className="w-full"
+          className="w-full h-auto"
         />
       </div>
+      {/* @ts-expect-error Server Component */}
       <Recordings />
 
       <Footer />
