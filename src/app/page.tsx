@@ -26,8 +26,10 @@ export default async function Home() {
           className="w-full h-auto"
         />
       </div>
-      {/* @ts-expect-error Server Component */}
-      <Recordings />
+    
+        {/* @ts-expect-error Server Component */}
+        <Recordings />
+    
 
       <Footer />
     </main>

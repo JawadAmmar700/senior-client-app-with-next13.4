@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 
 const HeroSection = () => {
@@ -32,7 +31,7 @@ const HeroSection = () => {
         </div>
 
         <div className="w-full lg:w-3/5 py-6 text-center flex justify-center z-0 ">
-          <Image src="/landing/landing-3.svg" width={500} height={500} alt="landing-3"  className="w-full h-auto" />
+          <Image src="/landing/landing-3.svg" width={500} height={500} alt="landing-3"  className="w-full h-auto" priority />
         </div>
       </div>
     </div>

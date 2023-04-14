@@ -2,6 +2,7 @@ import React from "react";
 import prisma from "../../lib/prisma";
 import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
+import RecordingsUi from "./recordingsUi";
 
 const fetchRecords = async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
@@ -31,16 +32,11 @@ const Recordings = async () => {
           <div className="mx-auto flex flex-wrap space-x-5">
             {
                 recordings?.map((recording) => (
-                  <div className="mb-4" key={recording.id}>
-                    <div className="w-[150px] h-[150px] bg-white shadow-2xl rounded-lg flex flex-col items-center justify-evenly">
-                      <h1 className="text-xl font-bold">{recording.file_name}</h1>
-                      <a href={recording.video_url}  download={recording.file_name} className="font-bold p-2 rounded-lg bg-sky-400 cursor-pointer">download</a>
-                    </div>
-                  </div>
+                 <RecordingsUi recording={recording} key={recording.id}  />
                 ))
             }
           </div>
-        : <h1 className="text-gray-600">It appears that you have not saved any recordings yet.</h1>
+        : <h1 className="text-gray-600 text-sm lg:text-xl font-medium">It appears that you have not saved any recordings yet.</h1>
         }
        
       </div>
