@@ -12,7 +12,7 @@ const Recordings = () => {
         </div>
       </div>
       <div className="w-full flex items-center justify-center">
-        <h1>It appears that you have not saved any recordings yet.</h1>
+        <h1 className="text-gray-600">It appears that you have not saved any recordings yet.</h1>
       </div>
     </section>
   );

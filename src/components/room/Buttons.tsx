@@ -6,6 +6,7 @@ import {
   BsCameraVideo,
   BsCameraVideoOff,
   BsChatDots,
+  BsRecord2Fill
 } from "react-icons/bs";
 import { MdCallEnd, MdOutlineScreenShare } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
@@ -119,6 +120,15 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
         } cursor-pointer`}
       >
         <BsChatDots className="w-5 h-5 text-white" />
+      </button>
+      <button
+        className={`btn outline-none border-none backdrop-blur-sm ${
+          isSharing || isSreenShare
+            ? "bg-black"
+            : "bg-white/10 hover:bg-opacity-20"
+        } cursor-pointer`}
+      >
+        <BsRecord2Fill className="w-5 h-5 text-white" />
       </button>
     </div>
   );

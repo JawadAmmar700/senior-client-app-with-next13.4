@@ -23,7 +23,6 @@ const Chat = ({ isDrawer, peer }: Props) => {
   const handleSendMessage = () => {
     if (messageText === "") return;
     if (!session?.user) return;
-    if (!peer) return;
     const messageData = {
       user_name: session.user.name!,
       photoUrl: session.user.image!,
@@ -31,7 +30,7 @@ const Chat = ({ isDrawer, peer }: Props) => {
       time: new Date().getTime(),
       message: messageText,
     };
-    peer.sendMessage(messageData);
+    peer?.sendMessage(messageData);
     dispatch(setChat(messageData));
     if (scrollRef.current)
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
