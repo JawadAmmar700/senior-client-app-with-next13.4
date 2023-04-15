@@ -6,7 +6,8 @@ import {
   BsCameraVideo,
   BsCameraVideoOff,
   BsChatDots,
-  BsRecord2Fill
+  BsRecord2Fill,
+  BsThreeDotsVertical,
 } from "react-icons/bs";
 import { MdCallEnd, MdOutlineScreenShare } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
@@ -20,7 +21,7 @@ import {
   setIsSharing,
   setMyMuted,
   setMyCamera,
-  setRecordingState
+  setRecordingState,
 } from "@/store/features/app-state/app-slice";
 import { P2P } from "@/lib/P2P";
 import { startRecording } from "@/lib/recordingFncs";
@@ -32,8 +33,15 @@ type ButtonsProps = {
 };
 
 const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
-  const { userScreenShare, userPin, isSharing, myCamera, myMuted, streams,recordingState } =
-    useSelector((state: RootState) => state.appState);
+  const {
+    userScreenShare,
+    userPin,
+    isSharing,
+    myCamera,
+    myMuted,
+    streams,
+    recordingState,
+  } = useSelector((state: RootState) => state.appState);
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -67,11 +75,11 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
     dispatch(setMyCamera());
   };
 
-
-  const handleRecording = async() => {
-    await startRecording()
-    dispatch(setRecordingState())
-  }
+  const handleRecording = async () => {
+    const event = await startRecording();
+    if (event === "cancelled") return;
+    dispatch(setRecordingState());
+  };
 
   return (
     <div className="w-full absolute  bottom-2 p-2 flex space-x-5 items-center justify-center z-40">
@@ -119,30 +127,45 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
       >
         <MdOutlineScreenShare className="w-5 h-5 text-white" />
       </button>
-      <button
-        onClick={() => dispatch(setOpenChat())}
-        className={`btn outline-none lg:hidden block  border-none backdrop-blur-sm ${
-          isSharing || isSreenShare
-            ? "bg-black"
-            : "bg-white/10 hover:bg-opacity-20"
-        } cursor-pointer`}
-      >
-        <BsChatDots className="w-5 h-5 text-white" />
-      </button>
-      <button
-        onClick={handleRecording}
-        className={`btn outline-none border-none backdrop-blur-sm ${
-          isSharing || isSreenShare
-            ? "bg-black"
-            : "bg-white/10 hover:bg-opacity-20"
-        } cursor-pointer`}
-      >
-        {
-          recordingState ?
-        <BsRecord2Fill className="w-5 h-5 text-red-500 animate-pulse" />:
-        <BsRecord2Fill className="w-5 h-5 text-white" />
-        }
-      </button>
+      <div className="dropdown dropdown-top dropdown-end">
+        <button
+          tabIndex={0}
+          className={`btn outline-none border-none backdrop-blur-sm ${
+            isSharing || isSreenShare
+              ? "bg-black"
+              : "bg-white/10 hover:bg-opacity-20"
+          } cursor-pointer`}
+        >
+          <BsThreeDotsVertical className="w-5 h-5 text-white" />
+        </button>
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40  mb-2"
+        >
+          <li>
+            <button
+              onClick={() => dispatch(setOpenChat())}
+              className={`btn outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}
+            >
+              <BsChatDots className="w-5 h-5 text-black" />
+              <span>Chat</span>
+            </button>
+          </li>
+          <li className="mt-2">
+            <button
+              onClick={handleRecording}
+              className={`btn outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}
+            >
+              {recordingState ? (
+                <BsRecord2Fill className="w-5 h-5 text-red-500 animate-pulse" />
+              ) : (
+                <BsRecord2Fill className="w-5 h-5 text-black" />
+              )}
+              <span>Record</span>
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };

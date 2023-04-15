@@ -6,6 +6,9 @@ import RecordingsUi from "./recordingsUi";
 
 const fetchRecords = async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
+  if (!session) {
+    return "unauthorized";
+  }
   const recordings = await prisma.recordings.findMany({
    where:{
     userId: session?.user.id
@@ -28,7 +31,12 @@ const Recordings = async () => {
       </div>
       <div className="w-full flex items-center justify-center">
         {
-          recordings.length >0?
+          recordings === "unauthorized"? 
+          <h1 className="text-gray-600 text-sm lg:text-xl font-medium">You are not authorized to view this content.</h1>
+          :
+          <>
+          {
+          recordings.length > 0?
           <div className="mx-auto flex flex-wrap space-x-5">
             {
                 recordings?.map((recording) => (
@@ -38,7 +46,8 @@ const Recordings = async () => {
           </div>
         : <h1 className="text-gray-600 text-sm lg:text-xl font-medium">It appears that you have not saved any recordings yet.</h1>
         }
-       
+          </>
+        }
       </div>
     </section>
   );
