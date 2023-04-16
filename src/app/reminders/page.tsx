@@ -9,10 +9,10 @@ const Page = () => {
     <div>
       <h1>Reminders</h1>
       <br />
-      <Suspense fallback={<div>Loading...</div>}>
-        {/* @ts-expect-error Server Component */}
-        <ReminderTodos />
-      </Suspense>
+      {/* <Suspense fallback={<div>Loading...</div>}> */}
+
+      {/* <ReminderTodos /> */}
+      {/* </Suspense> */}
       <br />
       <br />
       <br />

@@ -1,4 +1,7 @@
 "use client";
+import "react-calendar/dist/Calendar.css";
+import "react-time-picker/dist/TimePicker.css";
+import "react-clock/dist/Clock.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
