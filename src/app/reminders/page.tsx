@@ -1,8 +1,5 @@
-import CalendarTodo from "@/components/remender/calendar";
-import ReminderTodos from "@/components/remender/reminderTodos";
-import { Suspense } from "react";
-
-export const revalidate = 30;
+// import CalendarTodo from "@/components/remender/calendar";
+// import ReminderTodos from "@/components/remender/reminderTodos";
 
 const Page = () => {
   return (
@@ -16,7 +13,7 @@ const Page = () => {
       <br />
       <br />
       <br />
-      <CalendarTodo />
+      {/* <CalendarTodo /> */}
     </div>
   );
 };
