@@ -3,8 +3,6 @@ import React from "react";
 import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
 
-export const revalidate = 30;
-
 const getReminders = async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
   if (session) {
