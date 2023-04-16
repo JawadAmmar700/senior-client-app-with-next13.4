@@ -35,7 +35,7 @@ const getReminders = async () => {
 
 const ReminderTodos = async () => {
   const reminders = (await getReminders()) as Reminder[];
-  console.log(reminders);
+
   return (
     <div>
       {reminders.length > 0 ? (
