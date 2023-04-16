@@ -1,4 +1,8 @@
 import "@/styles/globals.css";
+import "react-calendar/dist/Calendar.css";
+import "react-time-picker/dist/TimePicker.css";
+import "react-clock/dist/Clock.css";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { headers } from "next/headers";
 import AuthContext from "@/lib/providers/auth-context";
 import { getSession } from "@/lib/auth-session";

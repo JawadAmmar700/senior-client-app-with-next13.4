@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const HeroSection = () => {
@@ -15,12 +16,12 @@ const HeroSection = () => {
             platform
           </p>
           <div className="flex space-x-2 z-20">
-            <a
-              href="#get-started"
+            <Link
+              href="/reminders"
               className="mx-auto lg:mx-0  bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
             >
-              Get Started
-            </a>
+              Reminders
+            </Link>
             <a
               href="#recordings"
               className="mx-auto lg:mx-0 ring-2 ring-white text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
@@ -31,7 +32,14 @@ const HeroSection = () => {
         </div>
 
         <div className="w-full lg:w-3/5 py-6 text-center flex justify-center z-0 ">
-          <Image src="/landing/landing-3.svg" width={500} height={500} alt="landing-3"  className="w-full h-auto" priority />
+          <Image
+            src="/landing/landing-3.svg"
+            width={500}
+            height={500}
+            alt="landing-3"
+            className="w-full h-auto"
+            priority
+          />
         </div>
       </div>
     </div>

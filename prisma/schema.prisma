@@ -45,6 +45,7 @@ generator client {
    accounts      Account[]
    sessions      Session[]
    recordings Recordings[]
+   reminders Reminder[]
  }
 
  model VerificationToken {
@@ -60,6 +61,17 @@ model Recordings {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   video_url String
   file_name String
+  userId   String  @db.ObjectId
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Reminder {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  description String
+  date String
+  time Int
+  isDone Boolean
   userId   String  @db.ObjectId
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

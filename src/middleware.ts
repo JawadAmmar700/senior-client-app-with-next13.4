@@ -13,6 +13,9 @@ export async function middleware(request: NextRequest) {
   if (!session && request.nextUrl.pathname.startsWith("/chat")) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
+  if (!session && request.nextUrl.pathname.startsWith("/reminders")) {
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
+  }
 }
 
 export const config = {
