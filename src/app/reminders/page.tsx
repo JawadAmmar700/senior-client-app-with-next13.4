@@ -2,8 +2,6 @@ import CalendarTodo from "@/components/remender/calendar";
 import ReminderTodos from "@/components/remender/reminderTodos";
 import { Suspense } from "react";
 
-export const revalidate = 60;
-
 const Page = () => {
   return (
     <div>

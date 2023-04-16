@@ -46,7 +46,6 @@ const CalendarTodo = () => {
       throw new Error("Failed to create reminder");
     }
     // router.refresh();
-    alert("Reminder created");
   };
 
   return (

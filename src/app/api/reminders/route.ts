@@ -33,15 +33,37 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+// export async function GET(request: Request) {
+//   try {
+//     const todos = await prisma.reminder.findMany({
+//       where: {
+//         userId: "643941b5f5b7bece23605f27",
+//       },
+//     });
+
+//     return new Response(JSON.stringify(todos), {
+//       status: 200,
+//     });
+//   } catch (error) {
+//     return new Response("Something went wrong", {
+//       status: 500,
+//     });
+//   }
+// }
+
+export async function PUT(request: Request) {
+  const res = await request.json();
+}
+export async function DELETE(request: Request) {
+  const { reminderId }: { reminderId: string } = await request.json();
+  console.log(reminderId);
   try {
-    const todos = await prisma.reminder.findMany({
+    await prisma.reminder.delete({
       where: {
-        userId: request.headers.get("userId")!,
+        id: reminderId,
       },
     });
-
-    return new Response(JSON.stringify(todos), {
+    return new Response("Reminder deleted", {
       status: 200,
     });
   } catch (error) {
@@ -49,11 +71,4 @@ export async function GET(request: Request) {
       status: 500,
     });
   }
-}
-
-export async function PUT(request: Request) {
-  const res = await request.json();
-}
-export async function DELETE(request: Request) {
-  const res = await request.json();
 }
