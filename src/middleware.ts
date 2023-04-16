@@ -16,6 +16,7 @@ export async function middleware(request: NextRequest) {
   if (!session && request.nextUrl.pathname.startsWith("/reminders")) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
+  return NextResponse.next();
 }
 
 export const config = {

@@ -1,6 +1,5 @@
 import { Reminder } from "@prisma/client";
 import React from "react";
-import prisma from "@/lib/prisma";
 import fetch from "node-fetch";
 import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
