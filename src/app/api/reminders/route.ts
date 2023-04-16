@@ -1,7 +1,5 @@
 import prisma from "@/lib/prisma";
 
-export const revalidate = 30;
-
 type POSTBody = {
   title: string;
   description: string;
