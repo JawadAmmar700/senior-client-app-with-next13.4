@@ -3,6 +3,8 @@ import ReminderTodos from "@/components/remender/reminderTodos";
 
 import { Suspense } from "react";
 
+export const revalidate = 30;
+
 const Page = async () => {
   return (
     <div>

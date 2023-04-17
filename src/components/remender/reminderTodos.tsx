@@ -15,6 +15,7 @@ const getReminders = async () => {
         userId: session.user.id,
       },
     });
+    console.log("todos", todos);
     return todos;
   } catch (error) {
     console.error(error);
