@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getServerSession } from "next-auth";
 
 type POSTBody = {
   title: string;
@@ -7,6 +9,25 @@ type POSTBody = {
   time: number;
   userId: string;
 };
+
+export async function GET(req: Request, res: Response) {
+  try {
+    const todos = await prisma.reminder.findMany({
+      where: {
+        userId: req.headers.get("userId")!,
+      },
+    });
+
+    return new Response(JSON.stringify({ todos }), {
+      status: 200,
+    });
+    // return NextResponse.json({ message: "Hello" });
+  } catch (error) {
+    return new Response("Something went wrong", {
+      status: 500,
+    });
+  }
+}
 
 export async function POST(request: Request) {
   const { date, description, time, title, userId } =
@@ -32,24 +53,6 @@ export async function POST(request: Request) {
     });
   }
 }
-
-// export async function GET(request: Request) {
-//   try {
-//     const todos = await prisma.reminder.findMany({
-//       where: {
-//         userId: "643941b5f5b7bece23605f27",
-//       },
-//     });
-
-//     return new Response(JSON.stringify(todos), {
-//       status: 200,
-//     });
-//   } catch (error) {
-//     return new Response("Something went wrong", {
-//       status: 500,
-//     });
-//   }
-// }
 
 export async function PUT(request: Request) {
   const res = await request.json();

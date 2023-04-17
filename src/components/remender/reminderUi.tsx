@@ -34,12 +34,14 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
         error: <b>Something went wrong, please try again</b>,
       }
     );
-    // startTransition(() => {
-    //   router.refresh();
-    // });
+    startTransition(() => {
+      router.refresh();
+    });
   };
   return (
-    <div>
+    <div
+      className={`${isPending ? "opacity-80 animate-pulse" : "opacity-100"}`}
+    >
       <h3>{reminder.title}</h3>
       <p>{reminder.description}</p>
       <button onClick={handleReminderDelete}>delete</button>
