@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import ReminderUi from "./reminderUi";
 import { Reminder } from "@prisma/client";
 // import fetch from "node-fetch";
+import prisma from "@/lib/prisma";
 
 const getReminders = async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
