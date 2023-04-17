@@ -2,7 +2,6 @@ import React from "react";
 import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
 import ReminderUi from "./reminderUi";
-import prisma from "@/lib/prisma";
 import { Reminder } from "@prisma/client";
 // import fetch from "node-fetch";
 
@@ -22,7 +21,7 @@ const getReminders = async () => {
       `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
       {
         method: "GET",
-        cache: "no-store",
+        cache: "no-cache",
         next: { revalidate: 30 },
         headers: {
           "Content-Type": "application/json",
