@@ -45,6 +45,7 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
     >
       <h3>{reminder.title}</h3>
       <p>{reminder.description}</p>
+      <p>{reminder.time}</p>
       <button onClick={handleReminderDelete}>delete</button>
     </div>
   );

@@ -8,25 +8,6 @@ type POSTBody = {
   userId: string;
 };
 
-export async function GET(req: Request, res: Response) {
-  try {
-    const todos = await prisma.reminder.findMany({
-      where: {
-        userId: req.headers.get("userId")!,
-      },
-    });
-
-    return new Response(JSON.stringify({ todos }), {
-      status: 200,
-    });
-    // return NextResponse.json({ message: "Hello" });
-  } catch (error) {
-    return new Response("Something went wrong", {
-      status: 500,
-    });
-  }
-}
-
 export async function POST(request: Request) {
   const { date, description, time, title, userId } =
     (await request.json()) as POSTBody;
