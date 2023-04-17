@@ -1,6 +1,4 @@
 import prisma from "@/lib/prisma";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { getServerSession } from "next-auth";
 
 type POSTBody = {
   title: string;

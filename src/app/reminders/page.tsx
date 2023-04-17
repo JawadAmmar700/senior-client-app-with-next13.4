@@ -3,7 +3,7 @@ import ReminderTodos from "@/components/remender/reminderTodos";
 
 import { Suspense } from "react";
 
-export const revalidate = 30;
+// export const revalidate = 30;
 // export const dynamic = "force-static";
 
 const Page = async ({}) => {

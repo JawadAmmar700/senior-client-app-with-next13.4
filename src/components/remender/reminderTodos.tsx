@@ -18,15 +18,18 @@ const getReminders = async () => {
     // console.log("todos", todos);
     // return todos;
 
-    const res = await fetch(`http://localhost:3000/api/reminders`, {
-      method: "GET",
-      cache: "no-store",
-      next: { revalidate: 30 },
-      headers: {
-        "Content-Type": "application/json",
-        userId: session?.user?.id,
-      },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
+      {
+        method: "GET",
+        cache: "no-store",
+        next: { revalidate: 30 },
+        headers: {
+          "Content-Type": "application/json",
+          userId: session?.user?.id,
+        },
+      }
+    );
     if (res.status !== 200) return [];
     const { todos }: any = await res.json();
     console.log("todos", todos);
