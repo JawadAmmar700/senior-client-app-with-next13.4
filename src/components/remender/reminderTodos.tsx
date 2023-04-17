@@ -5,7 +5,24 @@ import ReminderUi from "./reminderUi";
 import { Reminder } from "@prisma/client";
 // import fetch from "node-fetch";
 
-const ReminderTodos = async ({ reminders }: { reminders: Reminder[] }) => {
+const getReminders = async () => {
+  const session: any = await getSession(headers().get("cookie") ?? "");
+
+  try {
+    const todos = await prisma.reminder.findMany({
+      where: {
+        userId: session.user.id,
+      },
+    });
+    return todos;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+const ReminderTodos = async () => {
+  const reminders: any = await getReminders();
   return (
     <div>
       {reminders?.length > 0 ? (

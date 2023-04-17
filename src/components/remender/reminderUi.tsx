@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
   const handleReminderDelete = async () => {
     toast.promise(
       new Promise(async (resolve, reject) => {
