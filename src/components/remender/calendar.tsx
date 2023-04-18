@@ -14,7 +14,7 @@ const CalendarTodo = () => {
   const session = data as Session;
   const router = useRouter();
   const [calendar, setCalendar] = useState<LooseValue>(new Date());
-  const [clock, setClock] = useState<LooseValue>(new Date());
+  const [clock, setClock] = useState<LooseValue>("00:00");
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -26,8 +26,27 @@ const CalendarTodo = () => {
       day: "numeric",
       year: "numeric",
     });
+    console.log(date);
+    const date2 = new Date(formattedDate);
+    const year = date2.getFullYear();
+    const month = (date2.getMonth() + 1).toString().padStart(2, "0"); // add zero-padding to month
+    const day = date2.getDate().toString().padStart(2, "0"); // add zero-padding to day
+    const formattedDate2 = `${year}-${month}-${day}`;
 
-    const reminderTime = new Date(`${clock}`);
+    const reminderTime = new Date(`${formattedDate2}T${clock}`);
+    const currentTime = new Date();
+    if (reminderTime <= currentTime) {
+      console.log("Reminder time has already passed");
+      return;
+    }
+    const timeDiff =
+      (reminderTime.getTime() - currentTime.getTime()) / 1000 / 60; // get time difference in minutes
+    if (timeDiff < 10) {
+      console.log("Reminder time should be at least 10 minutes from now");
+      return;
+    }
+
+    console.log(clock?.toString());
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
@@ -40,15 +59,16 @@ const CalendarTodo = () => {
           title,
           description,
           date: formattedDate,
-          time: reminderTime.getTime(),
+          time: Math.floor(reminderTime.getTime() / 1000),
           userId: session?.user?.id,
+          timeString: clock?.toString(),
         }),
       }
     );
     if (!response.ok) {
       throw new Error("Failed to create reminder");
     }
-    // router.refresh();
+    router.refresh();
   };
 
   return (

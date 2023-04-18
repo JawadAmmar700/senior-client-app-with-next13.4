@@ -6,13 +6,14 @@ type POSTBody = {
   date: string;
   time: number;
   userId: string;
+  timeString: string;
 };
 
 export async function POST(request: Request) {
-  const { date, description, time, title, userId } =
+  const { date, description, time, title, userId, timeString } =
     (await request.json()) as POSTBody;
   try {
-    await prisma.reminder.create({
+    const todo = await prisma.reminder.create({
       data: {
         title,
         description,
@@ -20,7 +21,16 @@ export async function POST(request: Request) {
         time,
         isDone: false,
         userId,
+        notificationSent: false,
+        timeString,
       },
+    });
+    const res = await fetch("http://localhost:4000", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(todo),
     });
 
     return new Response("Reminder created", {
