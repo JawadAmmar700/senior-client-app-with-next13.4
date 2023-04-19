@@ -4,10 +4,11 @@ import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import Calendar from "react-calendar";
 import { LooseValue } from "react-calendar/dist/cjs/shared/types";
 import TimePicker from "react-time-picker";
+import { Toaster, toast } from "react-hot-toast";
 
 const CalendarTodo = () => {
   const { data } = useSession();
@@ -17,6 +18,7 @@ const CalendarTodo = () => {
   const [clock, setClock] = useState<LooseValue>("00:00");
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [isPending, startTransition] = useTransition();
 
   const handleReminderCreation = async () => {
     const date = new Date(`${calendar}`);
@@ -26,27 +28,24 @@ const CalendarTodo = () => {
       day: "numeric",
       year: "numeric",
     });
-    console.log(date);
     const date2 = new Date(formattedDate);
     const year = date2.getFullYear();
-    const month = (date2.getMonth() + 1).toString().padStart(2, "0"); // add zero-padding to month
-    const day = date2.getDate().toString().padStart(2, "0"); // add zero-padding to day
+    const month = (date2.getMonth() + 1).toString().padStart(2, "0");
+    const day = date2.getDate().toString().padStart(2, "0");
     const formattedDate2 = `${year}-${month}-${day}`;
 
     const reminderTime = new Date(`${formattedDate2}T${clock}`);
     const currentTime = new Date();
     if (reminderTime <= currentTime) {
-      console.log("Reminder time has already passed");
-      return;
+      return toast.error("Reminder time has already passed");
     }
     const timeDiff =
-      (reminderTime.getTime() - currentTime.getTime()) / 1000 / 60; // get time difference in minutes
+      (reminderTime.getTime() - currentTime.getTime()) / 1000 / 60;
     if (timeDiff < 10) {
-      console.log("Reminder time should be at least 10 minutes from now");
-      return;
+      return toast.error(
+        "Reminder time should be at least 10 minutes from now"
+      );
     }
-
-    console.log(clock?.toString());
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
@@ -68,7 +67,9 @@ const CalendarTodo = () => {
     if (!response.ok) {
       throw new Error("Failed to create reminder");
     }
+    // startTransition(() => {
     router.refresh();
+    // });
   };
 
   return (
@@ -99,6 +100,7 @@ const CalendarTodo = () => {
         value={description}
       />
       <button onClick={handleReminderCreation}>create</button>
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };
