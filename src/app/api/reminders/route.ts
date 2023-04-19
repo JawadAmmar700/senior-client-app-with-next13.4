@@ -34,14 +34,17 @@ export async function POST(request: Request) {
         notificationSent: false,
         timeString,
       },
-    });
-    const res = await fetch("http://localhost:4000", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
       },
-      body: JSON.stringify(todo),
     });
+
+    await createCronJob(todo);
 
     return new Response("Reminder created", {
       status: 200,
