@@ -14,7 +14,15 @@ export async function POST(request: Request) {
   const { date, description, time, title, userId, timeString } =
     (await request.json()) as POSTBody;
   try {
-    console.log("passed here -1");
+    console.log(
+      "passed here -1",
+      title,
+      description,
+      date,
+      time,
+      userId,
+      timeString
+    );
     const todo = await prisma.reminder.create({
       data: {
         title,
