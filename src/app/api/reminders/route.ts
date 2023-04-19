@@ -34,19 +34,19 @@ export async function POST(request: Request) {
         notificationSent: false,
         timeString,
       },
-      include: {
-        user: {
-          select: {
-            email: true,
-            name: true,
-          },
-        },
-      },
+      // include: {
+      //   user: {
+      //     select: {
+      //       email: true,
+      //       name: true,
+      //     },
+      //   },
+      // },
     });
     console.log("passed here -2");
 
-    await createCronJob(todo);
-    console.log("passed here -3");
+    // await createCronJob(todo);
+    // console.log("passed here -3");
 
     return new Response("Reminder created", {
       status: 200,
