@@ -1,15 +1,4 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: `${process.env.MY_EMAIL}`,
-    pass: `${process.env.MY_PASS}`,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+import { transporter } from "@/lib/nodemailer";
 
 export async function POST(request: Request) {
   const { email, meetingId } = await request.json();
@@ -23,7 +12,6 @@ export async function POST(request: Request) {
     await transporter.sendMail(mailOptions);
     return new Response(JSON.stringify({ success: true }));
   } catch (error) {
-
     return new Response(JSON.stringify({ success: false }), {
       status: 500,
     });

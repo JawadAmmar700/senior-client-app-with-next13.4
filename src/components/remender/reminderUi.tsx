@@ -24,14 +24,14 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
           }
         );
         if (response.ok) {
-          resolve("Recording deleted successfully");
+          resolve("Reminder deleted successfully");
         } else {
           reject("Something went wrong, please try again");
         }
       }),
       {
         loading: "Deleting...",
-        success: <b>Recording deleted successfully</b>,
+        success: <b>Reminder deleted successfully</b>,
         error: <b>Something went wrong, please try again</b>,
       }
     );
