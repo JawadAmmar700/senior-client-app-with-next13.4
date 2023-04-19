@@ -47,6 +47,15 @@ const CalendarTodo = () => {
       );
     }
 
+    console.log({
+      title,
+      description,
+      date: formattedDate,
+      time: Math.floor(reminderTime.getTime() / 1000),
+      userId: session?.user?.id,
+      timeString: clock?.toString(),
+    });
+
     const response = await fetch(`/api/reminders`, {
       method: "POST",
       headers: {
