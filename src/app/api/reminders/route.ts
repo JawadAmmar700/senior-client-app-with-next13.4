@@ -14,6 +14,7 @@ export async function POST(request: Request) {
   const { date, description, time, title, userId, timeString } =
     (await request.json()) as POSTBody;
   try {
+    console.log("passed here -1");
     const todo = await prisma.reminder.create({
       data: {
         title,
@@ -34,8 +35,10 @@ export async function POST(request: Request) {
         },
       },
     });
+    console.log("passed here -2");
 
     await createCronJob(todo);
+    console.log("passed here -3");
 
     return new Response("Reminder created", {
       status: 200,
