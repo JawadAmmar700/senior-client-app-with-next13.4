@@ -1,4 +1,3 @@
-import { createCronJob } from "@/lib/cron-job";
 import prisma from "@/lib/prisma";
 
 type POSTBody = {
@@ -35,7 +34,18 @@ export async function POST(request: Request) {
       },
     });
 
-    await createCronJob(todo);
+    //   createCronJob(todo);
+
+    const cron = await fetch(`${process.env.SERVER_APP}/cron-job`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        todo,
+      }),
+    });
+    if (!cron.ok) throw new Error("Cron job not created");
 
     return new Response("Reminder created", {
       status: 200,
