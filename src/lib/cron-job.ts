@@ -31,6 +31,7 @@ const dateFromString = (dateString: string, timeString: string) => {
   const day = date.getDate().toString().padStart(2, "0"); // add zero-padding to day
   const formattedDate = `${year}-${month}-${day}`;
   const scheduledTime = new Date(`${formattedDate}T${timeString}`);
+  console.log(scheduledTime);
   return scheduledTime;
 };
 
@@ -50,6 +51,8 @@ export const createCronJob = async (
   }
 ) => {
   const cronSchedule = createSchedule(todo.date, todo.unix);
+  console.log(cronSchedule);
+
   cron.schedule(cronSchedule, async () => {
     await prisma.reminder.update({
       where: {
