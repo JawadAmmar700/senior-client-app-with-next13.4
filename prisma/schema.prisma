@@ -70,9 +70,10 @@ model Reminder {
   title String
   description String
   date String
-  time Int
+  unix Int
   isDone Boolean
   notificationSent Boolean
+  time String
   userId   String  @db.ObjectId
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

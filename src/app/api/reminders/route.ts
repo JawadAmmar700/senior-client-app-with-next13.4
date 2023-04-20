@@ -5,13 +5,13 @@ type POSTBody = {
   title: string;
   description: string;
   date: string;
-  time: number;
+  unix: number;
   userId: string;
-  timeString: string;
+  time: string;
 };
 
 export async function POST(request: Request) {
-  const { date, description, time, title, userId, timeString } =
+  const { date, description, unix, title, userId, time } =
     (await request.json()) as POSTBody;
   try {
     const todo = await prisma.reminder.create({
@@ -19,10 +19,11 @@ export async function POST(request: Request) {
         title,
         description,
         date,
-        time,
+        unix,
         isDone: false,
         userId,
         notificationSent: false,
+        time,
       },
       include: {
         user: {
@@ -51,7 +52,6 @@ export async function PUT(request: Request) {
 }
 export async function DELETE(request: Request) {
   const { reminderId }: { reminderId: string } = await request.json();
-  console.log(reminderId);
   try {
     await prisma.reminder.delete({
       where: {

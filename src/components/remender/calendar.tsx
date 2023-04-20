@@ -58,8 +58,11 @@ const CalendarTodo = () => {
           title,
           description,
           date: formattedDate,
-          time: Math.floor(reminderTime.getTime() / 1000),
+          unix: Math.floor(reminderTime.getTime() / 1000),
           userId: session?.user?.id,
+          time:
+            clock?.toString() +
+            `${reminderTime.getHours() >= 12 ? "PM" : "AM"}`,
         }),
       }
     );

@@ -49,7 +49,7 @@ export const createCronJob = async (
     };
   }
 ) => {
-  const cronSchedule = createSchedule(todo.date, todo.time);
+  const cronSchedule = createSchedule(todo.date, todo.unix);
   cron.schedule(cronSchedule, async () => {
     await prisma.reminder.update({
       where: {
