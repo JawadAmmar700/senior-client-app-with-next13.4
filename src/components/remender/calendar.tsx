@@ -47,29 +47,22 @@ const CalendarTodo = () => {
       );
     }
 
-    console.log({
-      title,
-      description,
-      date: formattedDate,
-      time: Math.floor(reminderTime.getTime() / 1000),
-      userId: session?.user?.id,
-      timeString: clock?.toString(),
-    });
-
-    const response = await fetch(`/api/reminders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        date: formattedDate,
-        time: Math.floor(reminderTime.getTime() / 1000),
-        userId: session?.user?.id,
-        timeString: clock?.toString(),
-      }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          date: formattedDate,
+          time: Math.floor(reminderTime.getTime() / 1000),
+          userId: session?.user?.id,
+        }),
+      }
+    );
     if (!response.ok) {
       throw new Error("Failed to create reminder");
     }
