@@ -231,7 +231,7 @@ const CalendarTodo = () => {
               htmlFor=""
               className="align-start text-sm lg:text-lg font-bold"
             >
-              Scheduale a Valid Date
+              Scheduale a Proper Date
             </label>
             <div className="w-full h-auto">
               <Calendar
@@ -247,7 +247,7 @@ const CalendarTodo = () => {
               htmlFor=""
               className="align-start text-sm lg:text-lg font-bold"
             >
-              Scheduale a Time
+              Scheduale a valid Time
             </label>
             <TimePicker
               onChange={onTimerChanged}
