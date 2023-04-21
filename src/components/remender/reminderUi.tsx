@@ -3,10 +3,30 @@ import { useTransition } from "react";
 import { Reminder } from "@prisma/client";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { BsTrash3 } from "react-icons/bs";
+import { BiEdit } from "react-icons/bi";
+import CalendarTodo from "./calendar";
+import { useDispatch } from "react-redux";
+import {
+  setReminder,
+  setType,
+} from "@/store/features/app-state/calendar-state";
 
 const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  const dispatch = useDispatch();
+
+  const handleReminderUpdate = () => {
+    dispatch(setType(true));
+    const obj = {
+      ...reminder,
+      prevClock: reminder.time,
+      prevCalendar: reminder.date,
+    };
+    dispatch(setReminder(obj));
+  };
 
   const handleReminderDelete = async () => {
     toast.promise(
@@ -40,14 +60,35 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
     });
   };
   return (
-    <div
-      className={`${isPending ? "opacity-80 animate-pulse" : "opacity-100"}`}
-    >
-      <h3>{reminder.title}</h3>
-      <p>{reminder.description}</p>
-      <p>{reminder.time}</p>
-      <button onClick={handleReminderDelete}>delete</button>
-    </div>
+    <>
+      <div className="stats shadow ml-4 mt-4">
+        <div className="stat">
+          <div className="stat-title">
+            {reminder.date} at {reminder.time}
+          </div>
+          <div className="stat-value text-xl">{reminder.title}</div>
+          <div className="stat-desc">{reminder.description}.</div>
+          <div className="stat-actions space-x-3">
+            <button
+              className="btn btn-error hover:bg-opacity-90"
+              onClick={() => handleReminderDelete()}
+            >
+              <BsTrash3 className="text-white" />
+            </button>
+            <label
+              htmlFor="my-modal-6"
+              onClick={() => handleReminderUpdate()}
+              className="btn btn-info hover:bg-opacity-90"
+            >
+              <BiEdit className="text-white" />
+            </label>
+            {/* <button className="btn btn-info hover:bg-opacity-90"> */}
+            {/* </button> */}
+          </div>
+        </div>
+      </div>
+      {/* <CalendarTodo /> */}
+    </>
   );
 };
 

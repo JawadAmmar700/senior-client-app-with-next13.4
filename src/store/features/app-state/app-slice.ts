@@ -16,7 +16,7 @@ export interface AppState {
   userMute: string[];
   userScreenShare: string[];
   chat: Chat[];
-  recordingState: boolean
+  recordingState: boolean;
 }
 
 const initialState: AppState = {
@@ -34,7 +34,7 @@ const initialState: AppState = {
   userMute: [],
   userScreenShare: [],
   chat: [],
-  recordingState: false
+  recordingState: false,
 };
 
 export const AppSlice = createSlice({
@@ -85,7 +85,7 @@ export const AppSlice = createSlice({
     },
     setRecordingState: (state) => {
       state.recordingState = !state.recordingState;
-    }
+    },
   },
 });
 
@@ -105,7 +105,7 @@ export const {
   setUserMute,
   setUserScreenShare,
   setChat,
-  setRecordingState
+  setRecordingState,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

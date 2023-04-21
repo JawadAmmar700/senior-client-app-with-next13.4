@@ -24,6 +24,7 @@ export default function Home() {
   const { openChat, streams } = useSelector(
     (state: RootState) => state.appState
   );
+
   const dispatch = useDispatch();
   const { data: session } = useSession();
   usePeerEventListener(peer);
