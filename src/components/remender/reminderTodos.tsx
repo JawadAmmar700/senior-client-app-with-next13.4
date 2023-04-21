@@ -2,7 +2,6 @@ import React from "react";
 import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
 import ReminderUi from "./reminderUi";
-import { Reminder } from "@prisma/client";
 import prisma from "@/lib/prisma";
 
 const getReminders = async () => {
@@ -24,15 +23,17 @@ const getReminders = async () => {
 const ReminderTodos = async () => {
   const reminders: any = await getReminders();
   return (
-    <div>
-      {reminders?.length > 0 ? (
-        reminders.map((reminder: any) => (
-          <ReminderUi reminder={reminder} key={reminder.id} />
-        ))
-      ) : (
-        <div>No reminders</div>
-      )}
-    </div>
+    <>
+      <div className="mt-5 lg:px-32 md:px-12 p-2 flex-wrap">
+        {reminders?.length > 0 ? (
+          reminders.map((reminder: any) => (
+            <ReminderUi reminder={reminder} key={reminder.id} />
+          ))
+        ) : (
+          <div>No reminders</div>
+        )}
+      </div>
+    </>
   );
 };
 

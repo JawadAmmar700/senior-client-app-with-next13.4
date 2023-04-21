@@ -1,14 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { AppSlice } from "./features/app-state/app-slice";
+import AppSlice from "./features/app-state/app-slice";
+import CalendarSlice from "./features/app-state/calendar-state";
 
 export const store = configureStore({
   reducer: {
-    appState: AppSlice.reducer,
+    appState: AppSlice,
+    calendarState: CalendarSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

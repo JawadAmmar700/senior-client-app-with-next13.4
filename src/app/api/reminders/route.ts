@@ -9,6 +9,18 @@ type POSTBody = {
   time: string;
 };
 
+type PUTBody = {
+  todoId: string;
+  title: string;
+  description: string;
+  date: string;
+  unix: number;
+  userId: string;
+  time: string;
+  notificationSent: boolean;
+  isDone: boolean;
+};
+
 export async function POST(request: Request) {
   const { date, description, unix, title, userId, time } =
     (await request.json()) as POSTBody;
@@ -59,7 +71,65 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const res = await request.json();
+  const {
+    date,
+    description,
+    unix,
+    title,
+    userId,
+    time,
+    todoId,
+    isDone,
+    notificationSent,
+  } = (await request.json()) as PUTBody;
+
+  try {
+    const todo = await prisma.reminder.update({
+      where: {
+        id: todoId,
+      },
+      data: {
+        title,
+        description,
+        date,
+        unix,
+        isDone,
+        userId,
+        notificationSent,
+        time,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    const cron = await fetch(`${process.env.SERVER_APP}/reminder-update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        todo,
+      }),
+    });
+
+    if (!cron.ok) {
+      throw new Error(cron.statusText);
+    }
+
+    return new Response("Reminder Updated", {
+      status: 200,
+    });
+  } catch (error) {
+    return new Response("Something went wrong, reminder is not updated", {
+      status: 400,
+    });
+  }
 }
 export async function DELETE(request: Request) {
   const { reminderId }: { reminderId: string } = await request.json();
