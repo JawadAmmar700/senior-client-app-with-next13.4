@@ -80,6 +80,7 @@ const CalendarTodo = () => {
         error: <b>Failed to create reminder</b>,
       }
     );
+
     router.refresh();
   };
 
@@ -225,19 +226,21 @@ const CalendarTodo = () => {
     <div className="w-full ">
       <input type="checkbox" id="my-modal-6" className="modal-toggle" />
       <div className="modal modal-bottom sm:modal-middle ">
-        <div className="modal-box items-center flex flex-col space-y-3 hide-scroll-bar ">
-          <div className="w-full flex flex-col space-y-2">
+        <div className="modal-box flex flex-col space-y-3 hide-scroll-bar w-auto">
+          <div className="flex flex-col space-y-2">
             <label
               htmlFor=""
               className="align-start text-sm lg:text-lg font-bold"
             >
-              Scheduale a Proper Date
+              Schedule a Proper Date
             </label>
             <div className="w-full h-auto">
               <Calendar
                 onChange={onCalendarChanged}
                 value={isEdit ? new Date(reminder.date) : calendar}
-                className={"rounded-lg shadow-xl w-full border-none"}
+                className={
+                  "rounded-lg shadow-xl border-none border-white mx-auto"
+                }
                 tileClassName="rounded-lg"
               />
             </div>
@@ -247,16 +250,16 @@ const CalendarTodo = () => {
               htmlFor=""
               className="align-start text-sm lg:text-lg font-bold"
             >
-              Scheduale a valid Time
+              Schedule a valid Time
             </label>
             <TimePicker
               onChange={onTimerChanged}
               value={isEdit ? reminder.time.slice(0, -2) : clock}
-              className={["rounded-lg shadow-xl outline-none border-none"]}
+              className={["rounded-lg shadow-xl"]}
               disableClock={true}
             />
           </div>
-          <div className="form-control w-full max-w-sm">
+          <div className="form-control w-full ">
             <label className="label">
               <span className="label-text text-sm lg:text-lg font-bold">
                 Reminder Title*
@@ -270,7 +273,7 @@ const CalendarTodo = () => {
               value={isEdit ? reminder.title : title}
             />
           </div>
-          <div className="form-control w-full max-w-sm">
+          <div className="form-control w-full ">
             <label className="label">
               <span className="label-text text-sm lg:text-lg font-bold">
                 Reminder Description*
@@ -284,7 +287,7 @@ const CalendarTodo = () => {
             />
           </div>
 
-          <div className="modal-action justify-start">
+          <div className="modal-action justify-start mx-auto">
             {isEdit ? (
               <button
                 onClick={handleReminderUpdate}

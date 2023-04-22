@@ -139,6 +139,21 @@ export async function DELETE(request: Request) {
         id: reminderId,
       },
     });
+
+    const cron = await fetch(`${process.env.SERVER_APP}/reminder-deleted`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        todoId: reminderId,
+      }),
+    });
+
+    if (!cron.ok) {
+      throw new Error(cron.statusText);
+    }
+
     return new Response("Reminder deleted", {
       status: 200,
     });

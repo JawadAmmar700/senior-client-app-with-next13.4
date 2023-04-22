@@ -5,12 +5,12 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { BsTrash3 } from "react-icons/bs";
 import { BiEdit } from "react-icons/bi";
-import CalendarTodo from "./calendar";
 import { useDispatch } from "react-redux";
 import {
   setReminder,
   setType,
 } from "@/store/features/app-state/calendar-state";
+import { MdDoneOutline } from "react-icons/md";
 
 const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
   const [isPending, startTransition] = useTransition();
@@ -60,35 +60,45 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
     });
   };
   return (
-    <>
-      <div className="stats shadow ml-4 mt-4">
-        <div className="stat">
-          <div className="stat-title">
-            {reminder.date} at {reminder.time}
+    <div
+      className={`indicator w-full rounded-lg ${isPending && "animate-pulse"}`}
+    >
+      {reminder.isDone && (
+        <div className="indicator-item indicator-top">
+          <div className="rounded-full p-2 bg-green-500">
+            <MdDoneOutline className="text-white h-6 w-6" />
           </div>
-          <div className="stat-value text-xl">{reminder.title}</div>
-          <div className="stat-desc">{reminder.description}.</div>
-          <div className="stat-actions space-x-3">
+        </div>
+      )}
+      <div className=" shadow-xl w-full rounded-lg">
+        <div className="flex justify-between items-center p-3 rounded-lg">
+          <div className="flex flex-col space-y-2 ">
+            <div className="stat-title">
+              {reminder.date} at {reminder.time}
+            </div>
+            <div className="text-lg font-bold">{reminder.title}</div>
+            <div className="break-words">{reminder.description}.</div>
+          </div>
+          <div className="flex items-center space-x-4">
             <button
               className="btn btn-error hover:bg-opacity-90"
               onClick={() => handleReminderDelete()}
             >
               <BsTrash3 className="text-white" />
             </button>
-            <label
-              htmlFor="my-modal-6"
-              onClick={() => handleReminderUpdate()}
-              className="btn btn-info hover:bg-opacity-90"
-            >
-              <BiEdit className="text-white" />
-            </label>
-            {/* <button className="btn btn-info hover:bg-opacity-90"> */}
-            {/* </button> */}
+            {!reminder.isDone && (
+              <label
+                htmlFor="my-modal-6"
+                onClick={() => handleReminderUpdate()}
+                className="btn btn-info hover:bg-opacity-90"
+              >
+                <BiEdit className="text-white" />
+              </label>
+            )}
           </div>
         </div>
       </div>
-      {/* <CalendarTodo /> */}
-    </>
+    </div>
   );
 };
 
