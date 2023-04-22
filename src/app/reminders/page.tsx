@@ -1,7 +1,7 @@
-import CalendarTodo from "@/components/remender/calendar";
-import Header from "@/components/remender/header";
-import ReminderTodos from "@/components/remender/reminderTodos";
-import Spinner from "@/components/remender/spinner";
+import CalendarTodo from "@/components/reminder/calendar";
+import Header from "@/components/reminder/header";
+import ReminderTodos from "@/components/reminder/reminderTodos";
+import Spinner from "@/components/reminder/spinner";
 import { Suspense } from "react";
 
 const Page = async () => {

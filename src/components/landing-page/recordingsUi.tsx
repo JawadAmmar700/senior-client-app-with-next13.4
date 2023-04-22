@@ -6,12 +6,6 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-type ReocoordingUIProps = {
-  id: string;
-  file_name: string;
-  video_url: string;
-};
-
 const RecordingsUi = ({ recording }: { recording: ReocoordingUIProps }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -20,9 +14,9 @@ const RecordingsUi = ({ recording }: { recording: ReocoordingUIProps }) => {
     toast.promise(
       new Promise(async (resolve, reject) => {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_APP_API}/api/delete-record`,
+          `${process.env.NEXT_PUBLIC_APP_API}/api/recordings`,
           {
-            method: "POST",
+            method: "DELETE",
             headers: {
               "Content-Type": "application/json",
             },

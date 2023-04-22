@@ -1,40 +1,34 @@
-import { Reminder } from "@prisma/client";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-type ReminderType = {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  unix: number;
-  isDone: boolean;
-  notificationSent: boolean;
-  time: string;
-  userId: string;
-  prevClock: string;
-  prevCalendar: string;
-};
-
 export interface CalendarState {
   reminder: ReminderType;
+  state: State;
   isEdit: boolean;
 }
 
+export const reminderObj = {
+  id: "",
+  title: "",
+  description: "",
+  date: "",
+  unix: 0,
+  isDone: false,
+  notificationSent: false,
+  time: "",
+  userId: "",
+};
+
+export const stateObj = {
+  clock: "00:00",
+  calendar: new Date(),
+  title: "",
+  description: "",
+};
+
 const initialState: CalendarState = {
-  reminder: {
-    id: "",
-    title: "",
-    description: "",
-    date: "",
-    unix: 0,
-    isDone: false,
-    notificationSent: false,
-    time: "",
-    userId: "",
-    prevClock: "",
-    prevCalendar: "",
-  },
+  reminder: reminderObj,
+  state: stateObj,
   isEdit: false,
 };
 
@@ -48,10 +42,12 @@ export const CalendarSlice = createSlice({
     setType: (state, action: PayloadAction<boolean>) => {
       state.isEdit = action.payload;
     },
+    setState: (state, action: PayloadAction<State>) => {
+      state.state = action.payload;
+    },
   },
 });
 
-// Action creators are generated for each case reducer function
-export const { setReminder, setType } = CalendarSlice.actions;
+export const { setReminder, setType, setState } = CalendarSlice.actions;
 
 export default CalendarSlice.reducer;

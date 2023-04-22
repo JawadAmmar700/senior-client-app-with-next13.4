@@ -1,29 +1,9 @@
+import { CronJobServer } from "@/lib/fetchers";
 import prisma from "@/lib/prisma";
-
-type POSTBody = {
-  title: string;
-  description: string;
-  date: string;
-  unix: number;
-  userId: string;
-  time: string;
-};
-
-type PUTBody = {
-  todoId: string;
-  title: string;
-  description: string;
-  date: string;
-  unix: number;
-  userId: string;
-  time: string;
-  notificationSent: boolean;
-  isDone: boolean;
-};
 
 export async function POST(request: Request) {
   const { date, description, unix, title, userId, time } =
-    (await request.json()) as POSTBody;
+    (await request.json()) as ReminderPostType;
   try {
     const todo = await prisma.reminder.create({
       data: {
@@ -45,6 +25,8 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    await CronJobServer({ todo }, "POST", "");
 
     const cron = await fetch(`${process.env.SERVER_APP}`, {
       method: "POST",
@@ -81,7 +63,7 @@ export async function PUT(request: Request) {
     todoId,
     isDone,
     notificationSent,
-  } = (await request.json()) as PUTBody;
+  } = (await request.json()) as ReminderPutType;
 
   try {
     const todo = await prisma.reminder.update({
@@ -108,19 +90,7 @@ export async function PUT(request: Request) {
       },
     });
 
-    const cron = await fetch(`${process.env.SERVER_APP}/reminder-update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        todo,
-      }),
-    });
-
-    if (!cron.ok) {
-      throw new Error(cron.statusText);
-    }
+    await CronJobServer({ todo }, "PUT", "/reminder-update");
 
     return new Response("Reminder Updated", {
       status: 200,
@@ -140,19 +110,7 @@ export async function DELETE(request: Request) {
       },
     });
 
-    const cron = await fetch(`${process.env.SERVER_APP}/reminder-deleted`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        todoId: reminderId,
-      }),
-    });
-
-    if (!cron.ok) {
-      throw new Error(cron.statusText);
-    }
+    await CronJobServer({ todoId: reminderId }, "DELETE", "/reminder-deleted");
 
     return new Response("Reminder deleted", {
       status: 200,

@@ -1,7 +1,5 @@
-import React from "react";
 import { BsPlus } from "react-icons/bs";
 import { MdArrowBackIosNew } from "react-icons/md";
-import CalendarTodo from "./calendar";
 import Link from "next/link";
 
 const Header = () => {

@@ -38,7 +38,7 @@ const RecordingTracker = () => {
       new Promise(async (resolve, reject) => {
         const video_path = await convertBlobToIpfs(videoUrl, file_name);
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_APP_API}/api/save-recordings`,
+          `${process.env.NEXT_PUBLIC_APP_API}/api/recordings`,
           {
             method: "POST",
             headers: {

@@ -8,6 +8,7 @@ import { BiEdit } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import {
   setReminder,
+  setState,
   setType,
 } from "@/store/features/app-state/calendar-state";
 import { MdDoneOutline } from "react-icons/md";
@@ -20,12 +21,15 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
 
   const handleReminderUpdate = () => {
     dispatch(setType(true));
-    const obj = {
-      ...reminder,
-      prevClock: reminder.time,
-      prevCalendar: reminder.date,
-    };
-    dispatch(setReminder(obj));
+    dispatch(setReminder(reminder));
+    dispatch(
+      setState({
+        title: reminder.title,
+        description: reminder.description,
+        calendar: new Date(reminder.date),
+        clock: reminder.time.slice(0, -2),
+      })
+    );
   };
 
   const handleReminderDelete = async () => {
@@ -60,9 +64,7 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
     });
   };
   return (
-    <div
-      className={`indicator w-full rounded-lg ${isPending && "animate-pulse"}`}
-    >
+    <div className="indicator w-full rounded-lg">
       {reminder.isDone && (
         <div className="indicator-item indicator-top">
           <div className="rounded-full p-2 bg-green-500">
@@ -70,7 +72,11 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
           </div>
         </div>
       )}
-      <div className=" shadow-xl w-full rounded-lg">
+      <div
+        className={`shadow-xl w-full rounded-lg ${
+          isPending && "animate-pulse opacity-50"
+        }`}
+      >
         <div className="flex justify-between items-center p-3 rounded-lg">
           <div className="flex flex-col space-y-2 ">
             <div className="stat-title">
