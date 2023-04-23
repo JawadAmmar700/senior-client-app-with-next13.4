@@ -13,14 +13,16 @@ const Header = () => {
   return (
     <div className="sticky inset-0 z-50  bg-white shadow-xl rounded-lg">
       <div className="flex justify-between p-2 items-center ">
-        <div className="flex space-x-5 items-center">
+        <div className="flex space-x-2 items-center">
           <Link
             href="/"
             className="btn btn-square bg-indigo-300 hover:bg-indigo-400 border-none"
           >
             <MdArrowBackIosNew className="w-5 h-5" />
           </Link>
-          <h1 className="text-md lg:text-2xl font-bold">{dateString}</h1>
+          <h1 className="text-xs md:text-md lg:text-2xl font-bold">
+            {dateString}
+          </h1>
         </div>
         <label
           htmlFor="my-modal-6"
