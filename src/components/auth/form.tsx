@@ -1,8 +1,9 @@
 "use client";
 import { signIn } from "next-auth/react";
 import React, { useState } from "react";
+import { fetcher } from "@/lib/fetchers";
 
-import { Formik, Form, Field } from "formik";
+import { Formik, Form as FormConponent, Field } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
 
@@ -11,14 +12,56 @@ import { Toaster, toast } from "react-hot-toast";
 
 const merriweather_Sans = Merriweather_Sans({ subsets: ["latin"] });
 
-const FormComponent = ({ provider }: FormProps) => {
+const Form = ({ provider, type }: FormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmition = async (values: {
-    email: string;
-    password: string;
-  }) => {
+  const handleSignUpSubmition = async (values: HandleSubmitProps) => {
+    if (!values.email || !values.password || !values.username) {
+      return toast.error("Please fill all the fields");
+    }
+    setIsSubmitting(true);
+    const user = await fetcher({
+      url: `${process.env.NEXT_PUBLIC_APP_API}/api/register-user`,
+      obj: values,
+    });
+
+    if (user.success) {
+      const done = await signIn(provider.id, {
+        callbackUrl: "/",
+        ...values,
+      });
+      if (done?.ok) {
+        setIsSubmitting(false);
+      }
+      return;
+    } else {
+      setIsSubmitting(false);
+      return toast.error("User already exists");
+    }
+  };
+
+  const SignUpSchema = Yup.object().shape({
+    username: Yup.string()
+      .min(2, "Too Short!")
+      .max(70, "Too Long!")
+      .required("Required"),
+    email: Yup.string().email("Invalid email").required("Required"),
+    password: Yup.string()
+      .min(8, "Too Short!")
+      .max(70, "Too Long!")
+      .required("Required"),
+  });
+
+  const SigninSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid email").required("Required"),
+    password: Yup.string()
+      .min(8, "Too Short!")
+      .max(70, "Too Long!")
+      .required("Required"),
+  });
+
+  const handleSignInSubmition = async (values: HandleSubmitProps) => {
     if (!values.email || !values.password)
       return toast.error("Please fill all the fields");
     setIsSubmitting(true);
@@ -31,23 +74,21 @@ const FormComponent = ({ provider }: FormProps) => {
     }
   };
 
-  const SigninSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email").required("Required"),
-    password: Yup.string()
-      .min(8, "Too Short!")
-      .max(70, "Too Long!")
-      .required("Required"),
-  });
-
   return (
     <div className="w-full max-w-xl px-10 lg:max-w-md">
       <Formik
-        initialValues={{ email: "", password: "" }}
-        validationSchema={SigninSchema}
-        onSubmit={handleSubmition}
+        initialValues={
+          type === "signup"
+            ? { email: "", username: "", password: "" }
+            : { email: "", password: "" }
+        }
+        validationSchema={type === "signup" ? SignUpSchema : SigninSchema}
+        onSubmit={
+          type === "signup" ? handleSignUpSubmition : handleSignInSubmition
+        }
       >
         {({ errors, touched, values }) => (
-          <Form>
+          <FormConponent>
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-bold">Email*</span>
@@ -61,7 +102,24 @@ const FormComponent = ({ provider }: FormProps) => {
                 className="input input-bordered w-full  placeholder:text-xs bg-[#F7FAFC]"
                 placeholder="****@example.com"
               />
-
+              {type === "signup" && (
+                <>
+                  <label className="label">
+                    <span className="label-text font-bold">Username*</span>
+                    {errors.username && touched.username ? (
+                      <div className="text-xs text-red-500">
+                        {errors.username}
+                      </div>
+                    ) : null}
+                  </label>
+                  <Field
+                    type="text"
+                    name="username"
+                    className="input input-bordered w-full  placeholder:text-xs bg-[#F7FAFC]"
+                    placeholder="username"
+                  />
+                </>
+              )}
               <label className="label">
                 <span className="label-text font-bold">Password*</span>
                 {errors.password && touched.password ? (
@@ -88,10 +146,14 @@ const FormComponent = ({ provider }: FormProps) => {
               </div>
             </div>
             <button
-              onClick={() => handleSubmition(values)}
+              onClick={() =>
+                type === "signup"
+                  ? handleSignUpSubmition(values)
+                  : handleSignInSubmition(values)
+              }
               type="submit"
               disabled={isSubmitting}
-              className="bg-blue-500 text-black  px-10 mx-auto py-3 rounded-lg flex hover:bg-blue-500/90 items-center space-x-2 mt-10 shadow-lg shadow-blue-400 cursor-pointer"
+              className="bg-blue-500 text-black px-10 mx-auto py-3 hover:bg-blue-500/90 rounded-lg flex shadow-blue-400 items-center space-x-2 mt-10 shadow-lg cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -107,13 +169,13 @@ const FormComponent = ({ provider }: FormProps) => {
                     htmlFor="signin"
                     className={`${merriweather_Sans.className} font-bold text-xs cursor-pointer text-white`}
                   >
-                    Signing in
+                    {type === "signup" ? "Signing Up" : "Signing In"}
                   </label>
                 </>
               ) : (
                 <>
                   <Image
-                    src="/svgs/sign-in.svg"
+                    src="/svgs/sign-up.svg"
                     alt="auth-hero"
                     width={25}
                     height={25}
@@ -122,12 +184,13 @@ const FormComponent = ({ provider }: FormProps) => {
                     htmlFor="signin"
                     className={`${merriweather_Sans.className} font-bold text-xs cursor-pointer text-white`}
                   >
-                    Sign in with {provider.name}
+                    {type === "signup" ? "Sign up" : "Sign in"} with{" "}
+                    {provider.name}
                   </label>
                 </>
               )}
             </button>
-          </Form>
+          </FormConponent>
         )}
       </Formik>
       <Toaster position="top-center" reverseOrder={false} />
@@ -135,4 +198,4 @@ const FormComponent = ({ provider }: FormProps) => {
   );
 };
 
-export default FormComponent;
+export default Form;

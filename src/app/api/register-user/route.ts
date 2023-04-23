@@ -8,12 +8,11 @@ export async function POST(request: Request) {
       email: email,
     },
   });
-  if (userEmailExists)
-    return new Response("Email already exists", { status: 404 });
+  if (userEmailExists) return new Response(JSON.stringify({ success: false }));
   const hashedPassword = await bcryptjs.hash(password, 10);
   const user = await prisma.user.create({
     data: {
-     name: username,
+      name: username,
       email,
       password: hashedPassword,
       image,

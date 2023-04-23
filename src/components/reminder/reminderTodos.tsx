@@ -11,6 +11,9 @@ const getReminders = async () => {
       where: {
         userId: session.user.id,
       },
+      orderBy: {
+        id: "desc",
+      },
     });
     return todos;
   } catch (error) {

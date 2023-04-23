@@ -1,10 +1,7 @@
 "use client";
 import { ClientSafeProvider, signIn } from "next-auth/react";
 import Image from "next/image";
-import React from "react";
-import { Merriweather_Sans } from "next/font/google";
 
-const merriweather_Sans = Merriweather_Sans({ subsets: ["latin"] });
 type Props = {
   provider: ClientSafeProvider;
 };
@@ -16,10 +13,7 @@ const Button = ({ provider }: Props) => {
       onClick={() => signIn(provider.id, { callbackUrl: "/" })}
     >
       <Image src="/svgs/google.svg" alt="auth-hero" width={25} height={25} />
-      <label
-        htmlFor="signin"
-        className={`${merriweather_Sans.className} font-bold cursor-pointer`}
-      >
+      <label htmlFor="signin" className={`font-bold cursor-pointer`}>
         Sign in with {provider.name}
       </label>
     </button>

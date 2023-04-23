@@ -5,6 +5,7 @@ import FormComponent from "./signup-form";
 import { Merriweather_Sans } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
+import Form from "@/components/auth/form";
 
 export const dynamic = "force-static";
 
@@ -44,7 +45,8 @@ const Page = async () => {
           >
             Or sign up with email
           </div>
-          <FormComponent provider={providers[1]} />
+          {/* <FormComponent provider={providers[1]} /> */}
+          <Form provider={providers[1]} type="signup" />
           <p
             className={`${merriweather_Sans.className} mt-5 font-bold  text-xs`}
           >

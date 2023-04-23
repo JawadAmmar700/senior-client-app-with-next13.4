@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcryptjs from "bcryptjs";
 
 import prisma from "@/lib/prisma";
@@ -109,7 +109,7 @@ export const authOptions = {
           accessToken: account.access_token,
           accessTokenExpires: Date.now() + account.expires_at * 1000,
           refreshToken: account.refresh_token,
-          user
+          user,
         };
       }
 
@@ -141,7 +141,7 @@ export const authOptions = {
         session.error = token.error;
       }
 
-      return session ;
+      return session;
     },
     async signIn({ user, account }) {
       if (account?.provider === "credentials") {

@@ -20,12 +20,13 @@ type FetcherProps = {
 
 type HandleSubmitProps = {
   email: string;
-  username: string;
+  username?: string;
   password: string;
 };
 
 type FormProps = {
   provider: ClientSafeProvider;
+  type: string;
 };
 
 type User = {

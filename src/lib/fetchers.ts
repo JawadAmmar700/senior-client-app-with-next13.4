@@ -26,7 +26,7 @@ const fetcher = async ({ url, obj }: FetcherProps) => {
         image: `https://source.boringavatars.com/pixel/120/${obj.username}`,
       }),
     });
-    if (!res.ok) return Error(res.statusText);
+
     const data = await res.json();
     return data;
   } catch (error: any) {

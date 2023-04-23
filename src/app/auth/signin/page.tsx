@@ -5,6 +5,7 @@ import FormComponent from "./signin-form";
 import Image from "next/image";
 import { Merriweather_Sans } from "next/font/google";
 import Link from "next/link";
+import Form from "@/components/auth/form";
 
 const merriweather_Sans = Merriweather_Sans({ subsets: ["latin"] });
 
@@ -42,7 +43,8 @@ const Page = async () => {
           >
             Or sign in with email
           </div>
-          <FormComponent provider={providers[1]} />
+          {/* <FormComponent provider={providers[1]} /> */}
+          <Form provider={providers[1]} type="signin" />
           <p
             className={`${merriweather_Sans.className} mt-5 font-bold  text-xs`}
           >
