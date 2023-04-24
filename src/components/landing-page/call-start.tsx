@@ -26,7 +26,7 @@ const CallStart = () => {
       meeting_id: meetingId,
     });
 
-    router.push("/chat?" + searchParams);
+    router.push(`/chat?${searchParams}`);
   };
 
   const handleJoinMeeting = () => {
@@ -42,7 +42,7 @@ const CallStart = () => {
       meeting_id: meetingId,
     });
 
-    router.push("/chat?" + searchParams);
+    router.push(`/chat?${searchParams}`);
   };
 
   return (
