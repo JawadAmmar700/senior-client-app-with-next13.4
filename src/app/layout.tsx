@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
-import { headers } from "next/headers";
+// import { headers } from "next/headers";
 import AuthContext from "@/lib/providers/auth-context";
-import { getSession } from "@/lib/auth-session";
+// import { getSession } from "@/lib/auth-session";
 import ReduxProvider from "@/lib/providers/redux-provider";
 
 export const metadata = {
@@ -14,11 +14,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession(headers().get("cookie") ?? "");
+  // const session = await getSession(headers().get("cookie") ?? "");
+  
   return (
     <html lang="en">
       <body>
-        <AuthContext session={session}>
+        <AuthContext >
           <ReduxProvider>{children}</ReduxProvider>
         </AuthContext>
       </body>

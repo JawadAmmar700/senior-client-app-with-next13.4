@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth,{type NextAuthOptions} from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -15,7 +15,7 @@ if (!process.env.NEXTAUTH_SECRET)
 if (!process.env.NEXTAUTH_JWT_SECRET)
   throw new Error("NEXTAUTH_JWT_SECRET is not defined");
 
-async function refreshAccessToken(token) {
+async function refreshAccessToken(token:any) {
   try {
     const url =
       "https://oauth2.googleapis.com/token?" +
@@ -53,7 +53,7 @@ async function refreshAccessToken(token) {
   }
 }
 
-export const authOptions = {
+export const authOptions:NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: `${process.env.NEXTAUTH_SECRET}`,
   providers: [
@@ -73,8 +73,8 @@ export const authOptions = {
         username: { label: "Username", type: "text", placeholder: "username" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        const userExists = await prisma.user.findUnique({
+      async authorize(credentials:any) {
+        const userExists:any = await prisma.user.findUnique({
           where: {
             email: credentials.email,
           },
@@ -103,7 +103,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }:any) {
       if (account?.provider === "google") {
         return {
           accessToken: account.access_token,
@@ -128,7 +128,7 @@ export const authOptions = {
       if (account?.provider === "google") return refreshAccessToken(token);
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }:any) {
       if (token.user) {
         session.user = {
           id: token.user.id,
@@ -143,7 +143,7 @@ export const authOptions = {
 
       return session;
     },
-    async signIn({ user, account }) {
+    async signIn({ user, account }:any) {
       if (account?.provider === "credentials") {
         if (user) {
           return true;
@@ -167,4 +167,5 @@ export const authOptions = {
   },
 };
 
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
