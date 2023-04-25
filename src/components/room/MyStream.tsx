@@ -57,7 +57,6 @@ const MyStream = ({
         ref={myVideoStreamRef}
         autoPlay
         playsInline
-        // muted
         className="w-full h-full object-cover -z-30  rounded-lg"
       />
       {!myCamera && (

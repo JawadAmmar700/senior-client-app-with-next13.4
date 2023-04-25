@@ -1,29 +1,45 @@
+import {
+  setElapsedTime,
+  setRecordingState,
+} from "@/store/features/app-state/app-slice";
+import { AnyAction, Dispatch } from "@reduxjs/toolkit";
 import Moralis from "moralis";
+import { toast } from "react-hot-toast";
 
 Moralis.start({
   apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
 });
 
 let mediaRecorder: MediaRecorder;
+let mixedStream: MediaStream;
 let chunks: Blob[] = [];
 
-const startRecording = (): Promise<string> => {
+const startRecording = (dispatch: Dispatch<AnyAction>): Promise<string> => {
   return new Promise(async (resolve, reject) => {
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          cursor: "always",
-          mediaSource: "screen",
-        } as MediaTrackConstraints,
-        audio: true,
+        video: true,
+      });
+      dispatch(setRecordingState());
+
+      stream.getVideoTracks()[0].onended = async () => {
+        await stopRecording(dispatch);
+      };
+
+      const audio = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        },
       });
 
-      // handle on cancel events
-      stream.addEventListener("cancel", (e) => {
-        reject("cancelled");
-      });
+      mixedStream = new MediaStream([
+        ...stream.getTracks(),
+        ...audio.getTracks(),
+      ]);
 
-      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder = new MediaRecorder(mixedStream);
       mediaRecorder.start();
 
       mediaRecorder.ondataavailable = (event) => {
@@ -36,16 +52,53 @@ const startRecording = (): Promise<string> => {
   });
 };
 
-const stopRecording = (): Promise<string> => {
+const stopRecording = (dispatch: Dispatch<AnyAction>): Promise<string> => {
+  dispatch(setRecordingState());
+  dispatch(setElapsedTime(0));
   mediaRecorder.stop();
   return new Promise((resolve, reject) => {
     try {
       mediaRecorder.onstop = async () => {
         mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+        mixedStream.getTracks().forEach((track) => track.stop());
         const blob = new Blob(chunks, { type: "video/webm" });
         chunks = [];
-        const url = blobToBase64(blob);
-        resolve(url); // Resolve the promise with the URL
+        const url = await blobToBase64(blob);
+        const file_name = prompt("Please enter a file name");
+        if (!file_name) return toast.error("Please provide a file name");
+        toast.promise(
+          new Promise(async (resolve, reject) => {
+            const video_path = await convertBlobToIpfs(url, file_name!);
+
+            const res = await fetch(
+              `${process.env.NEXT_PUBLIC_APP_API}/api/recordings`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  file_name: file_name,
+                  videoBlob: video_path,
+                }),
+              }
+            );
+            if (res.ok) {
+              resolve(
+                "Recording saved successfully, you can find it in your recordings"
+              );
+            } else {
+              reject("Something went wrong, please try again");
+            }
+          }),
+          {
+            loading: "Saving...",
+            success:
+              "Recording saved successfully, you can find it in your recordings",
+            error: "Something went wrong, please try again",
+          }
+        );
+        resolve("done");
       };
     } catch (error) {
       reject(error); // Reject the promise with the error

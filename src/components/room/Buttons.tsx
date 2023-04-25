@@ -21,7 +21,6 @@ import {
   setIsSharing,
   setMyMuted,
   setMyCamera,
-  setRecordingState,
 } from "@/store/features/app-state/app-slice";
 import { P2P } from "@/lib/P2P";
 import { startRecording } from "@/lib/recordingFncs";
@@ -76,9 +75,7 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
   };
 
   const handleRecording = async () => {
-    const event = await startRecording();
-    if (event === "cancelled") return;
-    dispatch(setRecordingState());
+    await startRecording(dispatch);
   };
 
   return (
@@ -140,18 +137,18 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
         </button>
         <ul
           tabIndex={0}
-          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40  mb-2"
+          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40 mb-2"
         >
-          <li>
+          <li className="block lg:hidden w-full">
             <button
               onClick={() => dispatch(setOpenChat())}
-              className={`btn outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}
+              className={`btn w-full outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}
             >
               <BsChatDots className="w-5 h-5 text-black" />
               <span>Chat</span>
             </button>
           </li>
-          <li className="mt-2">
+          <li className="lg:mt-0 mt-2">
             <button
               onClick={handleRecording}
               className={`btn outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}

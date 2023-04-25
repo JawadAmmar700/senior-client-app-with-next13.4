@@ -17,6 +17,7 @@ export interface AppState {
   userScreenShare: string[];
   chat: Chat[];
   recordingState: boolean;
+  elapsedTime: number;
 }
 
 const initialState: AppState = {
@@ -35,6 +36,7 @@ const initialState: AppState = {
   userScreenShare: [],
   chat: [],
   recordingState: false,
+  elapsedTime: 0,
 };
 
 export const AppSlice = createSlice({
@@ -86,6 +88,9 @@ export const AppSlice = createSlice({
     setRecordingState: (state) => {
       state.recordingState = !state.recordingState;
     },
+    setElapsedTime: (state, action: PayloadAction<number>) => {
+      state.elapsedTime = state.elapsedTime + action.payload;
+    },
   },
 });
 
@@ -106,6 +111,7 @@ export const {
   setUserScreenShare,
   setChat,
   setRecordingState,
+  setElapsedTime,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

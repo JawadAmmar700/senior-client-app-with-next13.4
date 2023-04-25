@@ -36,15 +36,15 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
     toast.promise(
       new Promise(async (resolve, reject) => {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
+          `${process.env.NEXT_PUBLIC_APP_API}/api/reminders?reminderId=${reminder.id}`,
           {
             method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              reminderId: reminder.id,
-            }),
+            // headers: {
+            //   "Content-Type": "application/json",
+            // },
+            // body: JSON.stringify({
+            //   reminderId: reminder.id,
+            // }),
           }
         );
         if (response.ok) {

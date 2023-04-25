@@ -11,18 +11,19 @@ const RecordingsUi = ({ recording }: { recording: ReocoordingUIProps }) => {
   const [isPending, startTransition] = useTransition();
 
   const handleDeleteRecording = async () => {
+    console.log("delete recording", recording.id);
     toast.promise(
       new Promise(async (resolve, reject) => {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_APP_API}/api/recordings`,
+          `${process.env.NEXT_PUBLIC_APP_API}/api/recordings?recordId=${recording.id}`,
           {
             method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              recordId: recording.id,
-            }),
+            // headers: {
+            //   "Content-Type": "application/json",
+            // },
+            // body: JSON.stringify({
+            //   recordId: recording.id,
+            // }),
           }
         );
         if (response.ok) {
