@@ -92,13 +92,14 @@ export async function DELETE(request: Request) {
   const params = new URL(request.url).searchParams;
   const reminderId = params.get("reminderId");
   try {
+    console.log(reminderId);
     await prisma.reminder.delete({
       where: {
         id: reminderId!,
       },
     });
 
-    // await CronJobServer({ todoId: reminderId! }, "DELETE", "/reminder-deleted");
+    await CronJobServer({ todoId: reminderId! }, "DELETE", "/reminder-deleted");
 
     return new Response("Reminder deleted", {
       status: 200,

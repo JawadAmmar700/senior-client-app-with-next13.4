@@ -1,8 +1,9 @@
+import "react-loading-skeleton/dist/skeleton.css";
 import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
 import React from "react";
 import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import prisma from "@/lib/prisma";
 
 const getReminders = async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
