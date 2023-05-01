@@ -98,7 +98,7 @@ export async function DELETE(request: Request) {
       },
     });
 
-    await CronJobServer({ todoId: reminderId! }, "DELETE", "/reminder-deleted");
+    // await CronJobServer({ todoId: reminderId! }, "DELETE", "/reminder-deleted");
 
     return new Response("Reminder deleted", {
       status: 200,
