@@ -106,6 +106,7 @@ export default function Main() {
       >
         <Chat isDrawer={true} peer={peer} />
       </div>
+
       <Toaster position="top-center" reverseOrder={false} />
     </div>
   );

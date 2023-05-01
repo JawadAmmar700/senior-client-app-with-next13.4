@@ -9,6 +9,7 @@ import {
   setUserMute,
   setUserScreenShare,
 } from "@/store/features/app-state/app-slice";
+import { toast } from "react-hot-toast";
 
 const usePeerEventListener = (peer: P2P) => {
   const dispatch = useDispatch();
@@ -19,10 +20,6 @@ const usePeerEventListener = (peer: P2P) => {
       data: User | string | User[] | any
     ) => {
       switch (eventName) {
-        case "new-user-joined":
-          break;
-        case "user-disconnected":
-          break;
         case "room-name":
           dispatch(setRoomName(data));
           break;

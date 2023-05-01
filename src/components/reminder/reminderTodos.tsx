@@ -2,8 +2,9 @@ import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
 import ReminderUi from "./reminderUi";
 import prisma from "@/lib/prisma";
+import { cache } from "react";
 
-const getReminders = async () => {
+const getReminders = cache(async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
 
   try {
@@ -20,7 +21,7 @@ const getReminders = async () => {
     console.error(error);
     return [];
   }
-};
+});
 
 const ReminderTodos = async () => {
   const reminders: any = await getReminders();

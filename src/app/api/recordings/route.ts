@@ -24,13 +24,13 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  // const { recordId } = (await request.json()) as any;
-  const params = new URL(request.url).searchParams;
-  const recordId = params.get("recordId");
+  const { recordId } = (await request.json()) as { recordId: string };
+  // const params = new URL(request.url).searchParams;
+  // const recordId = params.get("recordId");
   try {
     await prisma.recordings.delete({
       where: {
-        id: recordId!,
+        id: recordId,
       },
     });
     return new Response("recording deleted correctly", {

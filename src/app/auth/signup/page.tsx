@@ -1,7 +1,5 @@
 import React from "react";
-import { getProviders } from "next-auth/react";
 import Button from "@/components/google-button";
-import FormComponent from "./signup-form";
 import { Merriweather_Sans } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,9 +10,6 @@ export const dynamic = "force-static";
 const merriweather_Sans = Merriweather_Sans({ subsets: ["latin"] });
 
 const Page = async () => {
-  const providersObj = (await getProviders()) || [];
-  const providers = Object.values(providersObj);
-
   return (
     <main className="w-full xs:bg-[#F7FAFC] bg-white xs:h-full h-screen flex items-center justify-center px-10 py-5">
       <div className="w-full h-full bg-white rounded-lg shadow-xl flex ">
@@ -39,14 +34,14 @@ const Page = async () => {
           >
             Sign up for Meetly
           </h1>
-          <Button provider={providers[0]} />
+          <Button />
           <div
             className={`divider px-10 ${merriweather_Sans.className} font-bold mt-10 text-xs`}
           >
             Or sign up with email
           </div>
-          {/* <FormComponent provider={providers[1]} /> */}
-          <Form provider={providers[1]} type="signup" />
+
+          <Form type="signup" />
           <p
             className={`${merriweather_Sans.className} mt-5 font-bold  text-xs`}
           >

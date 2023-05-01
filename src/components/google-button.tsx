@@ -1,20 +1,16 @@
 "use client";
-import { ClientSafeProvider, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 
-type Props = {
-  provider: ClientSafeProvider;
-};
-
-const Button = ({ provider }: Props) => {
+const Button = () => {
   return (
     <button
       className="bg-[#F7FAFC] text-black px-10 py-3 rounded-lg flex items-center hover:bg-[#F7FAFC]/30 space-x-2 mt-10 shadow-lg cursor-pointer"
-      onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+      onClick={() => signIn("google", { callbackUrl: "/" })}
     >
       <Image src="/svgs/google.svg" alt="auth-hero" width={25} height={25} />
       <label htmlFor="signin" className={`font-bold cursor-pointer`}>
-        Sign in with {provider.name}
+        Sign in with Google
       </label>
     </button>
   );

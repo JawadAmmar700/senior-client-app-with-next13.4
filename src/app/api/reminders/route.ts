@@ -28,20 +28,6 @@ export async function POST(request: Request) {
 
     await CronJobServer({ todo }, "POST", "");
 
-    const cron = await fetch(`${process.env.SERVER_APP}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        todo,
-      }),
-    });
-
-    if (!cron.ok) {
-      throw new Error(cron.statusText);
-    }
-
     return new Response("Reminder created", {
       status: 200,
     });

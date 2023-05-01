@@ -25,7 +25,6 @@ type HandleSubmitProps = {
 };
 
 type FormProps = {
-  provider: ClientSafeProvider;
   type: string;
 };
 
@@ -34,6 +33,7 @@ type User = {
   username: string;
   photoUrl: string;
   room_name?: string;
+  time: number;
 };
 
 type MapOfPeerCalls = {

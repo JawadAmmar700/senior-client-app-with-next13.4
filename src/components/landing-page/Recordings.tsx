@@ -3,8 +3,9 @@ import prisma from "../../lib/prisma";
 import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
 import RecordingsUi from "./recordingsUi";
+import { cache } from "react";
 
-const fetchRecords = async () => {
+const fetchRecords = cache(async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
   if (!session) {
     return "unauthorized";
@@ -15,7 +16,7 @@ const fetchRecords = async () => {
     },
   });
   return recordings;
-};
+});
 
 const Recordings = async () => {
   const recordings = await fetchRecords();

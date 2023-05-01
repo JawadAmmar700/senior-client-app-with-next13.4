@@ -4,7 +4,6 @@ import HeroSection from "@/components/landing-page/hero-section";
 import InfoTitle from "@/components/landing-page/info-title";
 import CallStart from "@/components/landing-page/call-start";
 import Recordings from "@/components/landing-page/Recordings";
-import { Suspense } from "react";
 
 export default async function Home() {
   return (
@@ -27,10 +26,8 @@ export default async function Home() {
           className="w-full h-auto"
         />
       </div>
-      <Suspense fallback={<div>Loading...</div>}>
-        {/* @ts-expect-error Server Component */}
-        <Recordings />
-      </Suspense>
+      {/* @ts-expect-error Server Component */}
+      <Recordings />
 
       <Footer />
     </main>

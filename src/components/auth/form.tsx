@@ -12,7 +12,7 @@ import { Toaster, toast } from "react-hot-toast";
 
 const merriweather_Sans = Merriweather_Sans({ subsets: ["latin"] });
 
-const Form = ({ provider, type }: FormProps) => {
+const Form = ({ type }: FormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -27,7 +27,7 @@ const Form = ({ provider, type }: FormProps) => {
     });
 
     if (user.success) {
-      const done = await signIn(provider.id, {
+      const done = await signIn("credentials", {
         callbackUrl: "/",
         ...values,
       });
@@ -65,7 +65,7 @@ const Form = ({ provider, type }: FormProps) => {
     if (!values.email || !values.password)
       return toast.error("Please fill all the fields");
     setIsSubmitting(true);
-    const done = await signIn(provider.id, {
+    const done = await signIn("credentials", {
       callbackUrl: "/",
       ...values,
     });
@@ -184,8 +184,7 @@ const Form = ({ provider, type }: FormProps) => {
                     htmlFor="signin"
                     className={`${merriweather_Sans.className} font-bold text-xs cursor-pointer text-white`}
                   >
-                    {type === "signup" ? "Sign up" : "Sign in"} with{" "}
-                    {provider.name}
+                    {type === "signup" ? "Sign up" : "Sign in"} with credentials
                   </label>
                 </>
               )}

@@ -4,6 +4,7 @@ import {
   Dispatch,
 } from "@reduxjs/toolkit";
 import Peer from "peerjs";
+import { toast } from "react-hot-toast";
 import io, { Socket } from "socket.io-client";
 
 export class P2P {
@@ -30,7 +31,7 @@ export class P2P {
 
   async init() {
     this.myStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: false,
       video: {
         facingMode: "user",
         width: { min: 150, ideal: 1280, max: 1920 },
@@ -60,6 +61,7 @@ export class P2P {
       userId: this.userId!,
       username,
       photoUrl,
+      time: Date.now(),
     };
   }
 
@@ -108,12 +110,14 @@ export class P2P {
   private socketEvents() {
     this.socket.on("new-user-joined", (user: User) => {
       this.callUser(user);
+      toast.success(`${user.username} joined the room`);
     });
 
-    this.socket.on("user-disconnected", (disconnectedUserId) => {
-      const userThatLeft = this.peerCalls.get(disconnectedUserId);
+    this.socket.on("user-disconnected", (user) => {
+      const userThatLeft = this.peerCalls.get(user.userId);
       userThatLeft?.call.close();
-      this.peerCalls.delete(disconnectedUserId);
+      this.peerCalls.delete(user.userId);
+      toast.success(`${user.username} left the room`);
       this.socket.emit("streams");
     });
   }
@@ -121,13 +125,6 @@ export class P2P {
   eventListeners(
     callback: (enevtName: string, data: User | string | any) => void
   ) {
-    this.socket.on("new-user-joined", (user: User) => {
-      return callback("new-user-joined", user);
-    });
-
-    this.socket.on("user-disconnected", (disconnectedUserId) => {
-      return callback("user-disconnected", disconnectedUserId);
-    });
     this.socket.on("room-name", (room_name) => {
       return callback("room-name", room_name);
     });
@@ -177,7 +174,6 @@ export class P2P {
         "userMuted"
       );
     }
-    // this.socket.emit("get-users-muted");
   }
 
   toggleOnOff(isCamera: boolean) {
