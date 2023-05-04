@@ -11,7 +11,6 @@ const RecordingsUi = ({ recording }: { recording: ReocoordingUIProps }) => {
   const [isPending, startTransition] = useTransition();
 
   const handleDeleteRecording = async () => {
-    console.log("delete recording", recording.id);
     toast.promise(
       new Promise(async (resolve, reject) => {
         const response = await fetch(

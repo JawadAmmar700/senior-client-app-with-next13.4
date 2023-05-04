@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "@/components/google-button";
+import Button from "@/components/shared-components/google-button";
 import { Merriweather_Sans } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";

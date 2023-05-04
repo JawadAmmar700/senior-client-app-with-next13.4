@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef } from "react";
-import usePeerEventListener from "@/lib/usePeerEventListener";
 
 import Chat from "@/components/room/chat";
 import Buttons from "@/components/room/Buttons";
@@ -12,7 +11,6 @@ import PinStream from "@/components/room/pinStream";
 
 import { useSession } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
-import { setMyStream } from "@/store/features/app-state/app-slice";
 import { RootState } from "@/store/configuration";
 import { Toaster } from "react-hot-toast";
 import { P2P } from "@/lib/P2P";
@@ -24,32 +22,20 @@ export default function Main() {
   const { openChat, streams } = useSelector(
     (state: RootState) => state.appState
   );
-
   const dispatch = useDispatch();
   const { data: session } = useSession();
-  usePeerEventListener(peer);
   const pinVideoRef = useRef<HTMLVideoElement | null>(null);
   const myVideoStreamRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const start = async () => {
-      const myStream = await peer.init();
-      dispatch(setMyStream(myStream));
+      await peer.init({
+        myVideoStreamRef,
+        pinVideoRef,
+        dispatch,
+      });
 
-      if (myVideoStreamRef.current) {
-        myVideoStreamRef.current.srcObject = myStream;
-        myVideoStreamRef.current.play();
-      }
-      if (pinVideoRef.current) {
-        pinVideoRef.current.srcObject = myStream;
-        pinVideoRef.current.play();
-      }
-      peer.joinRoom(
-        sessionStorage.getItem("user_name")!,
-        sessionStorage.getItem("roomName")!,
-        sessionStorage.getItem("meetingId")!,
-        sessionStorage.getItem("user_image")!
-      );
+      peer.joinRoom();
     };
 
     start();
@@ -68,45 +54,46 @@ export default function Main() {
   }, [pinVideoRef, myVideoStreamRef]);
 
   return (
-    <div className="w-full h-full flex relative flex-1 flex-col p-2">
-      <RoomName />
-      <RoomInfo />
+    <div className="w-full h-full flex">
+      <div className="w-full h-full flex relative flex-1 flex-col p-2">
+        <RoomName />
+        <RoomInfo />
 
-      <div className="flex-1  rounded w-full h-full">
-        <div className="relative w-full h-full flex items-center justify-center overflow-y-scroll hide-scroll-bar">
-          <PinStream pinVideoRef={pinVideoRef} image={session?.user?.image!} />
-
-          <div className="absolute inset-0 w-full h-full">
-            {/* streams */}
-            <div className="absolute right-2 w-[150px] h-full overflow-y-scroll hide-scroll-bar">
-              <MyStream
-                image={session?.user?.image!}
-                myVideoStreamRef={myVideoStreamRef}
-                pinVideoRef={pinVideoRef}
-                username="you"
-              />
-              {streams.length > 0 &&
-                streams.map((call, id: number) => (
-                  <UserStreams call={call} pinVideoRef={pinVideoRef} key={id} />
-                ))}
-            </div>
-            <Buttons
-              myVideoStreamRef={myVideoStreamRef}
+        <div className="flex-1  rounded w-full h-full">
+          <div className="relative w-full h-full flex items-center justify-center overflow-y-scroll hide-scroll-bar">
+            <PinStream
               pinVideoRef={pinVideoRef}
-              peer={peer}
+              image={session?.user?.image!}
             />
+
+            <div className="absolute inset-0 w-full h-full">
+              {/* streams */}
+              <div className="absolute right-2 w-[150px] h-full overflow-y-scroll hide-scroll-bar">
+                <MyStream
+                  myVideoStreamRef={myVideoStreamRef}
+                  image={session?.user?.image!}
+                  username="you"
+                  peer={peer}
+                />
+                {streams.length > 0 &&
+                  streams.map((call, id: number) => (
+                    <UserStreams peer={peer} call={call} key={id} />
+                  ))}
+              </div>
+              <Buttons peer={peer} />
+            </div>
+            <RecordingTracker />
           </div>
-          <RecordingTracker />
+        </div>
+        <div
+          className={`w-4/5 md:w-[400px] h-full block lg:hidden bg-white ${
+            openChat ? "block" : "hidden"
+          }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-black`}
+        >
+          <Chat isDrawer={true} peer={peer} />
         </div>
       </div>
-      <div
-        className={`w-4/5 md:w-[400px] h-full block lg:hidden bg-white ${
-          openChat ? "block" : "hidden"
-        }   rounded-tl-lg rounded-bl-lg  fixed top-0  right-0 z-50 text-black`}
-      >
-        <Chat isDrawer={true} peer={peer} />
-      </div>
-
+      <Chat isDrawer={false} peer={peer} />
       <Toaster position="top-center" reverseOrder={false} />
     </div>
   );

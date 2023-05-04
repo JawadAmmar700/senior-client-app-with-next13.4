@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import {
   BsMic,
   BsMicMute,
@@ -15,36 +14,22 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
 import { RootState } from "@/store/configuration";
-import {
-  setMyScreenShare,
-  setOpenChat,
-  setIsSharing,
-  setMyMuted,
-  setMyCamera,
-} from "@/store/features/app-state/app-slice";
+import { setOpenChat } from "@/store/features/app-state/app-slice";
 import { P2P } from "@/lib/P2P";
 import { startRecording } from "@/lib/recordingFncs";
 
 type ButtonsProps = {
-  myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null>;
-  pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
   peer: P2P;
 };
 
-const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
-  const {
-    userScreenShare,
-    userPin,
-    isSharing,
-    myCamera,
-    myMuted,
-    streams,
-    recordingState,
-  } = useSelector((state: RootState) => state.appState);
+const Buttons = ({ peer }: ButtonsProps) => {
+  const { userPin, isSharing, myCamera, myMuted, streams, recordingState } =
+    useSelector((state: RootState) => state.appState);
   const dispatch = useDispatch();
 
   const router = useRouter();
-  const isSreenShare = userScreenShare?.find((s) => s === userPin);
+  const isPinedUserScreenSharing = streams.find((s) => s.id && userPin)?.user
+    .isScreenShare;
 
   const endCall = () => {
     peer.disconnectUser();
@@ -52,26 +37,10 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
   };
   const shareScreen = () => {
     if (streams.length > 0) {
-      peer.shareScreen(
-        myVideoStreamRef,
-        pinVideoRef,
-        setMyScreenShare,
-        setIsSharing,
-        dispatch
-      );
+      peer.shareScreen();
     } else {
       toast.error("No one in this room to share screen with 😔");
     }
-  };
-
-  const mute = () => {
-    peer.muteStream(!myMuted);
-    dispatch(setMyMuted());
-  };
-
-  const camonoff = () => {
-    peer.toggleOnOff(!myCamera);
-    dispatch(setMyCamera());
   };
 
   const handleRecording = async () => {
@@ -79,14 +48,14 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
   };
 
   return (
-    <div className="w-full absolute  bottom-2 p-2 flex space-x-5 items-center justify-center z-40">
+    <div
+      className={`w-full absolute  bottom-0 p-2 flex space-x-5 items-center justify-center z-40 ${
+        (isSharing || isPinedUserScreenSharing) && "bg-black/50 rounded-lg"
+      } `}
+    >
       <button
-        onClick={mute}
-        className={`btn outline-none border-none backdrop-blur-sm  ${
-          isSharing || isSreenShare
-            ? "bg-black"
-            : "bg-white/10 hover:bg-opacity-20"
-        } cursor-pointer`}
+        onClick={() => peer.muteStream()}
+        className={`btn outline-none border-none backdrop-blur-sm  bg-white/10 hover:bg-opacity-20 cursor-pointer`}
       >
         {myMuted ? (
           <BsMicMute className="w-5 h-5 text-white" />
@@ -95,12 +64,8 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
         )}
       </button>
       <button
-        onClick={camonoff}
-        className={`btn outline-none border-none backdrop-blur-sm ${
-          isSharing || isSreenShare
-            ? "bg-black"
-            : "bg-white/10 hover:bg-opacity-20"
-        } cursor-pointer`}
+        onClick={() => peer.toggleOnOff()}
+        className={`btn outline-none border-none backdrop-blur-sm bg-white/10 hover:bg-opacity-20 cursor-pointer`}
       >
         {myCamera ? (
           <BsCameraVideo className="w-5 h-5  text-white" />
@@ -116,39 +81,31 @@ const Buttons = ({ myVideoStreamRef, pinVideoRef, peer }: ButtonsProps) => {
       </button>
       <button
         onClick={shareScreen}
-        className={`btn outline-none border-none backdrop-blur-sm ${
-          isSharing || isSreenShare
-            ? "bg-black"
-            : "bg-white/10 hover:bg-opacity-20"
-        } cursor-pointer`}
+        className={`btn outline-none border-none backdrop-blur-sm bg-white/10 hover:bg-opacity-20 cursor-pointer`}
       >
         <MdOutlineScreenShare className="w-5 h-5 text-white" />
       </button>
       <div className="dropdown dropdown-top dropdown-end">
         <button
           tabIndex={0}
-          className={`btn outline-none border-none backdrop-blur-sm ${
-            isSharing || isSreenShare
-              ? "bg-black"
-              : "bg-white/10 hover:bg-opacity-20"
-          } cursor-pointer`}
+          className={`btn outline-none border-none backdrop-blur-sm bg-white/10 hover:bg-opacity-20 cursor-pointer`}
         >
           <BsThreeDotsVertical className="w-5 h-5 text-white" />
         </button>
         <ul
           tabIndex={0}
-          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40 mb-2"
+          className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40  mb-2"
         >
-          <li className="block lg:hidden w-full">
+          <li>
             <button
               onClick={() => dispatch(setOpenChat())}
-              className={`btn w-full outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}
+              className={`btn outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}
             >
               <BsChatDots className="w-5 h-5 text-black" />
               <span>Chat</span>
             </button>
           </li>
-          <li className="lg:mt-0 mt-2">
+          <li className="mt-2">
             <button
               onClick={handleRecording}
               className={`btn outline-none border-none backdrop-blur-sm bg-white shadow-xl hover:bg-base-300 flex items-center justify-evenly cursor-pointer`}

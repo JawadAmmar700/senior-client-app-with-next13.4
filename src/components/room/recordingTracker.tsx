@@ -12,7 +12,6 @@ const RecordingTracker = () => {
     (state: RootState) => state.appState
   );
   const dispatch = useDispatch();
-  // const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   useEffect(() => {
     let interval: any;

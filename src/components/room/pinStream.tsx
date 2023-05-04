@@ -7,15 +7,10 @@ type PinStreamProps = {
 };
 
 const PinStream = ({ pinVideoRef, image }: PinStreamProps) => {
-  const {
-    userScreenShare,
-    userPin,
-    isSharing,
-    myCamera,
-    userCameraONOFF,
-    streams,
-  } = useSelector((state: RootState) => state.appState);
-  const isSreenShare = userScreenShare?.find((s) => s === userPin);
+  const { userPin, myCamera, streams } = useSelector(
+    (state: RootState) => state.appState
+  );
+  const pinedUser = streams.find((s: any) => s.id === userPin);
   return (
     <>
       <video
@@ -24,9 +19,8 @@ const PinStream = ({ pinVideoRef, image }: PinStreamProps) => {
         autoPlay
         playsInline
         muted
-        className={`w-full h-full aspect-video rounded-lg ${
-          isSreenShare || isSharing ? "object-contain" : "object-cover"
-        }  -z-30`}
+        className={`w-full h-full aspect-video rounded-lg object-cover 
+          -z-30`}
       />
       {!myCamera && !userPin && (
         <div className="absolute w-full bg-slate-800 h-full inset-0 rounded-lg flex items-center justify-center">
@@ -37,10 +31,10 @@ const PinStream = ({ pinVideoRef, image }: PinStreamProps) => {
           />
         </div>
       )}
-      {userCameraONOFF?.find((s) => s === userPin) && (
+      {pinedUser?.user.isCamera && (
         <div className="absolute w-full bg-slate-800 h-full inset-0 rounded-lg flex items-center justify-center">
           <img
-            src={streams.find((s: any) => s.id === userPin)?.user.photoUrl}
+            src={pinedUser.user.photoUrl}
             alt="user-image"
             className="rounded-full w-10 h-10"
           />

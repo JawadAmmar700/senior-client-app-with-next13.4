@@ -6,9 +6,11 @@ import { AnyAction, Dispatch } from "@reduxjs/toolkit";
 import Moralis from "moralis";
 import { toast } from "react-hot-toast";
 
-Moralis.start({
-  apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-});
+if (!Moralis.Core.isStarted) {
+  Moralis.start({
+    apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+  });
+}
 
 let mediaRecorder: MediaRecorder;
 let mixedStream: MediaStream;

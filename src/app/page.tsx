@@ -10,25 +10,10 @@ export default async function Home() {
     <main className="relative w-full gradient">
       <Header />
       <HeroSection />
-      <div className="relative -mt-12 lg:-mt-24">
-        <img
-          src="/svgs/wave-up.svg"
-          alt="Picture of the author"
-          className="w-full h-auto"
-        />
-      </div>
       <InfoTitle />
       <CallStart />
-      <div className="relative -mt-12 lg:-mt-24 " id="recordings">
-        <img
-          src="/svgs/wave-up.svg"
-          alt="Picture of the author"
-          className="w-full h-auto"
-        />
-      </div>
       {/* @ts-expect-error Server Component */}
       <Recordings />
-
       <Footer />
     </main>
   );

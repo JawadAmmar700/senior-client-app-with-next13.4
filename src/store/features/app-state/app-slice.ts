@@ -12,9 +12,6 @@ export interface AppState {
   myStream: MediaStream | null;
   roomName: string;
   streams: MapOfPeerCalls[];
-  userCameraONOFF: string[];
-  userMute: string[];
-  userScreenShare: string[];
   chat: Chat[];
   recordingState: boolean;
   elapsedTime: number;
@@ -31,9 +28,6 @@ const initialState: AppState = {
   myStream: null,
   roomName: "",
   streams: [],
-  userCameraONOFF: [],
-  userMute: [],
-  userScreenShare: [],
   chat: [],
   recordingState: false,
   elapsedTime: 0,
@@ -73,15 +67,6 @@ export const AppSlice = createSlice({
     setStreams: (state, action: PayloadAction<MapOfPeerCalls[]>) => {
       state.streams = action.payload;
     },
-    setUserCameraONOFF: (state, action: PayloadAction<string[]>) => {
-      state.userCameraONOFF = action.payload;
-    },
-    setUserMute: (state, action: PayloadAction<string[]>) => {
-      state.userMute = action.payload;
-    },
-    setUserScreenShare: (state, action: PayloadAction<string[]>) => {
-      state.userScreenShare = action.payload;
-    },
     setChat: (state, action: PayloadAction<Chat>) => {
       state.chat = [...state.chat, action.payload];
     },
@@ -89,12 +74,11 @@ export const AppSlice = createSlice({
       state.recordingState = !state.recordingState;
     },
     setElapsedTime: (state, action: PayloadAction<number>) => {
-      state.elapsedTime = state.elapsedTime + action.payload;
+      state.elapsedTime += action.payload;
     },
   },
 });
 
-// Action creators are generated for each case reducer function
 export const {
   setIsSharing,
   setMyCamera,
@@ -106,9 +90,6 @@ export const {
   setUserPin,
   setRoomName,
   setStreams,
-  setUserCameraONOFF,
-  setUserMute,
-  setUserScreenShare,
   setChat,
   setRecordingState,
   setElapsedTime,

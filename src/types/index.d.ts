@@ -33,9 +33,11 @@ type User = {
   username: string;
   photoUrl: string;
   room_name?: string;
+  isCamera: boolean;
+  isMic: boolean;
+  isScreenShare: boolean;
   time: number;
 };
-
 type MapOfPeerCalls = {
   call: MediaConnection;
   stream: MediaStream;
@@ -133,4 +135,10 @@ type ReminderPutType = {
   time: string;
   notificationSent: boolean;
   isDone: boolean;
+};
+
+type OP = {
+  userMuted: string[];
+  userCameraOnOff: string[];
+  userScreenShare: string[];
 };

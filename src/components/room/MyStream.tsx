@@ -1,50 +1,26 @@
-import React from "react";
 import { TbPinnedOff, TbPinned } from "react-icons/tb";
 import { BsMic, BsMicMute } from "react-icons/bs";
 import { RootState } from "@/store/configuration";
 import { useSelector, useDispatch } from "react-redux";
-import { setMyPin, setUserPin } from "@/store/features/app-state/app-slice";
+import { P2P } from "@/lib/P2P";
 
 type MyStreamProps = {
   myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null>;
+  peer: P2P;
   username: string;
   image: string;
-  pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
 };
 
 const MyStream = ({
-  myVideoStreamRef,
   username,
   image,
-  pinVideoRef,
+  peer,
+  myVideoStreamRef,
 }: MyStreamProps) => {
-  const {
-    userPin,
-    isSharing,
-    myCamera,
-    myMuted,
-    myPin,
-    myScreenShare,
-    myStream,
-  } = useSelector((state: RootState) => state.appState);
+  const { userPin, myCamera, myMuted, myPin } = useSelector(
+    (state: RootState) => state.appState
+  );
   const dispatch = useDispatch();
-
-  const pinMyStream = () => {
-    if (pinVideoRef.current) {
-      if (myPin) {
-        pinVideoRef.current.srcObject = null;
-
-        dispatch(setMyPin(false));
-        dispatch(setUserPin(""));
-      } else {
-        pinVideoRef.current.srcObject = isSharing ? myScreenShare : myStream;
-        pinVideoRef.current.play();
-
-        dispatch(setMyPin(true));
-        dispatch(setUserPin(""));
-      }
-    }
-  };
 
   return (
     <div
@@ -79,7 +55,7 @@ const MyStream = ({
           </div>
           <button
             id="my-pin"
-            onClick={pinMyStream}
+            onClick={() => peer.pinMyStream(myPin)}
             className="p-2 rounded-full  backdrop-blur-sm bg-white/10  flex items-center justify-center"
           >
             {myPin ? (

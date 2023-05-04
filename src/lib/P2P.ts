@@ -1,11 +1,25 @@
 import {
-  ActionCreatorWithPayload,
-  AnyAction,
-  Dispatch,
-} from "@reduxjs/toolkit";
+  setChat,
+  setIsSharing,
+  setMyCamera,
+  setMyMuted,
+  setMyPin,
+  setMyScreenShare,
+  setMyStream,
+  setRoomName,
+  setStreams,
+  setUserPin,
+} from "@/store/features/app-state/app-slice";
+import { AnyAction, Dispatch } from "@reduxjs/toolkit";
 import Peer from "peerjs";
 import { toast } from "react-hot-toast";
 import io, { Socket } from "socket.io-client";
+
+interface SetPeerStatesArgs {
+  myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null>;
+  pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
+  dispatch: Dispatch<AnyAction>;
+}
 
 export class P2P {
   private peer: Peer;
@@ -13,9 +27,16 @@ export class P2P {
   private peerCalls = new Map<string, MapOfPeerCalls>();
   private peerConnections: RTCPeerConnection[] = [];
   private myStream: MediaStream | null = null;
+  private myScreenShare: MediaStream | null = null;
+  private isSharing: boolean = false;
   private userId: string | null = null;
   private opts: any = {};
-  private user: User | null = null;
+  private me: User | null = null;
+  private pinVideoRef: React.MutableRefObject<HTMLVideoElement | null> | null =
+    null;
+  private myVideoStreamRef: React.MutableRefObject<HTMLVideoElement | null> | null =
+    null;
+  private dispatch: Dispatch<AnyAction> | null = null;
 
   constructor() {
     this.peer = new Peer();
@@ -26,10 +47,15 @@ export class P2P {
     });
 
     this.socketEvents();
+    this.eventListeners();
     this.answerCallEvent();
   }
 
-  async init() {
+  async init({ myVideoStreamRef, pinVideoRef, dispatch }: SetPeerStatesArgs) {
+    this.myVideoStreamRef = myVideoStreamRef;
+    this.pinVideoRef = pinVideoRef;
+    this.dispatch = dispatch;
+
     this.myStream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
@@ -38,39 +64,53 @@ export class P2P {
         height: { min: 100, ideal: 720, max: 1080 },
       },
     });
-    return this.myStream;
+
+    dispatch(setMyStream(this.myStream));
+    if (myVideoStreamRef.current && pinVideoRef.current) {
+      myVideoStreamRef.current.srcObject = this.myStream;
+      myVideoStreamRef.current.play();
+      pinVideoRef.current.srcObject = this.myStream;
+      pinVideoRef.current.play();
+    }
   }
 
-  joinRoom(
-    username: string,
-    room_name: string,
-    roomId: string,
-    photoUrl: string
-  ) {
+  joinRoom() {
+    const username = sessionStorage.getItem("user_name")!;
+    const roomName = sessionStorage.getItem("roomName")!;
+    const meetingId = sessionStorage.getItem("meetingId")!;
+    const userImage = sessionStorage.getItem("user_image")!;
     setTimeout(() => {
       this.socket.emit(
         "join-room",
         username,
-        room_name,
-        roomId,
-        this.userId,
-        photoUrl
+        roomName,
+        meetingId,
+        this.userId!,
+        userImage
       );
     }, 2000);
-    this.user = {
+    this.me = {
       userId: this.userId!,
       username,
-      photoUrl,
+      photoUrl: userImage,
       time: Date.now(),
+      isCamera: false,
+      isMic: false,
+      isScreenShare: false,
     };
   }
 
   private callUser(user: User) {
-    const call = this.peer.call(user.userId, this.myStream!, {
-      metadata: this.user!,
-    });
+    const call = this.peer.call(
+      user.userId,
+      this.isSharing ? this.myScreenShare! : this.myStream!,
+      {
+        metadata: this.me,
+      }
+    );
     call.on("stream", (userStream) => {
       this.peerConnections.push(call.peerConnection);
+
       this.peerCalls.set(call.peer, {
         call,
         id: call.peer,
@@ -92,6 +132,7 @@ export class P2P {
         const isPeerCallExist = this.peerCalls.has(call.peer);
         if (!isPeerCallExist) {
           this.peerConnections.push(call.peerConnection);
+
           this.peerCalls.set(call.peer, {
             call,
             id: call.peer,
@@ -102,7 +143,7 @@ export class P2P {
         this.socket.emit("streams");
       });
       call.on("close", () => {
-        this.peerCalls.get(call.peer)?.call.close();
+        this.peerCalls.delete(call.peer);
       });
     });
   }
@@ -110,124 +151,145 @@ export class P2P {
   private socketEvents() {
     this.socket.on("new-user-joined", (user: User) => {
       this.callUser(user);
-      toast.success(`${user.username} joined the room`);
     });
 
-    this.socket.on("user-disconnected", (user) => {
-      const userThatLeft = this.peerCalls.get(user.userId);
-      userThatLeft?.call.close();
-      this.peerCalls.delete(user.userId);
-      toast.success(`${user.username} left the room`);
-      this.socket.emit("streams");
-    });
+    this.socket.on(
+      "user-disconnected",
+      ({ userId }: { username: string; userId: string }) => {
+        const userThatLeft = this.peerCalls.get(userId);
+        userThatLeft?.call.close();
+        this.peerCalls.delete(userId);
+        this.socket.emit("streams");
+      }
+    );
   }
 
-  eventListeners(
-    callback: (enevtName: string, data: User | string | any) => void
-  ) {
-    this.socket.on("room-name", (room_name) => {
-      return callback("room-name", room_name);
-    });
-    this.socket.on("streams", () => {
-      return callback("streams", Array.from(this.peerCalls.values()));
-    });
-    this.socket.on("user-operation", (userId, op, data) => {
-      return callback("user-operation", {
-        userId,
-        op,
-        data,
+  private updatePeerCall(callPeerId: string, update: Partial<any>) {
+    const currentCall = this.peerCalls.get(callPeerId);
+    if (currentCall) {
+      this.peerCalls.set(callPeerId, {
+        ...currentCall,
+        user: {
+          ...currentCall.user,
+          ...update.user,
+        },
       });
-    });
-    this.socket.on("get-users-muted", (usersMuted) => {
-      return callback("get-users-muted", usersMuted);
-    });
-    this.socket.on("get-users-cameraOnOff", (usersCameraONOFF) => {
-      return callback("get-users-camera-status", usersCameraONOFF);
-    });
-    this.socket.on("get-users-shareScreen", (usersScreenShare) => {
-      return callback("get-users-sharescreen-status", usersScreenShare);
-    });
-    this.socket.on("chat-message", (data) => {
-      return callback("chat-message", data);
-    });
+    }
   }
 
-  async muteStream(isMuted: boolean) {
+  private handleUserOperation(operation: string, callPeerId: string) {
+    if (this.dispatch) {
+      switch (operation) {
+        case "userCameraOnOff":
+          this.updatePeerCall(callPeerId, {
+            user: { isCamera: !this.peerCalls.get(callPeerId)!.user.isCamera },
+          });
+          break;
+        case "userMuted":
+          this.updatePeerCall(callPeerId, {
+            user: { isMic: !this.peerCalls.get(callPeerId)!.user.isMic },
+          });
+          break;
+        case "userScreenShare":
+          this.updatePeerCall(callPeerId, {
+            user: {
+              isScreenShare:
+                !this.peerCalls.get(callPeerId)!.user.isScreenShare,
+            },
+          });
+          break;
+        default:
+          break;
+      }
+      this.dispatch(setStreams(Array.from(this.peerCalls.values())));
+    }
+  }
+
+  private eventListeners() {
+    const eventListenerMap = {
+      "new-user-joined": (user: User) =>
+        toast.success(`${user.username} joined the room`),
+      "user-disconnected": ({
+        username,
+      }: {
+        username: string;
+        userId: string;
+      }) => toast.success(`${username} left the room`),
+      "room-name": (roomName: string) =>
+        this.dispatch && this.dispatch(setRoomName(roomName)),
+      "media-streams": () => {
+        this.dispatch &&
+          this.dispatch(setStreams(Array.from(this.peerCalls.values())));
+      },
+      "user-operation": (op: string, callPeerId: string) =>
+        this.handleUserOperation(op, callPeerId),
+
+      "chat-message": (data: Chat) => {
+        console.log("message", data);
+        this.dispatch && this.dispatch(setChat(data));
+      },
+    };
+
+    for (const [eventName, listener] of Object.entries(eventListenerMap)) {
+      this.socket.on(eventName, listener);
+    }
+  }
+
+  async muteStream() {
     this.myStream
       ?.getAudioTracks()
       .forEach((track) => (track.enabled = !track.enabled));
 
-    if (isMuted) {
-      this.socket.emit(
-        "user-operation",
-        this.userId,
+    this.dispatch && this.dispatch(setMyMuted());
 
-        isMuted,
-        "userMuted"
-      );
-    } else {
-      this.socket.emit(
-        "user-operation",
-        this.userId,
+    this.me = {
+      ...this.me!,
+      isMic: !this.me?.isMic,
+    };
 
-        isMuted,
-        "userMuted"
-      );
-    }
+    this.socket.emit("user-operation", this.userId, "userMuted");
   }
 
-  toggleOnOff(isCamera: boolean) {
+  toggleOnOff() {
     this.myStream
       ?.getVideoTracks()
       .forEach((track) => (track.enabled = !track.enabled));
+    this.dispatch && this.dispatch(setMyCamera());
 
-    if (isCamera) {
-      this.socket.emit(
-        "user-operation",
-        this.userId,
-        isCamera,
-        "userCameraOnOff"
-      );
-    } else {
-      this.socket.emit(
-        "user-operation",
-        this.userId,
-        isCamera,
-        "userCameraOnOff"
-      );
+    this.me = {
+      ...this.me!,
+      isCamera: !this.me?.isCamera,
+    };
+    this.socket.emit("user-operation", this.userId, "userCameraOnOff");
+  }
+
+  async switchStreams(isSharing: boolean, stream: MediaStream) {
+    if (
+      this.myVideoStreamRef?.current &&
+      this.pinVideoRef?.current &&
+      this.dispatch
+    ) {
+      this.dispatch(setIsSharing(isSharing));
+      this.dispatch(setMyScreenShare(isSharing ? stream : null));
+      this.myVideoStreamRef.current.srcObject = stream;
+      this.pinVideoRef.current.srcObject = stream;
+      this.socket.emit("user-operation", this.userId, "userScreenShare");
     }
   }
 
-  async shareScreen(
-    myVideo: React.MutableRefObject<HTMLVideoElement | null>,
-    pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>,
-    setMyScreenShare: ActionCreatorWithPayload<
-      MediaStream | null,
-      "counter/setMyScreenShare"
-    >,
-    setIsSharing: ActionCreatorWithPayload<boolean, "counter/setIsSharing">,
-    dispatch: Dispatch<AnyAction>
-  ) {
-    const screenShare = await navigator.mediaDevices.getDisplayMedia({
+  async shareScreen() {
+    this.myScreenShare = await navigator.mediaDevices.getDisplayMedia({
       video: {
         cursor: "always",
         mediaSource: "screen",
       } as MediaTrackConstraints,
       audio: false,
     });
-    dispatch(setIsSharing(true));
-    dispatch(setMyScreenShare(screenShare));
 
-    if (myVideo.current) {
-      this.socket.emit("user-operation", this.userId, true, "userScreenShare");
-      myVideo.current.srcObject = screenShare;
-      myVideo.current.play();
-    }
-    if (pinVideoRef.current) {
-      pinVideoRef.current.srcObject = screenShare;
-      pinVideoRef.current.play();
-    }
-    const shareScreenTracks = screenShare.getVideoTracks()[0];
+    this.isSharing = true;
+    await this.switchStreams(true, this.myScreenShare);
+
+    const shareScreenTracks = this.myScreenShare.getVideoTracks()[0];
     this.peerConnections.forEach((peerConnection) => {
       const sender = peerConnection.getSenders().find((s) => {
         return s.track?.kind === shareScreenTracks.kind;
@@ -235,25 +297,11 @@ export class P2P {
       sender?.replaceTrack(shareScreenTracks);
     });
 
-    shareScreenTracks.onended = () => {
-      dispatch(setIsSharing(false));
-      dispatch(setMyScreenShare(null));
-
-      if (myVideo.current) {
-        this.socket.emit(
-          "user-operation",
-          this.userId,
-          false,
-          "userScreenShare"
-        );
-        myVideo.current.srcObject = this.myStream;
-        myVideo.current.play();
-      }
-      if (pinVideoRef.current) {
-        pinVideoRef.current.srcObject = this.myStream;
-        pinVideoRef.current.play();
-      }
+    shareScreenTracks.onended = async () => {
+      this.isSharing = false;
+      await this.switchStreams(false, this.myStream!);
       const returnStream = this.myStream?.getVideoTracks()[0];
+
       this.peerConnections.forEach((peerConnection) => {
         const sender = peerConnection.getSenders().find((s) => {
           return s.track?.kind === returnStream?.kind;
@@ -264,11 +312,48 @@ export class P2P {
   }
 
   sendMessage(message: Chat) {
-    this.socket.emit(
-      "chat-message",
-      message,
-      sessionStorage.getItem("meetingId")
-    );
+    console.log("message", message);
+    this.socket.emit("chat-message", message);
+  }
+
+  pinMyStream(myPin: boolean) {
+    if (this.pinVideoRef?.current && this.dispatch) {
+      if (myPin) {
+        this.pinVideoRef.current.srcObject = null;
+
+        this.dispatch(setMyPin(false));
+        this.dispatch(setUserPin(""));
+      } else {
+        this.pinVideoRef.current.srcObject = this.isSharing
+          ? this.myScreenShare
+          : this.myStream;
+        this.pinVideoRef.current.play();
+
+        this.dispatch(setMyPin(true));
+        this.dispatch(setUserPin(""));
+      }
+    }
+  }
+
+  pinUserStream(userId: string, userPin: string) {
+    if (this.pinVideoRef?.current && this.dispatch) {
+      const stream = Array.from(this.peerCalls.values()).find(
+        (s) => s.id === userId
+      );
+      if (stream) {
+        if (userId === userPin) {
+          this.pinVideoRef.current.srcObject = this.isSharing
+            ? this.myScreenShare
+            : this.myStream;
+          this.dispatch(setMyPin(true));
+          this.dispatch(setUserPin(""));
+          return;
+        }
+        this.pinVideoRef.current.srcObject = stream.stream;
+        this.dispatch(setUserPin(userId));
+        this.dispatch(setMyPin(false));
+      }
+    }
   }
 
   disconnectUser() {

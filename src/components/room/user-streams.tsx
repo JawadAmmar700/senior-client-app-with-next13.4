@@ -1,52 +1,22 @@
-import React from "react";
 import Video from "./Video";
 import { TbPinnedOff, TbPinned } from "react-icons/tb";
 import { BsMic, BsMicMute } from "react-icons/bs";
 import { RootState } from "@/store/configuration";
-import { useSelector, useDispatch } from "react-redux";
-import { setMyPin, setUserPin } from "@/store/features/app-state/app-slice";
+import { useSelector } from "react-redux";
+import { P2P } from "@/lib/P2P";
 
 type UserStreamsProps = {
   call: MapOfPeerCalls;
-  pinVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
+  peer: P2P;
 };
 
-const UserStreams = ({ call, pinVideoRef }: UserStreamsProps) => {
-  const {
-    userPin,
-    isSharing,
-    myScreenShare,
-    myStream,
-    userCameraONOFF,
-    userMute,
-    streams,
-  } = useSelector((state: RootState) => state.appState);
-  const dispatch = useDispatch();
-
-  const isCamera = userCameraONOFF?.find((s) => s === call.id);
-  const isMute = userMute?.find((s) => s === call.id);
-
-  const pinUserStream = (userId: string) => {
-    if (pinVideoRef.current) {
-      const stream = streams.find((s) => s.id === userId);
-      if (stream) {
-        if (userId === userPin) {
-          pinVideoRef.current.srcObject = isSharing ? myScreenShare : myStream;
-          dispatch(setMyPin(true));
-          dispatch(setUserPin(""));
-          return;
-        }
-        pinVideoRef.current.srcObject = stream.stream;
-        dispatch(setUserPin(userId));
-        dispatch(setMyPin(false));
-      }
-    }
-  };
+const UserStreams = ({ peer, call }: UserStreamsProps) => {
+  const { userPin } = useSelector((state: RootState) => state.appState);
 
   return (
     <div className="w-[150px] h-[100px] rounded-lg relative mt-5 border-2 border-white">
       <Video stream={call.stream} />
-      {isCamera && (
+      {call.user.isCamera && (
         <div className="absolute w-full bg-slate-700 h-full inset-0 rounded-lg flex items-center justify-center">
           <img
             src={call.user.photoUrl}
@@ -58,14 +28,14 @@ const UserStreams = ({ call, pinVideoRef }: UserStreamsProps) => {
       <div className="absolute inset-0 rounded-lg flex flex-col  w-full h-full justify-start text-white z-50">
         <div className="w-full flex items-center space-x-1 p-1">
           <div className="p-2 rounded-full  backdrop-blur-sm bg-white/10  flex items-center justify-center">
-            {isMute ? (
+            {call.user.isMic ? (
               <BsMicMute className="w-4 h-4" />
             ) : (
               <BsMic className="w-4 h-4" />
             )}
           </div>
           <button
-            onClick={() => pinUserStream(call.id)}
+            onClick={() => peer.pinUserStream(call.id, userPin)}
             className="p-2 rounded-full  backdrop-blur-sm bg-white/10  flex items-center justify-center"
           >
             {call.id === userPin ? (

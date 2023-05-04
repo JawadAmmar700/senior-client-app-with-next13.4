@@ -125,6 +125,13 @@ const CallStart = () => {
           </button>
         </div>
       </section>
+      <div className="relative -mt-12 lg:-mt-24 " id="recordings">
+        <img
+          src="/svgs/wave-up.svg"
+          alt="Picture of the author"
+          className="w-full h-auto"
+        />
+      </div>
       <Toaster position="top-center" reverseOrder={false} />
     </>
   );
