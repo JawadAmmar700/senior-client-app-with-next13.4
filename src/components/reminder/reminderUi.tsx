@@ -12,6 +12,7 @@ import {
   setType,
 } from "@/store/features/app-state/calendar-state";
 import { MdDoneOutline } from "react-icons/md";
+import axios from "axios";
 
 const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
   const [isPending, startTransition] = useTransition();
@@ -35,19 +36,11 @@ const ReminderUi = ({ reminder }: { reminder: Reminder }) => {
   const handleReminderDelete = async () => {
     toast.promise(
       new Promise(async (resolve, reject) => {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_APP_API}/api/reminders?reminderId=${reminder.id}`,
-          {
-            method: "DELETE",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-            // body: JSON.stringify({
-            //   reminderId: reminder.id,
-            // }),
-          }
+        const { status } = await axios.delete(
+          `${process.env.NEXT_PUBLIC_APP_API}/api/reminders?reminderId=${reminder.id}`
         );
-        if (response.ok) {
+
+        if (status === 200) {
           resolve("Reminder deleted successfully");
         } else {
           reject("Something went wrong, please try again");

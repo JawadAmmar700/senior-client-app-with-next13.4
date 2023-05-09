@@ -1,4 +1,4 @@
-import NextAuth,{type NextAuthOptions} from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -15,7 +15,7 @@ if (!process.env.NEXTAUTH_SECRET)
 if (!process.env.NEXTAUTH_JWT_SECRET)
   throw new Error("NEXTAUTH_JWT_SECRET is not defined");
 
-async function refreshAccessToken(token:any) {
+async function refreshAccessToken(token: any) {
   try {
     const url =
       "https://oauth2.googleapis.com/token?" +
@@ -53,7 +53,7 @@ async function refreshAccessToken(token:any) {
   }
 }
 
-export const authOptions:NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: `${process.env.NEXTAUTH_SECRET}`,
   providers: [
@@ -73,8 +73,8 @@ export const authOptions:NextAuthOptions = {
         username: { label: "Username", type: "text", placeholder: "username" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials:any) {
-        const userExists:any = await prisma.user.findUnique({
+      async authorize(credentials: any) {
+        const userExists: any = await prisma.user.findUnique({
           where: {
             email: credentials.email,
           },
@@ -103,18 +103,20 @@ export const authOptions:NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }:any) {
+    async jwt({ token, user, account }: any) {
       if (account?.provider === "google") {
         return {
           accessToken: account.access_token,
           accessTokenExpires: Date.now() + account.expires_at * 1000,
           refreshToken: account.refresh_token,
+          provider: "google",
           user,
         };
       }
 
       if (account?.provider === "credentials" && user) {
         return {
+          provider: "credentials",
           user,
         };
       }
@@ -128,13 +130,14 @@ export const authOptions:NextAuthOptions = {
       if (account?.provider === "google") return refreshAccessToken(token);
       return token;
     },
-    async session({ session, token }:any) {
+    async session({ session, token }: any) {
       if (token.user) {
         session.user = {
           id: token.user.id,
           email: token.user.email,
           name: token.user.name,
           image: token.user.image,
+          provider: token.provider,
         };
       }
       if (token.error) {
@@ -143,7 +146,7 @@ export const authOptions:NextAuthOptions = {
 
       return session;
     },
-    async signIn({ user, account }:any) {
+    async signIn({ user, account }: any) {
       if (account?.provider === "credentials") {
         if (user) {
           return true;

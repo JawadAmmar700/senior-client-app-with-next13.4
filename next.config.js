@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
     typedRoutes: true,
+    serverActions: true,
   },
   images: {
     domains: ["lh3.googleusercontent.com", "source.boringavatars.com"],

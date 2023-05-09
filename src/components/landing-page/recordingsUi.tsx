@@ -5,6 +5,7 @@ import { BsCloudDownload } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const RecordingsUi = ({ recording }: { recording: ReocoordingUIProps }) => {
   const router = useRouter();
@@ -13,19 +14,16 @@ const RecordingsUi = ({ recording }: { recording: ReocoordingUIProps }) => {
   const handleDeleteRecording = async () => {
     toast.promise(
       new Promise(async (resolve, reject) => {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_APP_API}/api/recordings?recordId=${recording.id}`,
+        const response = await axios.delete(
+          `${process.env.NEXT_PUBLIC_APP_API}/api/recordings`,
           {
-            method: "DELETE",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-            // body: JSON.stringify({
-            //   recordId: recording.id,
-            // }),
+            params: {
+              recordId: recording.id,
+            },
           }
         );
-        if (response.ok) {
+
+        if (response.status === 200) {
           resolve("Recording deleted successfully");
         } else {
           reject("Something went wrong, please try again");

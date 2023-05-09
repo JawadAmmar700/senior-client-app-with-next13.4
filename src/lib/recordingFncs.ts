@@ -3,6 +3,7 @@ import {
   setRecordingState,
 } from "@/store/features/app-state/app-slice";
 import { AnyAction, Dispatch } from "@reduxjs/toolkit";
+import axios from "axios";
 import Moralis from "moralis";
 import { toast } from "react-hot-toast";
 
@@ -72,20 +73,15 @@ const stopRecording = (dispatch: Dispatch<AnyAction>): Promise<string> => {
           new Promise(async (resolve, reject) => {
             const video_path = await convertBlobToIpfs(url, file_name!);
 
-            const res = await fetch(
+            const response = await axios.post(
               `${process.env.NEXT_PUBLIC_APP_API}/api/recordings`,
               {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  file_name: file_name,
-                  videoBlob: video_path,
-                }),
+                file_name: file_name,
+                videoBlob: video_path,
               }
             );
-            if (res.ok) {
+
+            if (response.status === 200) {
               resolve(
                 "Recording saved successfully, you can find it in your recordings"
               );

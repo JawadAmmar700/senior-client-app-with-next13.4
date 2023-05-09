@@ -24,6 +24,7 @@ import {
   checkIfDateATimeIsValid,
   dateFormatter,
 } from "@/lib/reminder-date-helper";
+import axios from "axios";
 
 const CalendarTodo = () => {
   const { data } = useSession();
@@ -62,6 +63,10 @@ const CalendarTodo = () => {
     error,
     method,
   }: ToastPromiseArgsTypes) => {
+    if (session?.user?.provider !== "google")
+      return toast.error(
+        "It seems you are not logged in with google, please login with google to create reminders"
+      );
     if (!state.title) return toast.error("Title is required");
     if (!state.description) return toast.error("Description is required");
     const { formattedDate, reminderTime } = dateFormatter(
@@ -86,7 +91,7 @@ const CalendarTodo = () => {
         title: state.title,
         description: state.description,
         date: formattedDate,
-        unix: Math.floor(reminderTime.getTime() / 1000),
+        unix,
         userId: session?.user?.id,
         time: timeString,
       };
@@ -105,27 +110,24 @@ const CalendarTodo = () => {
         notificationSent: ifUserUpdatesTheDateAndTime
           ? reminder.notificationSent
           : false,
-        unix: Math.floor(reminderTime.getTime() / 1000),
+        unix,
         userId: reminder.userId,
         time: timeString,
       };
     }
 
     const promiseFunction = new Promise(async (resolve, reject) => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
-        {
-          method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
-      if (!response.ok) {
+      const response = await axios({
+        method,
+        url: `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
+        data: body,
+      });
+
+      if (response.status === 200) {
+        return resolve(success);
+      } else {
         return reject(error);
       }
-      return resolve(success);
     });
 
     await toast.promise(promiseFunction, {
