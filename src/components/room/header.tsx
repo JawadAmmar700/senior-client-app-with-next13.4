@@ -1,6 +1,6 @@
 "use client";
 import { RootState } from "@/store/configuration";
-import moment from "moment";
+import Moment from "react-moment";
 import { signOut, useSession } from "next-auth/react";
 import { IoClose } from "react-icons/io5";
 import { MdGroups } from "react-icons/md";
@@ -106,7 +106,7 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
                   </div>
                   <div className="text-md font-medium">
                     <span className="mr-1">Joined</span>
-                    {moment().from(user.time)}
+                    <Moment from={user.time} />
                   </div>
                 </div>
               ))}

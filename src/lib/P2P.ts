@@ -1,4 +1,5 @@
 import {
+  // Participant,
   setChat,
   setIsSharing,
   setMyCamera,
@@ -6,6 +7,8 @@ import {
   setMyPin,
   setMyScreenShare,
   setMyStream,
+  // setParticipantLeft,
+  // setParticipants,
   setRoomName,
   setStreams,
   setUserPin,
@@ -211,15 +214,23 @@ export class P2P {
         toast.success(`${user.username} joined the room`),
       "user-disconnected": ({
         username,
+        userId,
       }: {
         username: string;
         userId: string;
-      }) => toast.success(`${username} left the room`),
+      }) => {
+        // this.dispatch &&
+        //   this.dispatch(
+        //     setParticipantLeft({ userId, left: true, timeLeft: Date.now() })
+        //   );
+        toast.success(`${username} left the room`);
+      },
       "room-name": (roomName: string) =>
         this.dispatch && this.dispatch(setRoomName(roomName)),
       "media-streams": () => {
-        this.dispatch &&
+        if (this.dispatch) {
           this.dispatch(setStreams(Array.from(this.peerCalls.values())));
+        }
       },
       "user-operation": (op: string, callPeerId: string) =>
         this.handleUserOperation(op, callPeerId),
@@ -228,6 +239,9 @@ export class P2P {
         console.log("message", data);
         this.dispatch && this.dispatch(setChat(data));
       },
+      // participants: (participants: Participant[]) => {
+      //   this.dispatch && this.dispatch(setParticipants(participants));
+      // },
     };
 
     for (const [eventName, listener] of Object.entries(eventListenerMap)) {

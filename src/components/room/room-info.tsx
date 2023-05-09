@@ -7,6 +7,7 @@ import ShareLinks from "./ShareLinks";
 import { EmailIcon } from "next-share";
 import { RootState } from "@/store/configuration";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 const RoomInfo = () => {
   const { streams } = useSelector((state: RootState) => state.appState);
@@ -18,20 +19,14 @@ const RoomInfo = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailInput))
       return toast.error("Invalid email address");
-    const res = await fetch(
+    const res = await axios.post(
       `${process.env.NEXT_PUBLIC_APP_API}/api/send-email`,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: emailInput,
-          meetingId: searchParams?.get("meeting_id")!,
-        }),
+        email: emailInput,
+        meetingId: searchParams?.get("meeting_id")!,
       }
     );
-    const data = await res.json();
+    const data = res.data;
     if (data.success) {
       setEmailInput("");
     } else {

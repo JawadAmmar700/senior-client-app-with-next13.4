@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcryptjs from "bcryptjs";
-
+import axios from "axios";
 import prisma from "@/lib/prisma";
 
 if (!process.env.GOOGLE_CLIENT_ID)
@@ -26,16 +26,10 @@ async function refreshAccessToken(token: any) {
         refresh_token: token.refreshToken,
       });
 
-    const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-    });
+    const response = await axios.post(url);
+    const refreshedTokens = await response.data;
 
-    const refreshedTokens = await response.json();
-
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw refreshedTokens;
     }
 
