@@ -12,7 +12,7 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
     (state: RootState) => state.appState
   );
   const isRoomCreator =
-    sessionStorage.getItem("isRoomCreator") === "true" ? true : false;
+    sessionStorage.getItem("isRoomCreator")! === "true" ? true : false;
 
   return (
     <>
