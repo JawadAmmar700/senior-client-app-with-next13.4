@@ -80,6 +80,7 @@ export class P2P {
     return new Date().toLocaleTimeString([], {
       hour: "numeric",
       minute: "numeric",
+      timeZone: "Europe/Istanbul",
     });
   }
 
