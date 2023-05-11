@@ -8,7 +8,11 @@ import { useSelector } from "react-redux";
 
 const Header = ({ isDrawer }: { isDrawer: boolean }) => {
   const { data: session } = useSession();
-  const { streams } = useSelector((state: RootState) => state.appState);
+  const { streams, Participants } = useSelector(
+    (state: RootState) => state.appState
+  );
+  const isRoomCreator =
+    sessionStorage.getItem("isRoomCreator") === "true" ? true : false;
 
   return (
     <>
@@ -79,6 +83,105 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
       <input type="checkbox" id="my-modal-7" className="modal-toggle" />
       <div className="modal modal-bottom sm:modal-middle">
         <div className="modal-box z-50">
+          {isRoomCreator ? (
+            <div className="flex w-full justify-between items-center">
+              <h3 className="font-bold text-lg">Participants History</h3>
+              <label
+                htmlFor="my-modal-7"
+                className="btn btn-square btn-outline"
+              >
+                <IoClose className="text-lg" />
+              </label>
+            </div>
+          ) : (
+            <div className="flex w-full justify-between items-center">
+              <h3 className="font-bold text-lg">
+                {streams.length > 0
+                  ? "Participants"
+                  : "There are no participants in this room, invite your friends to join"}
+              </h3>
+              <label
+                htmlFor="my-modal-7"
+                className="btn btn-square btn-outline"
+              >
+                <IoClose className="text-lg" />
+              </label>
+            </div>
+          )}
+
+          {isRoomCreator
+            ? Participants.map((participant, id) => (
+                <div
+                  key={id}
+                  className="w-full rounded-lg flex items-center justify-between px-3 py-2 shadow-xl"
+                >
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="avatar">
+                      <div className="w-12 rounded-xl">
+                        <img src={participant.photoUrl} alt="Profile Picture" />
+                      </div>
+                    </div>
+                    <p className="font-bold text-xl">
+                      {participant.email === session?.user?.email
+                        ? "you"
+                        : participant.username}
+                    </p>
+                  </div>
+                  <div className="text-md font-medium flex flex-col space-y-2">
+                    <span className="mr-1">Joined at {participant.time} </span>
+                    {participant.left && (
+                      <span className="mr-1">
+                        Left at {participant.timeLeft}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            : streams.map(({ user }, id) => (
+                <div
+                  key={id}
+                  className="w-full rounded-lg flex items-center justify-between px-3 py-2 shadow-xl"
+                >
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="avatar">
+                      <div className="w-12 rounded-xl">
+                        <img src={user.photoUrl} alt="Profile Picture" />
+                      </div>
+                    </div>
+                    <p className="font-bold text-xl">{user.username}</p>
+                  </div>
+                  <div className="text-md font-medium">
+                    <span className="mr-1">Joined at {user.time}</span>
+                  </div>
+                </div>
+              ))}
+          {/* {streams.length > 0 && (
+            <div className="w-full flex flex-col space-y-3 p-2">
+              {streams.map(({ user }, id) => (
+                <div
+                  key={id}
+                  className="w-full rounded-lg flex items-center justify-between px-3 py-2 shadow-xl"
+                >
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="avatar">
+                      <div className="w-12 rounded-xl">
+                        <img src={user.photoUrl} alt="Profile Picture" />
+                      </div>
+                    </div>
+                    <p className="font-bold text-xl">{user.username}</p>
+                  </div>
+                  <div className="text-md font-medium">
+                    <span className="mr-1">Joined</span>
+                    <Moment from={user.time} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )} */}
+        </div>
+      </div>
+      {/* <div className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box z-50">
           <div className="flex w-full justify-between items-center">
             <h3 className="font-bold text-lg">
               {streams.length > 0
@@ -113,7 +216,7 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
             </div>
           )}
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

@@ -1,5 +1,5 @@
 import {
-  // Participant,
+  Participant,
   setChat,
   setIsSharing,
   setMyCamera,
@@ -7,8 +7,7 @@ import {
   setMyPin,
   setMyScreenShare,
   setMyStream,
-  // setParticipantLeft,
-  // setParticipants,
+  setParticipants,
   setRoomName,
   setStreams,
   setUserPin,
@@ -77,11 +76,20 @@ export class P2P {
     }
   }
 
+  dateToString() {
+    return new Date().toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "numeric",
+    });
+  }
+
   joinRoom() {
     const username = sessionStorage.getItem("user_name")!;
+    const email = sessionStorage.getItem("user_email")!;
     const roomName = sessionStorage.getItem("roomName")!;
     const meetingId = sessionStorage.getItem("meetingId")!;
     const userImage = sessionStorage.getItem("user_image")!;
+
     setTimeout(() => {
       this.socket.emit(
         "join-room",
@@ -89,14 +97,15 @@ export class P2P {
         roomName,
         meetingId,
         this.userId!,
-        userImage
+        userImage,
+        email
       );
     }, 2000);
     this.me = {
       userId: this.userId!,
       username,
       photoUrl: userImage,
-      time: Date.now(),
+      time: this.dateToString(),
       isCamera: false,
       isMic: false,
       isScreenShare: false,
@@ -214,17 +223,10 @@ export class P2P {
         toast.success(`${user.username} joined the room`),
       "user-disconnected": ({
         username,
-        userId,
       }: {
         username: string;
         userId: string;
-      }) => {
-        // this.dispatch &&
-        //   this.dispatch(
-        //     setParticipantLeft({ userId, left: true, timeLeft: Date.now() })
-        //   );
-        toast.success(`${username} left the room`);
-      },
+      }) => toast.success(`${username} left the room`),
       "room-name": (roomName: string) =>
         this.dispatch && this.dispatch(setRoomName(roomName)),
       "media-streams": () => {
@@ -236,12 +238,11 @@ export class P2P {
         this.handleUserOperation(op, callPeerId),
 
       "chat-message": (data: Chat) => {
-        console.log("message", data);
         this.dispatch && this.dispatch(setChat(data));
       },
-      // participants: (participants: Participant[]) => {
-      //   this.dispatch && this.dispatch(setParticipants(participants));
-      // },
+      participants: (participants: Participant[]) => {
+        this.dispatch && this.dispatch(setParticipants(participants));
+      },
     };
 
     for (const [eventName, listener] of Object.entries(eventListenerMap)) {

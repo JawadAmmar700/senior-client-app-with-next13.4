@@ -1,14 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-// export type Participant = {
-//   userId: string;
-//   username: string;
-//   photoUrl: string;
-//   time: number;
-//   timeLeft: number;
-//   left: boolean;
-// };
+export type Participant = {
+  userId: string;
+  username: string;
+  photoUrl: string;
+  time: string;
+  timeLeft: string;
+  left: boolean;
+  email: string;
+};
 
 export interface AppState {
   myMuted: boolean;
@@ -24,7 +25,7 @@ export interface AppState {
   chat: Chat[];
   recordingState: boolean;
   elapsedTime: number;
-  // Participants: Participant[];
+  Participants: Participant[];
 }
 
 const initialState: AppState = {
@@ -41,7 +42,7 @@ const initialState: AppState = {
   chat: [],
   recordingState: false,
   elapsedTime: 0,
-  // Participants: [],
+  Participants: [],
 };
 
 export const AppSlice = createSlice({
@@ -87,23 +88,9 @@ export const AppSlice = createSlice({
     setElapsedTime: (state, action: PayloadAction<number>) => {
       state.elapsedTime += action.payload;
     },
-    // setParticipants: (state, action: PayloadAction<Participant[]>) => {
-    //   state.Participants = action.payload;
-    // },
-    // setParticipantLeft: (
-    //   state,
-    //   action: PayloadAction<{ userId: string; left: boolean; timeLeft: number }>
-    // ) => {
-    //   state.Participants = state.Participants.map((participant) => {
-    //     if (participant.userId === action.payload.userId) {
-    //       return {
-    //         ...participant,
-    //         ...action.payload,
-    //       };
-    //     }
-    //     return participant;
-    //   });
-    // },
+    setParticipants: (state, action: PayloadAction<Participant[]>) => {
+      state.Participants = action.payload;
+    },
   },
 });
 
@@ -121,8 +108,7 @@ export const {
   setChat,
   setRecordingState,
   setElapsedTime,
-  // setParticipants,
-  // setParticipantLeft,
+  setParticipants,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

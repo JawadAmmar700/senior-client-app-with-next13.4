@@ -21,6 +21,8 @@ const CallStart = () => {
     sessionStorage.setItem("meetingId", meetingId);
     sessionStorage.setItem("user_name", session?.user?.name!);
     sessionStorage.setItem("user_image", session?.user?.image!);
+    sessionStorage.setItem("user_email", session?.user?.email!);
+    sessionStorage.setItem("isRoomCreator", "true");
 
     const searchParams = new URLSearchParams({
       meeting_id: meetingId,
@@ -33,10 +35,18 @@ const CallStart = () => {
     if (!session)
       return toast.error("You must be logged in to create a meeting");
     if (!meetingId) return toast.error("Provide meeting id");
-
+    if (
+      sessionStorage.getItem("meetingId") === meetingId &&
+      sessionStorage.getItem("isRoomCreator") === "true"
+    ) {
+      sessionStorage.setItem("isRoomCreator", "true");
+    } else {
+      sessionStorage.setItem("isRoomCreator", "false");
+    }
     sessionStorage.setItem("meetingId", meetingId);
     sessionStorage.setItem("user_name", session?.user?.name!);
     sessionStorage.setItem("user_image", session?.user?.image!);
+    sessionStorage.setItem("user_email", session?.user?.email!);
 
     const searchParams = new URLSearchParams({
       meeting_id: meetingId,
