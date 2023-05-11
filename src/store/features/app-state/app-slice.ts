@@ -5,10 +5,9 @@ export type Participant = {
   userId: string;
   username: string;
   photoUrl: string;
-  time: string;
-  timeLeft: string;
-  left: boolean;
   email: string;
+  joinedAt: string;
+  leftAt: string | null;
 };
 
 export interface AppState {

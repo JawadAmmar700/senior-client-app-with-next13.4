@@ -106,7 +106,7 @@ export class P2P {
       userId: this.userId!,
       username,
       photoUrl: userImage,
-      time: this.dateToString(),
+      joinedAt: this.dateToString(),
       isCamera: false,
       isMic: false,
       isScreenShare: false,

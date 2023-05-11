@@ -37,7 +37,7 @@ type User = {
   isCamera: boolean;
   isMic: boolean;
   isScreenShare: boolean;
-  time: string;
+  joinedAt: string;
 };
 type MapOfPeerCalls = {
   call: MediaConnection;
