@@ -1,6 +1,8 @@
 import dynamic from "next/dynamic";
 const Main = dynamic(() => import("@/components/room/Main"), { ssr: false });
-import Header from "@/components/room/header";
+const Header = dynamic(() => import("@/components/room/header"), {
+  ssr: false,
+});
 
 const Page = () => {
   return (
