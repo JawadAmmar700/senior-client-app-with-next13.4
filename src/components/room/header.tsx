@@ -23,6 +23,8 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
   const [fileData, setFileData] = useState<FileDataType[]>([]);
   const timeIntervalRef = useRef<HTMLInputElement>(null);
 
+  console.log("Participants", Participants);
+
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
