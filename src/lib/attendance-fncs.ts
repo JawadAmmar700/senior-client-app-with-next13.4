@@ -28,10 +28,6 @@ const timeTounix = (timeString: string) => {
   const [hourString, minuteString] = timeString.split(":");
   let [hour, minute] = [parseInt(hourString), parseInt(minuteString)];
 
-  if (timeString.includes("PM")) {
-    hour += 12;
-  }
-
   const now = new Date();
   const dateString = `${
     now.getMonth() + 1
@@ -41,24 +37,38 @@ const timeTounix = (timeString: string) => {
   return Math.floor(dateObj.getTime() / 1000);
 };
 
+const removeMeFromParticipants = (
+  Participants: Participant[],
+  filtermeOut: string
+) => {
+  return Participants.filter(
+    (participant) =>
+      participant.email.toLowerCase().trim() !==
+      filtermeOut.toLowerCase().trim()
+  );
+};
+
 const checkTheDurationOfAttendees = (
   Participants: Participant[],
   filtermeOut: string
 ) => {
   let totalParticipantsDuration = new Map<string, number>();
 
-  const participantsWithoutMe = Participants.filter(
-    (participant) => participant.email !== filtermeOut
+  console.log("Participants", Participants);
+  const participantsWithoutMe = removeMeFromParticipants(
+    Participants,
+    filtermeOut
   );
 
   const participantsWithDuration = participantsWithoutMe.map((participant) => {
-    const duration = participant.leftAt
-      ? Math.floor(
-          timeTounix(participant.leftAt) - timeTounix(participant.joinedAt)
-        )
-      : Math.floor(
-          Math.floor(Date.now() / 1000) - timeTounix(participant.joinedAt)
-        );
+    const duration =
+      participant.leftAt !== null
+        ? Math.floor(
+            timeTounix(participant.leftAt) - timeTounix(participant.joinedAt)
+          )
+        : Math.floor(
+            Math.floor(Date.now() / 1000) - timeTounix(participant.joinedAt)
+          );
     return {
       ...participant,
       duration: Math.floor(duration / 60),
@@ -83,41 +93,45 @@ const checkTheDurationOfAttendees = (
 };
 
 const compareTheAteendees = async (
-  streams: MapOfPeerCalls[],
   Participants: Participant[],
   fileData: FileDataType[],
   timeInterval: string,
   filtermeOut: string
 ) => {
+  const participantsWithoutMe = removeMeFromParticipants(
+    Participants,
+    filtermeOut
+  );
   if (!timeInterval) {
-    console.log("no time interval");
-    const matchingAttendees = streams.map((attendee) => {
-      const matchingAttendeeAttended = fileData.find(
+    const matchingAttendees = fileData.map((attendee) => {
+      const matchingAttendeeAttended = participantsWithoutMe.find(
         (attended) =>
-          attended.username === attendee.user.username &&
-          attended.email === attendee.user.email
+          attended.username.toLowerCase().trim() ===
+            attendee.username.toLowerCase().trim() &&
+          attended.email.toLowerCase().trim() ===
+            attendee.email.toLowerCase().trim()
       );
       return {
-        username: attendee.user.username,
-        email: attendee.user.email,
+        username: attendee.username,
+        email: attendee.email,
         attended: !!matchingAttendeeAttended,
       };
     });
     return matchingAttendees;
   } else {
-    console.log("time interval");
     const totalParticipantsDuration = checkTheDurationOfAttendees(
       Participants,
       filtermeOut
     );
 
     const matchingAttendees = fileData.map((attendee) => {
-      const matchingAttendeeAttended = streams.find(
+      const matchingAttendeeAttended = participantsWithoutMe.find(
         (attended) =>
-          attended.user.username === attendee.username &&
-          attended.user.email === attendee.email
+          attended.username.toLowerCase().trim() ===
+            attendee.username.toLowerCase().trim() &&
+          attended.email.toLowerCase().trim() ===
+            attendee.email.toLowerCase().trim()
       );
-
       const attended =
         totalParticipantsDuration.get(attendee.email)! >=
           parseInt(timeInterval) && matchingAttendeeAttended
@@ -130,6 +144,7 @@ const compareTheAteendees = async (
         attended,
       };
     });
+
     return matchingAttendees;
   }
 };

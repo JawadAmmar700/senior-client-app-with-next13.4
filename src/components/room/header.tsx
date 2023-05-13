@@ -23,8 +23,6 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
   const [fileData, setFileData] = useState<FileDataType[]>([]);
   const timeIntervalRef = useRef<HTMLInputElement>(null);
 
-  console.log("Participants", Participants);
-
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
@@ -45,7 +43,6 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
     if (!fileData.length) return toast.error("Please upload a file first");
 
     const matchingAttendees = await compareTheAteendees(
-      streams,
       Participants,
       fileData,
       timeIntervalRef.current?.value!,
@@ -69,7 +66,6 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
   }, [
     roomName,
     Participants,
-    streams,
     fileData,
     session?.user?.email,
     timeIntervalRef.current?.value,
