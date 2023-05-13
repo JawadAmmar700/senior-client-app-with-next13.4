@@ -1,15 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type Participant = {
-  userId: string;
-  username: string;
-  photoUrl: string;
-  email: string;
-  joinedAt: string;
-  leftAt: string | null;
-};
-
 export interface AppState {
   myMuted: boolean;
   myCamera: boolean;

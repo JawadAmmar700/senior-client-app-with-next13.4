@@ -1,18 +1,17 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { RootState } from "@/store/configuration";
 import { signOut, useSession } from "next-auth/react";
 import { IoClose } from "react-icons/io5";
 import { MdGroups } from "react-icons/md";
 import { useSelector } from "react-redux";
-import { utils, writeFileXLSX, read } from "xlsx";
 import { SiMicrosoftexcel } from "react-icons/si";
 import { toast } from "react-hot-toast";
-
-type FileDataType = {
-  username: string;
-  email: string;
-};
+import {
+  compareTheAteendees,
+  sheetToArray,
+  toExcel,
+} from "@/lib/attendance-fncs";
 
 const Header = ({ isDrawer }: { isDrawer: boolean }) => {
   const { data: session } = useSession();
@@ -22,49 +21,38 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
     (state: RootState) => state.appState
   );
   const [fileData, setFileData] = useState<FileDataType[]>([]);
+  const timeIntervalRef = useRef<HTMLInputElement>(null);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
       reader.onload = function (e) {
         const data = e.target?.result;
-        const workBook = read(data, { type: "binary" });
-        const workSheetName = workBook.SheetNames[0];
-        const workSheet = workBook.Sheets[workSheetName];
-        const dataParse: FileDataType[] = utils.sheet_to_json(workSheet);
+        const dataParse = sheetToArray(data);
         setFileData(dataParse);
       };
       reader.readAsBinaryString(e.target.files[0]);
     }
   };
 
-  const exportFile = useCallback(() => {
-    const ws = utils.json_to_sheet(Participants);
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, "Data");
-    writeFileXLSX(wb, `${roomName}-participants.xlsx`);
+  const exportFile = useCallback(async () => {
+    await toExcel(`${roomName}-participants.xlsx`, Participants);
   }, [Participants]);
 
-  const handleAttendance = () => {
-    const matchingAttendees = streams.map((attendee) => {
-      const matchingAttendeeAttended = fileData.find(
-        (attended) => attended.username === attendee.user.username
-      );
-      return {
-        username: attendee.user.username,
-        attended: !!matchingAttendeeAttended,
-      };
-    });
+  const handleAttendance = useCallback(async () => {
+    if (!fileData.length) return toast.error("Please upload a file first");
 
+    const matchingAttendees = await compareTheAteendees(
+      streams,
+      Participants,
+      fileData,
+      timeIntervalRef.current?.value!,
+      session?.user?.email!
+    );
     toast.promise(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         try {
-          const data = matchingAttendees;
-          const ws = utils.json_to_sheet(data);
-          const wb = utils.book_new();
-          utils.book_append_sheet(wb, ws, "Data");
-          writeFileXLSX(wb, `${roomName}-attendance.xlsx`);
-
+          await toExcel(`${roomName}-attendance.xlsx`, matchingAttendees);
           resolve("success");
         } catch (error) {
           reject("Error Taking Attendance");
@@ -76,7 +64,14 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
         error: "Error Taking Attendance",
       }
     );
-  };
+  }, [
+    roomName,
+    Participants,
+    streams,
+    fileData,
+    session?.user?.email,
+    timeIntervalRef.current?.value,
+  ]);
 
   return (
     <>
@@ -231,10 +226,10 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
       </div>
       <input type="checkbox" id="my-modal-8" className="modal-toggle" />
       <div className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Take Attendance</h3>
-          <div className="py-4">
-            <div className="form-control w-full max-w-xs">
+        <div className="modal-box ">
+          <h3 className="font-bold text-lg">Take Attendance with one click</h3>
+          <div className="py-4 mx-auto">
+            <div className="form-control w-full max-w-xs ">
               <label className="label">
                 <span className="label-text">
                   Please upload Excel file with attendees with the following
@@ -246,8 +241,25 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
                 className="file-input file-input-bordered w-full max-w-xs"
                 onChange={onFileChange}
               />
-              <button onClick={handleAttendance}>start</button>
             </div>
+            <div className="form-control w-full max-w-xs">
+              <label className="label">
+                <span className="label-text">
+                  Time interval for a participant to be marked as attended(in
+                  minutes)
+                </span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="30, 60, etc"
+                className="input input-bordered w-full max-w-xs"
+                ref={timeIntervalRef}
+              />
+            </div>
+            <button className="btn btn-success mt-5" onClick={handleAttendance}>
+              Take Attendance
+            </button>
           </div>
           <div className="modal-action">
             <label htmlFor="my-modal-8" className="btn">

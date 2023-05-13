@@ -32,6 +32,7 @@ type FormProps = {
 type User = {
   userId: string;
   username: string;
+  email: string;
   photoUrl: string;
   room_name?: string;
   isCamera: boolean;
@@ -142,4 +143,18 @@ type OP = {
   userMuted: string[];
   userCameraOnOff: string[];
   userScreenShare: string[];
+};
+
+type FileDataType = {
+  username: string;
+  email: string;
+};
+
+type Participant = {
+  userId: string;
+  username: string;
+  photoUrl: string;
+  email: string;
+  joinedAt: string;
+  leftAt: string | null;
 };

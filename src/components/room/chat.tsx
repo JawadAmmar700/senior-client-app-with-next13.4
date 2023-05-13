@@ -44,7 +44,7 @@ const Chat = ({ isDrawer, peer }: Props) => {
         !isDrawer
           ? "hidden lg:flex w-[400px]"
           : ` ${openChat ? " flex w-full" : "hidden"}`
-      }  flex-col  h-screen overflow-hidden  bg-white shadow-xl rounded-tl-lg rounded-bl-lg`}
+      }  flex-col  overflow-hidden  bg-white shadow-xl rounded-tl-lg rounded-bl-lg`}
     >
       <div className="w-full p-2 flex items-center justify-between ">
         <h1 className="text-xl text-black font-bold text-center">Group Chat</h1>

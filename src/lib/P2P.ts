@@ -1,5 +1,4 @@
 import {
-  Participant,
   setChat,
   setIsSharing,
   setMyCamera,
@@ -46,6 +45,7 @@ export class P2P {
     this.socket = io(`${process.env.NEXT_PUBLIC_SERVER_APP}`, this.opts);
     this.peer.on("open", (id) => {
       this.userId = id;
+      console.log("peer id", id);
     });
 
     this.socketEvents();
@@ -105,6 +105,7 @@ export class P2P {
     this.me = {
       userId: this.userId!,
       username,
+      email,
       photoUrl: userImage,
       joinedAt: this.dateToString(),
       isCamera: false,
@@ -123,7 +124,7 @@ export class P2P {
     );
     call.on("stream", (userStream) => {
       this.peerConnections.push(call.peerConnection);
-
+      console.log("call.peer", call.peer);
       this.peerCalls.set(call.peer, {
         call,
         id: call.peer,
@@ -145,7 +146,6 @@ export class P2P {
         const isPeerCallExist = this.peerCalls.has(call.peer);
         if (!isPeerCallExist) {
           this.peerConnections.push(call.peerConnection);
-
           this.peerCalls.set(call.peer, {
             call,
             id: call.peer,
@@ -153,6 +153,7 @@ export class P2P {
             stream: userStream,
           });
         }
+
         this.socket.emit("streams");
       });
       call.on("close", () => {
