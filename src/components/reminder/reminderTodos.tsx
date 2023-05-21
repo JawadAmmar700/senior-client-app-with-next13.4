@@ -18,7 +18,6 @@ const getReminders = cache(async () => {
     });
     return todos;
   } catch (error) {
-    console.error(error);
     return [];
   }
 });

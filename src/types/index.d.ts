@@ -82,6 +82,17 @@ type POSTBody = {
   userId: string;
   time: string;
 };
+// added for server actions
+type ReminderBody = {
+  title: string;
+  description: string;
+  date: string;
+  unix: number;
+  userId: string;
+  time: string;
+  isDone: boolean;
+  notificationSent: boolean;
+};
 
 type PUTBody = {
   todoId: string;
@@ -99,7 +110,7 @@ type ToastPromiseArgsTypes = {
   loading: string;
   success: string;
   error: string;
-  method: string;
+  method: "POST" | "PUT";
 };
 
 type ReocoordingUIProps = {

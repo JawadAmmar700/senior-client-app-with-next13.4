@@ -1,5 +1,4 @@
 import { LooseValue } from "react-calendar/dist/cjs/shared/types";
-import { toast } from "react-hot-toast";
 
 const dateToString = (date: Date) => {
   return date.toLocaleDateString("en-US", {
@@ -21,19 +20,31 @@ const dateFormatter = (calendar: LooseValue, clock: any) => {
   const reminderTime = new Date(`${formattedDate2}T${clock}`);
   return { formattedDate, reminderTime };
 };
-
-const checkIfDateATimeIsValid = (reminderTime: Date) => {
+//server action
+const checkIfDateATimeIsValid = (reminderTime: Date): string | null => {
   const currentTime = new Date();
   if (reminderTime <= currentTime) {
-    toast.error("Reminder time has already passed");
-    return false;
+    return "Reminder time has already passed";
   }
   const timeDiff = (reminderTime.getTime() - currentTime.getTime()) / 1000 / 60;
   if (timeDiff < 10) {
-    toast.error("Reminder time should be at least 10 minutes from now");
-    return false;
+    return "Reminder time should be at least 10 minutes from now";
   }
-  return true;
+  return null;
 };
+// const checkIfDateATimeIsValid = (reminderTime: Date) => {
+//   console.log("client");
+//   const currentTime = new Date();
+//   if (reminderTime <= currentTime) {
+//     toast.error("Reminder time has already passed");
+//     return false;
+//   }
+//   const timeDiff = (reminderTime.getTime() - currentTime.getTime()) / 1000 / 60;
+//   if (timeDiff < 10) {
+//     toast.error("Reminder time should be at least 10 minutes from now");
+//     return false;
+//   }
+//   return true;
+// };
 
 export { dateFormatter, checkIfDateATimeIsValid, dateToString };

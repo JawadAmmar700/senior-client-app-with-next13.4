@@ -45,7 +45,6 @@ export class P2P {
     this.socket = io(`${process.env.NEXT_PUBLIC_SERVER_APP}`, this.opts);
     this.peer.on("open", (id) => {
       this.userId = id;
-      console.log("peer id", id);
     });
 
     this.socketEvents();
@@ -90,6 +89,7 @@ export class P2P {
     const roomName = sessionStorage.getItem("roomName")!;
     const meetingId = sessionStorage.getItem("meetingId")!;
     const userImage = sessionStorage.getItem("user_image")!;
+    const isRoomCreator = sessionStorage.getItem("isRoomCreator")! === "true";
 
     setTimeout(() => {
       this.socket.emit(
@@ -99,7 +99,8 @@ export class P2P {
         meetingId,
         this.userId!,
         userImage,
-        email
+        email,
+        isRoomCreator
       );
     }, 2000);
     this.me = {
@@ -124,7 +125,6 @@ export class P2P {
     );
     call.on("stream", (userStream) => {
       this.peerConnections.push(call.peerConnection);
-      console.log("call.peer", call.peer);
       this.peerCalls.set(call.peer, {
         call,
         id: call.peer,

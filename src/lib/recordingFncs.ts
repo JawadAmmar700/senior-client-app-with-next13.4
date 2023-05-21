@@ -1,4 +1,5 @@
 import {
+  ResetElapsedTime,
   setElapsedTime,
   setRecordingState,
 } from "@/store/features/app-state/app-slice";
@@ -57,7 +58,7 @@ const startRecording = (dispatch: Dispatch<AnyAction>): Promise<string> => {
 
 const stopRecording = (dispatch: Dispatch<AnyAction>): Promise<string> => {
   dispatch(setRecordingState());
-  dispatch(setElapsedTime(0));
+  dispatch(ResetElapsedTime(0));
   mediaRecorder.stop();
   return new Promise((resolve, reject) => {
     try {

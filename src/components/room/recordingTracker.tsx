@@ -24,6 +24,8 @@ const RecordingTracker = () => {
     return () => clearInterval(interval);
   }, [recordingState]);
 
+  console.log(elapsedTime);
+
   const handleStopRecording = async () => {
     await stopRecording(dispatch);
   };

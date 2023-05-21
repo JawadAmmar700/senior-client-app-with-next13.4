@@ -1,6 +1,5 @@
 import { CronJobServer } from "@/lib/fetchers";
 import prisma from "@/lib/prisma";
-import axios from "axios";
 
 export async function POST(request: Request) {
   const { date, description, unix, title, userId, time } =
@@ -99,18 +98,7 @@ export async function DELETE(request: Request) {
       },
     });
 
-    const cron = await axios.delete(
-      `${process.env.SERVER_APP}/reminder-deleted`,
-      {
-        params: {
-          todoId: reminderId,
-        },
-      }
-    );
-
-    if (cron.status !== 200) {
-      throw new Error(cron.statusText);
-    }
+    await CronJobServer({ todoId: reminderId! }, "DELETE", "/reminder-deleted");
 
     return new Response("Reminder deleted", {
       status: 200,

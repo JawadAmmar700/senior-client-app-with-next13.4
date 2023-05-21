@@ -78,6 +78,9 @@ export const AppSlice = createSlice({
     setElapsedTime: (state, action: PayloadAction<number>) => {
       state.elapsedTime += action.payload;
     },
+    ResetElapsedTime: (state, action: PayloadAction<number>) => {
+      state.elapsedTime = action.payload;
+    },
     setParticipants: (state, action: PayloadAction<Participant[]>) => {
       state.Participants = action.payload;
     },
@@ -99,6 +102,7 @@ export const {
   setRecordingState,
   setElapsedTime,
   setParticipants,
+  ResetElapsedTime,
 } = AppSlice.actions;
 
 export default AppSlice.reducer;

@@ -7,11 +7,9 @@ import { MdGroups } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { SiMicrosoftexcel } from "react-icons/si";
 import { toast } from "react-hot-toast";
-import {
-  compareTheAteendees,
-  sheetToArray,
-  toExcel,
-} from "@/lib/attendance-fncs";
+import { sheetToArray, toExcel } from "@/lib/attendance-fncs";
+// server actions
+import { compareAteendeesServerAction } from "@/app/_actions";
 
 const Header = ({ isDrawer }: { isDrawer: boolean }) => {
   const { data: session } = useSession();
@@ -42,12 +40,15 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
   const handleAttendance = useCallback(async () => {
     if (!fileData.length) return toast.error("Please upload a file first");
 
-    const matchingAttendees = await compareTheAteendees(
-      Participants,
-      fileData,
-      timeIntervalRef.current?.value!,
-      session?.user?.email!
-    );
+    const formData = new FormData();
+    formData.append("fileData", JSON.stringify(fileData));
+    formData.append("timeInterval", timeIntervalRef.current?.value!);
+    formData.append("email", session?.user?.email!);
+    formData.append("Participants", JSON.stringify(Participants));
+
+    // server actions
+    const matchingAttendees = await compareAteendeesServerAction(formData);
+
     toast.promise(
       new Promise(async (resolve, reject) => {
         try {
@@ -255,10 +256,14 @@ const Header = ({ isDrawer }: { isDrawer: boolean }) => {
                 ref={timeIntervalRef}
               />
             </div>
-            <button className="btn btn-success mt-5" onClick={handleAttendance}>
+            <button
+              className="btn btn-success mt-5"
+              onClick={() => handleAttendance()}
+            >
               Take Attendance
             </button>
           </div>
+
           <div className="modal-action">
             <label htmlFor="my-modal-8" className="btn">
               Close

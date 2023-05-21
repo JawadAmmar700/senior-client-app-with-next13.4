@@ -5,7 +5,6 @@ import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 // Third party imports
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import Calendar from "react-calendar";
 import TimePicker from "react-time-picker";
@@ -21,10 +20,10 @@ import {
   stateObj,
 } from "@/store/features/app-state/calendar-state";
 import {
-  checkIfDateATimeIsValid,
-  dateFormatter,
-} from "@/lib/reminder-date-helper";
-import axios from "axios";
+  checkifDateAndTimeIsValidAServerAction,
+  createReminder,
+  dateFormatterServerAction,
+} from "@/app/_actions";
 
 const CalendarTodo = () => {
   const { data } = useSession();
@@ -33,7 +32,6 @@ const CalendarTodo = () => {
     (state: RootState) => state.calendarState
   );
   const dispatch = useDispatch();
-  const router = useRouter();
   const cancelRef = useRef<HTMLLabelElement>(null);
 
   const handleReminderCreation = async () => {
@@ -69,73 +67,31 @@ const CalendarTodo = () => {
       );
     if (!state.title) return toast.error("Title is required");
     if (!state.description) return toast.error("Description is required");
-    const { formattedDate, reminderTime } = dateFormatter(
+    const { reminderTime, formattedDate } = await dateFormatterServerAction(
       state.calendar,
       state.clock
     );
-
-    if (!checkIfDateATimeIsValid(reminderTime)) return;
+    const { error: err }: any = await checkifDateAndTimeIsValidAServerAction(
+      reminderTime
+    );
+    if (err) return toast.error(err);
     if (cancelRef.current) {
       cancelRef.current.click();
     }
 
-    let body: POSTBody | PUTBody;
+    const formData = new FormData();
+    formData.append("stateForm", JSON.stringify(state));
+    formData.append("reminderForm", JSON.stringify(reminder));
+    formData.append("method", method);
+    formData.append("userId", session?.user?.id ?? "");
+    formData.append("formattedDate", formattedDate);
+    formData.append("reminderTime", reminderTime.toString());
 
-    const unix = Math.floor(reminderTime.getTime() / 1000);
-    const timeString =
-      state.clock?.toString() +
-      `${reminderTime.getHours() >= 12 ? "PM" : "AM"}`;
-
-    if (method === "POST") {
-      body = {
-        title: state.title,
-        description: state.description,
-        date: formattedDate,
-        unix,
-        userId: session?.user?.id,
-        time: timeString,
-      };
-    }
-    if (method === "PUT") {
-      const ifUserUpdatesTheDateAndTime =
-        reminder.time.slice(0, -2).trim() === state.clock &&
-        new Date(formattedDate).getTime() === new Date(reminder.date).getTime();
-
-      body = {
-        todoId: reminder.id,
-        title: state.title,
-        description: state.description,
-        date: formattedDate,
-        isDone: reminder.isDone,
-        notificationSent: ifUserUpdatesTheDateAndTime
-          ? reminder.notificationSent
-          : false,
-        unix,
-        userId: reminder.userId,
-        time: timeString,
-      };
-    }
-
-    const promiseFunction = new Promise(async (resolve, reject) => {
-      const response = await axios({
-        method,
-        url: `${process.env.NEXT_PUBLIC_APP_API}/api/reminders`,
-        data: body,
-      });
-
-      if (response.status === 200) {
-        return resolve(success);
-      } else {
-        return reject(error);
-      }
-    });
-
-    await toast.promise(promiseFunction, {
+    await toast.promise(createReminder(formData), {
       loading,
       success,
       error,
     });
-    router.refresh();
   };
 
   const handleModalCancel = () => {

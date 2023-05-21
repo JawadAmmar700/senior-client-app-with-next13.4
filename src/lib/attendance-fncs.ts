@@ -25,6 +25,8 @@ const toExcel = async (file_name: string, data: XlsxUtilsType) => {
 };
 
 const timeTounix = (timeString: string) => {
+  console.log("test3");
+
   const [hourString, minuteString] = timeString.split(":");
   let [hour, minute] = [parseInt(hourString), parseInt(minuteString)];
 
@@ -54,7 +56,6 @@ const checkTheDurationOfAttendees = (
 ) => {
   let totalParticipantsDuration = new Map<string, number>();
 
-  console.log("Participants", Participants);
   const participantsWithoutMe = removeMeFromParticipants(
     Participants,
     filtermeOut
@@ -102,6 +103,7 @@ const compareTheAteendees = async (
     Participants,
     filtermeOut
   );
+
   if (!timeInterval) {
     const matchingAttendees = fileData.map((attendee) => {
       const matchingAttendeeAttended = participantsWithoutMe.find(

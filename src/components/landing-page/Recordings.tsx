@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth-session";
 import { headers } from "next/headers";
 import RecordingsUi from "./recordingsUi";
 import { cache } from "react";
+import { deleteRecording } from "@/app/_actions";
 
 const fetchRecords = cache(async () => {
   const session: any = await getSession(headers().get("cookie") ?? "");
@@ -40,7 +41,14 @@ const Recordings = async () => {
             {recordings.length > 0 ? (
               <div className="mx-auto flex flex-wrap space-x-5">
                 {recordings?.map((recording) => (
-                  <RecordingsUi recording={recording} key={recording.id} />
+                  <form action={deleteRecording}>
+                    <input
+                      type="hidden"
+                      name="recordingID"
+                      value={recording.id}
+                    />
+                    <RecordingsUi recording={recording} key={recording.id} />
+                  </form>
                 ))}
               </div>
             ) : (
